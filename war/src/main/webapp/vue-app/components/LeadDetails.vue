@@ -1,297 +1,307 @@
 <template>
-  <v-flex>
-    <v-container>
-      <div class="container">
-        <form method="post">
-          <div class="row">
-            <div class="col-md-3">
-              <div class="profile-img">
-                <img src="/rest/v1/social/users/root/avatar" alt />
-              </div>
+    <v-flex>
+        <v-container>
+            <div class="container">
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="profile-img">
+                                <img alt :src="leadAvatar"/>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="profile-head">
+                                <h1>{{lead.name}}</h1>
+                                <h4>{{lead.mail}}</h4>
+                                <h6>{{lead.company}}</h6>
+                                <h6>{{lead.position}}</h6>
+                                <h5>{{lead.country}}</h5>
+                                <h5>{{lead.phone}}</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <a @click="backToList()" class="actionIcon" role="button" style="float: right;">
+                                <i class="uiIconBack uiIconLightGray"></i>
+                            </a>
+
+                            <h3>{{lead.status}}</h3>
+                            <div class="tl">Telemarketer infos</div>
+                            <b>Name:</b>
+                            <p>Sonia</p>
+                            <b>Mail:</b>
+                            <p>ux-sf02@exoplatform.com</p>
+                            <v-btn @click.stop="drawer = !drawer" color="blue" dark>Notes</v-btn>
+                        </div>
+                    </div>
+                    <div class="row col-md-12">
+                        <v-layout>
+                            <v-flex class="white text-center" flat>
+                                <v-tabs background-color="blue-grey lighten-5 icons-and-text" grow
+                                        v-model="selectedTab">
+                                    <v-tabs-slider color="primary"/>
+                                    <v-tab href="#leadInfo" key="leadInfo">Lead INfo</v-tab>
+                                    <v-tab href="#leadSourceInfo" key="leadSourceInfo">Lead Source Info</v-tab>
+                                    <v-tab href="#captureInfo" key="captureInfo">Capture Info</v-tab>
+                                </v-tabs>
+
+                                <v-tabs-items class="infoContent" v-model="selectedTab">
+                                    <v-tab-item class="tabContent" eager id="leadInfo" value="leadInfo">
+                                        <div class="profile">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Lead ID:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.leadID}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Language:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.language}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Creation Date:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.creationDate}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Update Date:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.updateDate}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Geographique Zone:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.geographiqueZone}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Marketing Suspended:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.MarketingSuspended}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Marketing Suspended Cause:</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.marketingSuspendedCause}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </v-tab-item>
+                                    <v-tab-item class="tabContent" eager id="leadSourceInfo" value="leadSourceInfo">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Person Source:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.personSource}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Landing page Info:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.landingPageInfo}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Capture source Info:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.captureSourceInfo}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Person IP:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.personIP}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Original Referrer:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.originalReferrer}}</div>
+                                            </div>
+                                        </div>
+                                    </v-tab-item>
+
+                                    <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
+                                        <div class="profile">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Capture Method</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.captureMethod}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Capture Type</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.captureType}}</div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <b>Capture Detail</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.captureDetail}}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" v-if="lead.blogSubscription==true">
+                                                <div class="col-md-3">
+                                                    <b>Blog Subscription Date</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div>{{lead.blogSubscriptionDate}}</div>
+                                                </div>
+                                            </div>
+
+                                            <v-expansion-panels multiple v-model="ressources">
+                                                <v-expansion-panel class="panel"
+                                                                   v-if="lead.communityRegistration==true">
+                                                    <v-expansion-panel-header class="panel-header">Community
+                                                        Registration
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <b>Tribe User Name</b>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div>{{lead.communityUserName}}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <b>Registration Method</b>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div>{{lead.registrationMethod}}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <b>Community Registration Date</b>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div>{{lead.communityRegistrationDate}}</div>
+                                                            </div>
+                                                        </div>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+                                                <v-expansion-panel class="panel" v-if="lead.demoRequest !== null && typeof(lead.demoRequest) !== 'undefined' && lead.demoRequest.length > 0">
+                                                    <v-expansion-panel-header
+                                                            class="panel-header"
+                                                    >Demo Requests ({{lead.demoRequest.length}})
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <div
+                                                                :key="item.demoMessage"
+                                                                class="msg"
+                                                                v-for="item in lead.demoRequest"
+                                                        >
+                                                            <p>{{item.demoMessage}}</p>
+                                                            <span class="time_date">{{item.demoMessageDate}}</span>
+                                                        </div>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+
+                                                <v-expansion-panel class="panel" v-if="lead.contactUs !== null && typeof(lead.contactUs) !== 'undefined' && lead.contactUs.length > 0">
+                                                    <v-expansion-panel-header
+                                                            class="panel-header"
+                                                    >contact Us ({{lead.contactUs.length}})
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <div
+                                                                :key="item.contactMessage"
+                                                                class="msg"
+                                                                v-for="item in lead.contactUs"
+                                                        >
+                                                            <p>{{item.contactMessage}}</p>
+                                                            <span class="time_date">{{item.contactMessageDate}}</span>
+                                                        </div>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+
+                                                <v-expansion-panel class="panel" v-if="lead.blogComments !== null && typeof(lead.blogComments) !== 'undefined' && lead.blogComments.length > 0">
+                                                    <v-expansion-panel-header
+                                                            class="panel-header"
+                                                    >Blog Comments ({{lead.blogComments.length}})
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <div
+                                                                :key="item.blogComments"
+                                                                class="msg"
+                                                                v-for="item in lead.blogComments"
+                                                        >
+                                                            <p>{{item.blogComment}}</p>
+                                                            <span class="time_date">{{item.blogCommentDate}}</span>
+                                                        </div>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+
+                                                <v-expansion-panel class="panel"
+                                                                   v-if="lead.resourceDownloads !== null && typeof(lead.resourceDownloads) !== 'undefined' && lead.resourceDownloads.length > 0">
+                                                    <v-expansion-panel-header
+                                                            class="panel-header"
+                                                    >Resource Downloads ({{lead.resourceDownloads.length}})
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <downloads-list :downloads="lead.resourceDownloads"/>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+
+                                                <v-expansion-panel class="panel" v-if=" lead.rewardRequest !== null && typeof(lead.rewardRequest) !== 'undefined' && lead.rewardRequest.length > 0">
+                                                    <v-expansion-panel-header
+                                                            class="panel-header"
+                                                    >Reward Requests ({{lead.rewardRequest.length}})
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <reward-requests-list :requests="lead.rewardRequest"/>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+                                            </v-expansion-panels>
+                                        </div>
+                                    </v-tab-item>
+                                </v-tabs-items>
+                            </v-flex>
+                        </v-layout>
+                    </div>
+                </form>
             </div>
-            <div class="col-md-5">
-              <div class="profile-head">
-                <h1>{{lead.name}}</h1>
-                <h4>{{lead.mail}}</h4>
-                <h6>{{lead.company}}</h6>
-                <h6>{{lead.position}}</h6>
-                <h5>{{lead.country}}</h5>
-                <h5>{{lead.phone}}</h5>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <a role="button" class="actionIcon" @click="backToList()" style="float: right;">
-                <i class="uiIconBack uiIconLightGray"></i>
-              </a>
-
-              <h3>{{lead.status}}</h3>
-              <div class="tl">Telemarketer infos</div>
-              <b>Name:</b>
-              <p>Sonia</p>
-              <b>Mail:</b>
-              <p>ux-sf02@exoplatform.com</p>
-              <v-btn color="blue" dark @click.stop="drawer = !drawer">Notes</v-btn>
-            </div>
-          </div>
-          <div class="row col-md-12">
-              <v-layout >
-                <v-flex class="white text-center" flat>
-                  <v-tabs v-model="selectedTab" grow background-color="blue-grey lighten-5 icons-and-text">
-                    <v-tabs-slider color="primary" />
-                    <v-tab key="leadInfo" href="#leadInfo">Lead INfo</v-tab>
-                    <v-tab key="leadSourceInfo" href="#leadSourceInfo">Lead Source Info</v-tab>
-                    <v-tab key="captureInfo" href="#captureInfo">Capture Info</v-tab>
-                  </v-tabs>
-
-                  <v-tabs-items v-model="selectedTab" class="infoContent">
-                    <v-tab-item id="leadInfo" value="leadInfo" class="tabContent" eager>
-                      <div class="profile">
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Lead ID:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.leadID}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Language:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.language}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Creation Date:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.creationDate}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Update Date:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.updateDate}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Geographique Zone:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.geographiqueZone}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Marketing Suspended:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.MarketingSuspended}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Marketing Suspended Cause:</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.marketingSuspendedCause}}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </v-tab-item>
-                    <v-tab-item  id="leadSourceInfo"  value="leadSourceInfo"  class="tabContent" eager >
-                      <div class="row">
-                        <div class="col-md-3">
-                          <b>Person Source:</b>
-                        </div>
-                        <div class="col-md-8">
-                          <div>{{lead.personSource}}</div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-3">
-                          <b>Landing page Info:</b>
-                        </div>
-                        <div class="col-md-8">
-                          <div>{{lead.landingPageInfo}}</div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-3">
-                          <b>Capture source Info:</b>
-                        </div>
-                        <div class="col-md-8">
-                          <div>{{lead.captureSourceInfo}}</div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-3">
-                          <b>Person IP:</b>
-                        </div>
-                        <div class="col-md-8">
-                          <div>{{lead.personIP}}</div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-3">
-                          <b>Original Referrer:</b>
-                        </div>
-                        <div class="col-md-8">
-                          <div>{{lead.originalReferrer}}</div>
-                        </div>
-                      </div>
-                    </v-tab-item>
-
-                    <v-tab-item id="captureInfo" value="captureInfo" class="tabContent" eager>
-                      <div class="profile">
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Capture Method</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.captureMethod}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Capture Type</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.captureType}}</div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <b>Capture Detail</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.captureDetail}}</div>
-                          </div>
-                        </div>
-
-                        <div class="row" v-if="lead.blogSubscription==true">
-                          <div class="col-md-3">
-                            <b>Blog Subscription Date</b>
-                          </div>
-                          <div class="col-md-8">
-                            <div>{{lead.blogSubscriptionDate}}</div>
-                          </div>
-                        </div>
-
-                        <v-expansion-panels v-model="ressources" multiple>
-                          <v-expansion-panel class="panel" v-if="lead.communityRegistration==true">
-                            <v-expansion-panel-header class="panel-header">Community Registration</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <div class="row">
-                                <div class="col-md-3">
-                                  <b>Tribe User Name</b>
-                                </div>
-                                <div class="col-md-8">
-                                  <div>{{lead.tribeUserName}}</div>
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-3">
-                                  <b>Registration Method</b>
-                                </div>
-                                <div class="col-md-8">
-                                  <div>{{lead.registrationMethod}}</div>
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-3">
-                                  <b>Community Registration Date</b>
-                                </div>
-                                <div class="col-md-8">
-                                  <div>{{lead.communityRegistrationDate}}</div>
-                                </div>
-                              </div>
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-                          <v-expansion-panel class="panel" v-if="lead.demoRequest.length > 0">
-                            <v-expansion-panel-header
-                              class="panel-header"
-                            >Demo Requests ({{lead.demoRequest.length}})</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <div
-                                v-for="item in lead.demoRequest"
-                                :key="item.demoMessage"
-                                class="msg"
-                              >
-                                <p>{{item.demoMessage}}</p>
-                                <span class="time_date">{{item.demoMessageDate}}</span>
-                              </div>
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel class="panel" v-if="lead.contactUs.length > 0">
-                            <v-expansion-panel-header
-                              class="panel-header"
-                            >contact Us ({{lead.contactUs.length}})</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <div
-                                v-for="item in lead.contactUs"
-                                :key="item.contactMessage"
-                                class="msg"
-                              >
-                                <p>{{item.contactMessage}}</p>
-                                <span class="time_date">{{item.contactMessageDate}}</span>
-                              </div>
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel class="panel" v-if="lead.blogComments.length > 0">
-                            <v-expansion-panel-header
-                              class="panel-header"
-                            >Blog Comments ({{lead.blogComments.length}})</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <div
-                                v-for="item in lead.blogComments"
-                                :key="item.blogComments"
-                                class="msg"
-                              >
-                                <p>{{item.blogComment}}</p>
-                                <span class="time_date">{{item.blogCommentDate}}</span>
-                              </div>
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel class="panel" v-if="lead.resourceDownloads.length > 0">
-                            <v-expansion-panel-header
-                              class="panel-header"
-                            >Resource Downloads ({{lead.resourceDownloads.length}})</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <downloads-list :downloads="lead.resourceDownloads" />
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel class="panel" v-if="lead.rewardRequest.length > 0">
-                            <v-expansion-panel-header
-                              class="panel-header"
-                            >Reward Requests ({{lead.rewardRequest.length}})</v-expansion-panel-header>
-                            <v-expansion-panel-content>
-                              <reward-requests-list :requests="lead.rewardRequest" />
-                            </v-expansion-panel-content>
-                          </v-expansion-panel>
-                        </v-expansion-panels>
-                      </div>
-                    </v-tab-item>
-                  </v-tabs-items>
-                </v-flex>
-              </v-layout>
-          </div>
-        </form>
-      </div>
-    </v-container>
-    <v-navigation-drawer v-model="drawer" absolute temporary right floating width="30%">
-      <notes-drawer :notes="lead.notes" />
-    </v-navigation-drawer>
-  </v-flex>
+        </v-container>
+        <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
+            <notes-drawer :notes="lead.notes"/>
+        </v-navigation-drawer>
+    </v-flex>
 </template>
 
 <script>
@@ -321,12 +331,22 @@ export default {
     emailRules: [(v) => !!v || 'E-mail is required', (v) => /.+@.+/.test(v) || 'E-mail must be valid'],
   }),
 
+   computed: {
+    leadAvatar: function () {
+        console.log(this.lead.communityUserName)
+        if(this.lead.communityUserName===null || typeof(this.lead.communityUserName) === 'undefined') {return "/eXoSkin/skin/images/system/UserAvtDefault.png"}
+        return "/rest/v1/social/users/"+this.lead.communityUserName+"/avatar"
+        }
+    },
+
   methods: {
     backToList() {
       this.$emit('backToList');
     },
   },
 };
+
+
 </script>
 <style>
 body {
@@ -466,5 +486,7 @@ b {
 .infoContent{
     border: 1px solid #e1e8ee;
 }
+
+
 
 </style>

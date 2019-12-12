@@ -1,7 +1,9 @@
-<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4" xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
+<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
+                  xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
 
-<portal-skin>
+    <portal-skin>
         <skin-name>Default</skin-name>
         <skin-module>lead-capture</skin-module>
         <css-path>/css/platform.css</css-path>
@@ -41,31 +43,30 @@
         <css-path>/css/leadsManagement.css</css-path>
         <css-priority>11</css-priority>
     </portal-skin>
-	
- <portlet>
-    <name>leadsManagement</name>
+
+    <portlet>
+        <name>leadsManagement</name>
+        <module>
+            <depends>
+                <module>leadsManagementjs</module>
+            </depends>
+        </module>
+    </portlet>
+
     <module>
-      <depends>
-        <module>leadsManagementjs</module>
-      </depends>
+        <name>leadsManagementjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/leadsManagement.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
     </module>
-  </portlet>
-
-  <module>
-    <name>leadsManagementjs</name>
-      <script>
-        <minify>false</minify>
-        <path>/js/leadsManagement.bundle.js</path>
-      </script>
-      <depends>
-        <module>jquery</module>
-        <as>$</as>
-      </depends>
-      <depends>
-          <module>vuetify</module>
-      </depends>
-  </module>
-
 
 
 </gatein-resources>
