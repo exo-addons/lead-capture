@@ -10,7 +10,15 @@
     <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagement</type>
     </component>
-
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
+        <component-plugin>
+            <name>organization.initializer.user.event.listener</name>
+            <set-method>addListenerPlugin</set-method>
+            <type>org.exoplatform.leadcapture.listeners.NewUserListener</type>
+            <description>description</description>
+        </component-plugin>
+    </external-component-plugins>
     <import>jar:/conf/portal/storage-configuration.xml</import>
 
 </configuration>

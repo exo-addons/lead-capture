@@ -7,13 +7,13 @@ import lombok.Data;
 
 @Data
 public class ResponseDTO implements Serializable {
-  private Long    Id;
+  private Long           Id;
 
-  private FormDTO  form;
+  private FormDTO        form;
 
-  private String  formName;
+  private String         formName;
 
-  private List<FieldDTO>  fields;
+  private List<FieldDTO> fields;
 
-  private Long    createdDate;
+  private Long           createdDate;
 }

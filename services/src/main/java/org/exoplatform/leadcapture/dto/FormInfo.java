@@ -7,9 +7,8 @@ import lombok.Data;
 @Data
 public class FormInfo implements Serializable {
 
-  private LeadDTO  lead;
+  private LeadDTO     lead;
 
   private ResponseDTO response;
-
 
 }

@@ -7,11 +7,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.dao.ResponseDAO;
-import org.exoplatform.leadcapture.dto.*;
+import org.exoplatform.leadcapture.dto.FieldDTO;
+import org.exoplatform.leadcapture.dto.FormInfo;
+import org.exoplatform.leadcapture.dto.LeadDTO;
+import org.exoplatform.leadcapture.dto.ResponseDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
@@ -62,6 +68,51 @@ public class LeadsManagement {
     }
   }
 
+  public void deleteLead(LeadEntity lead) throws IOException {
+    try {
+      List<FieldEntity> fieldEntities = new ArrayList<>();
+      List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
+      for (ResponseEntity responseEntity : responseEntities) {
+        fieldDAO.deleteAll(fieldDAO.getFileldsByResponse(responseEntity.getId()));
+      }
+      responseDAO.deleteAll(responseEntities);
+      leadDAO.delete(lead);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void updateLead(LeadDTO lead) throws IOException {
+    try {
+      lead.setUpdatedDate(new Date().getTime());
+      leadDAO.update(Utils.toLeadEntity(lead));
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void assigneLead(Long leadId, String assignee) throws IOException {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setUpdatedDate(new Date().getTime());
+      leadEntity.setAssignee(assignee);
+      leadDAO.update(leadEntity);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void updateStatus(Long leadId, String status) throws IOException {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setUpdatedDate(new Date().getTime());
+      leadEntity.setStatus(status);
+      leadDAO.update(leadEntity);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
   public List<LeadDTO> getLeads() {
     List<LeadDTO> leadsList = new ArrayList<>();
     List<LeadEntity> leadsEntities = leadDAO.findAll();
@@ -75,23 +126,32 @@ public class LeadsManagement {
     return leadsList;
   }
 
-  public List<FormResponses> getResponses() {
-    List <FormResponses> formResponsesList = new ArrayList<>();
+  public JSONArray getResponses(long leadId) {
+    JSONArray formResponsesList = new JSONArray();
     List<FormEntity> formEntities = formDAO.findAll();
-    for (FormEntity formEntity : formEntities){
-      List<ResponseEntity> responsesEntities = responseDAO.getResponsesByForm(formEntity.getId());
-      if (responsesEntities != null) {
-        List <ResponseDTO>  responsesList= new ArrayList<>();
-        for (ResponseEntity responseEntity : responsesEntities) {
-          
-          if (responseEntity != null) {
-            responsesList.add(Utils.toResponseDto(responseEntity));
+    for (FormEntity formEntity : formEntities) {
+      try {
+        JSONObject formResponse = new JSONObject();
+        formResponse.put("form", Utils.toFormJson(formEntity));
+        List<ResponseEntity> responsesEntities = responseDAO.getResponsesByForm(formEntity.getId(), leadId);
+        if (responsesEntities != null && responsesEntities.size() > 0) {
+          JSONArray responsesList = new JSONArray();
+          for (ResponseEntity responseEntity : responsesEntities) {
+
+            if (responseEntity != null) {
+              responseEntity.setFilelds(fieldDAO.getFileldsByResponse(responseEntity.getId()));
+              responsesList.put(Utils.toResponseJson(responseEntity));
+            }
           }
+          formResponse.put("responses", responsesList);
+          formResponsesList.put(formResponse);
         }
-        formResponsesList.add(new FormResponses(Utils.toFormDto(formEntity),responsesList));
+      } catch (Exception e) {
+        LOG.error("Cannot get responses for form {}", formEntity.getName(), e);
       }
+
     }
-        
+
     return formResponsesList;
   }
 
@@ -100,10 +160,16 @@ public class LeadsManagement {
     FormEntity formEntity = formDAO.getFormByName(responseDTO.getFormName());
     if (formEntity == null) {
       String fields = responseDTO.getFields().stream().map(n -> n.getName()).collect(Collectors.joining(","));
+      if (!fields.contains("createdDate")) {
+        fields = (fields.concat(",createdDate"));
+      }
       formEntity = formDAO.create(new FormEntity(responseDTO.getFormName(), fields));
     } else {
       String fields = formEntity.getFields();
       List<String> fieldList = new ArrayList<String>(Arrays.asList(fields.split(",")));
+      if (!fieldList.contains("createdDate")) {
+        fieldList.add("createdDate");
+      }
       boolean changed = false;
       for (FieldDTO field : responseDTO.getFields()) {
         if (!fieldList.contains(field.getName())) {
@@ -125,6 +191,14 @@ public class LeadsManagement {
       FieldEntity fieldEntity = new FieldEntity(field.getName(), field.getValue(), responseEntity);
       fieldDAO.create(fieldEntity);
     }
+  }
+
+  public LeadEntity getLeadbyId(long id) {
+    return leadDAO.find(id);
+  }
+
+  public LeadEntity getLeadByMail(String mail) {
+    return leadDAO.getLeadByMail(mail);
   }
 
 }

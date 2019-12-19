@@ -27,24 +27,52 @@
                             <v-col cols="12" md="3" sm="6">
                                 <v-text-field append-icon="search" label="" v-model="search"></v-text-field>
                             </v-col>
+    <v-dialog v-model="dialog" max-width="500px">
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" fab dark class="mb-2" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
+          </template>
+              <v-form
+      ref="form"
+      v-model="valid"
+    >
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
 
-                            <v-dialog max-width="290" v-model="confirmDialog">
-                                <v-card>
-                                    <v-card-title class="headline">Confirmation</v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field :rules="[rules.required]" v-model="editedItem.firstName" label="First name"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field :rules="[rules.required]" v-model="editedItem.lastName" label="Last name"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field :rules="[rules.required, rules.valideMail]" v-model="editedItem.mail" label="Mail"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.company" label="Company"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.position" label="Position"></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="editedItem.country" label="Country"></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
 
-                                    <v-card-text>Are you sure to delete the Lead</v-card-text>
-
-                                    <v-card-actions>
-                                        <div class="flex-grow-1"></div>
-                                        <div class="uiAction">
-                                            <button @click="delete_()" class="btn btn-primary" type="button">Delete
-                                            </button>
-                                            <button @click="confirmDialog = false" class="btn" type="button">Cancel
-                                            </button>
-                                        </div>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn  color="blue darken-1" text @click="close">Cancel</v-btn>
+              <v-btn :disabled="!valid" color="blue darken-1" text @click="save">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+           </v-form>
+        </v-dialog>
                         </v-toolbar>
                     </template>
                     <template v-slot:item.name="{ item }">
@@ -52,21 +80,26 @@
                             <b>{{item.firstName}} {{item.lastName}}</b>
                         </a>
                     </template>
+                    <template v-slot:item.mail="{ item }">
+                        <a @click="edit(item)">
+                            {{item.mail}}
+                        </a>
+                    </template>
                     <template v-slot:item.assignee="{ item }">
-
-                        <select v-model="item.assignee">
+<!--                                 <v-select :items="assignees" item-text="fullName" item-value="userName" label="" :append-icon="''" dense solo></v-select>
+ -->                        <select v-model="item.assignee" @change="onAssign(item)">
                             <option :value="null" disabled>Not assigned
                             </option>
-                            <option :key="option.userName" v-bind:value="option" v-for="option in assignees">
+                            <option :key="option.userName" v-bind:value="option.userName" v-for="option in assignees">
                                 {{option.fullName}}
                             </option>
-                        </select>
+                        </select> 
 
                     </template>
                     <template v-slot:no-data>No Leads</template>
                 </v-data-table>
             </v-layout>
-            <lead-details :lead="selectedLead" v-on:backToList="backToList" v-show="showDetails"/>
+            <lead-details :lead="selectedLead" :formResponses="formResponses" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:save="editItem" v-show="showDetails"/>
         </main>
     </v-app>
 </template>
@@ -78,26 +111,16 @@ export default {
     leadDetails,
   },
   data: () => ({
+    valid: true,
     notassigned:false,
     myLeads:false,
     currentUser:'test1',
-    assignees:[
-      {
-        userName:'test1',
-        fullName:'krout MedAmine'
-      },{
-        userName:'test2',
-        fullName:'Patrice'
-      },{
-        userName:'test3',
-        fullName:'Wassim'
-      }
-    ],
+    assignees:[],
     showTable: true,
     showDetails: false,
     search: '',
     dialog: false,
-    confirmDialog: false,
+    
     itemToDelete: 0,
     alert: false,
     message: '',
@@ -127,7 +150,13 @@ export default {
       country: '',
       status: '',
     },
+    formResponses:[],
     selectedLead: {},
+    rules: {
+            required: value => !!value || 'Required.',
+            counter: value => value.length >= 3 || 'Min 3 characters',
+            valideMail: value => /.+@.+/.test(value) || 'E-mail must be valid',
+        }
   }),
   created() {
         this.initialize()
@@ -183,6 +212,12 @@ export default {
         sortable: true,
         value: 'country',
       },
+      {
+        text: 'Status',
+        align: 'center',
+        sortable: true,
+        value: 'status',
+      },
 ]}
 },
   methods: {
@@ -194,19 +229,37 @@ export default {
         .then((resp) => {
           this.leadList = resp;
         });
+
+      fetch(`/portal/rest/leadcapture/leadsmanagement/marketers`, {
+        credentials: 'include',
+      })
+        .then((resp) => resp.json())
+        .then((resp) => {
+          this.assignees = resp;
+        });  
     },
 
     edit(item) {
-      this.selectedLead = item;
+      this.selectedLead = item
+      const telemarketer = this.assignees.find(x => x.userName === item.assignee)
+      this.selectedLead.telemarketerFullName= telemarketer.fullName
+      this.selectedLead.telemarketerMail= telemarketer.mail
       this.showTable = false;
       this.showDetails = true;
+      fetch(`/portal/rest/leadcapture/leadsmanagement/responses/`+item.id, {
+        credentials: 'include',
+      })
+        .then((resp) => resp.json())
+        .then((resp) => {
+          this.formResponses=resp;
+        });
     },
     backToList() {
       this.showDetails = false;
       this.showTable = true;
     },
     editItem(item) {
-      fetch(`/portal/rest/gamification/connectors/github/hooksmanagement/hooks/` + item.id, {
+      fetch(`portal/rest/leadcapture/leadsmanagement/responses/` + item.id, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -221,7 +274,7 @@ export default {
         })
         .then((response) => {
           this.initialize();
-          this.displaySusccessMessage('Webhook updated');
+          this.displaySusccessMessage('lead updated');
         })
         .catch((result) => {
           this.initialize();
@@ -231,19 +284,10 @@ export default {
         });
     },
 
-    getHooks() {
-      this.editedIndex = this.leadList.indexOf(item);
-      this.editedItem = item;
-      this.dialog = true;
-    },
+  
 
-    deleteItem(item) {
-      this.itemToDelete = item.id;
-      this.confirmDialog = true;
-    },
-
-    delete_() {
-      fetch(`/portal/rest/gamification/connectors/github/hooksmanagement/hooks/` + this.itemToDelete, {
+    delete_(item) {
+      fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + item.id, {
         method: 'delete',
         credentials: 'include',
         headers: {
@@ -258,7 +302,9 @@ export default {
         .then((response) => {
           this.confirmDialog = false;
           this.initialize();
-          this.displaySusccessMessage('Webhook deleted');
+          this.displaySusccessMessage('lead deleted');
+                this.showDetails = false;
+      this.showTable = true;
         })
         .catch((result) => {
           this.confirmDialog = false;
@@ -279,48 +325,17 @@ export default {
     },
 
     save() {
-      if (this.editedItem.organization === '' || this.editedItem.repo === '') {
-        this.alert_type_add = 'alert-error';
-        this.alert_edit = true;
-        this.message_edit = 'All fields should be filled';
 
-        setTimeout(() => (this.alert_edit = false), 5000);
-      } else {
-        const i = this.editedIndex;
-        if (this.editedIndex > -1) {
-          fetch(`/portal/rest/gamification/connectors/github/hooksmanagement/hooks/` + this.editedItem.id, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.editedItem),
-          })
-            .then((result) => {
-              if (!result.ok) {
-                throw result;
-              }
-            })
-            .then((response) => {
-              this.initialize();
-              this.displaySusccessMessage('Webhook updated');
-            })
-            .catch((result) => {
-              this.initialize();
-              result.text().then((body) => {
-                this.displayErrorMessage(body);
-              });
-            });
-        } else {
           this.leadList.push(this.editedItem);
+          const newLead ={"lead":this.editedItem}
 
-          fetch(`/portal/rest/gamification/connectors/github/hooksmanagement/hooks`, {
+          fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
             method: 'post',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(this.editedItem),
+            body: JSON.stringify(newLead),
           })
             .then((result) => {
               if (!result.ok) {
@@ -329,7 +344,7 @@ export default {
             })
             .then((response) => {
               this.initialize();
-              this.displaySusccessMessage('Webhook created');
+              this.displaySusccessMessage('Lead created');
             })
             .catch((result) => {
               this.initialize();
@@ -337,10 +352,81 @@ export default {
                 this.displayErrorMessage(body);
               });
             });
-        }
+        
         this.close();
-      }
+      
     },
+    
+    onAssign(item){
+      this.assigne(item);  
+    },
+    
+    changeStatus(item){
+          const lead={
+           "id": item.id,
+           "mail": item.mail,
+           "status": item.status
+           }
+
+          fetch(`/portal/rest/leadcapture/leadsmanagement/status`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(lead),
+          })
+            .then((result) => {
+              if (!result.ok) {
+                throw result;
+              }
+            })
+            .then((response) => {
+              this.displaySusccessMessage('Lead status updated');
+            })
+            .catch((result) => {
+              this.initialize();
+              result.text().then((body) => {
+                this.displayErrorMessage(body);
+              });
+            });
+        
+        this.close();
+      
+    },
+
+    assigne(item) {
+          const lead={
+           "id": item.id,
+           "mail": item.mail,
+           "assignee": item.assignee
+           }
+
+          fetch(`/portal/rest/leadcapture/leadsmanagement/assign`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(lead),
+          })
+            .then((result) => {
+              if (!result.ok) {
+                throw result;
+              }
+            })
+            .then((response) => {
+              this.displaySusccessMessage('Lead assigned');
+            })
+            .catch((result) => {
+              this.initialize();
+              result.text().then((body) => {
+                this.displayErrorMessage(body);
+              });
+            });
+
+    },
+
 
     displaySusccessMessage(message) {
       this.message = message;

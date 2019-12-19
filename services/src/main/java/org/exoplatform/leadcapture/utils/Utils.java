@@ -1,6 +1,22 @@
 package org.exoplatform.leadcapture.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.commons.utils.PropertyManager;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import org.exoplatform.leadcapture.dto.FieldDTO;
 import org.exoplatform.leadcapture.dto.FormDTO;
 import org.exoplatform.leadcapture.dto.LeadDTO;
@@ -10,12 +26,10 @@ import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public class Utils {
-
+  private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+  private static final Log LOG = ExoLogger.getLogger(Utils.class);
+  private static final String MARKETING_GROUP_NAME_CONFIGURATION = "exo.addon.lc.marketing.group.name";
 
   public static LeadDTO toLeadDto(LeadEntity leadEntity) {
     LeadDTO leadDTO = new LeadDTO();
@@ -29,7 +43,9 @@ public class Utils {
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
     leadDTO.setCreatedDate(leadEntity.getCreatedDate());
+    leadDTO.setFormattedCreatedDate(formatter.format(new Date(leadEntity.getCreatedDate())));
     leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
+    leadDTO.setFormattedUpdatedDate(formatter.format(new Date(leadEntity.getUpdatedDate())));
     leadDTO.setLanguage(leadEntity.getLanguage());
     leadDTO.setAssignee(leadEntity.getAssignee());
     leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());
@@ -87,27 +103,42 @@ public class Utils {
 
   public static LeadEntity mergeLead(LeadEntity leadEntity, LeadDTO leadDTO) {
 
-    if(!StringUtils.isEmpty(leadDTO.getFirstName()))leadEntity.setFirstName(leadDTO.getFirstName());
-    if(!StringUtils.isEmpty(leadDTO.getLastName()))leadEntity.setLastName(leadDTO.getLastName());
-    if(!StringUtils.isEmpty(leadDTO.getCompany()))leadEntity.setCompany(leadDTO.getCompany());
-    if(!StringUtils.isEmpty(leadDTO.getPosition()))leadEntity.setPosition(leadDTO.getPosition());
-    if(!StringUtils.isEmpty(leadDTO.getCountry()))leadEntity.setCountry(leadDTO.getCountry());
-    if(!StringUtils.isEmpty(leadDTO.getStatus()))leadEntity.setStatus(leadDTO.getStatus());
-    if(!StringUtils.isEmpty(leadDTO.getPhone()))leadEntity.setPhone(leadDTO.getPhone());
-    if(!StringUtils.isEmpty(leadDTO.getLanguage()))leadEntity.setLanguage(leadDTO.getLanguage());
-    if(!StringUtils.isEmpty(leadDTO.getAssignee()))leadEntity.setAssignee(leadDTO.getAssignee());
-    if(!StringUtils.isEmpty(leadDTO.getGeographiqueZone()))leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
-    if(!StringUtils.isEmpty(leadDTO.getCaptureMethod()))leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
-    if(!StringUtils.isEmpty(leadDTO.getCaptureType()))leadEntity.setCaptureType(leadDTO.getCaptureType());
-    if(leadDTO.getBlogSubscription()!=null && leadDTO.getBlogSubscription() && !leadEntity.getBlogSubscription())
-    {
+    if (!StringUtils.isEmpty(leadDTO.getFirstName()))
+      leadEntity.setFirstName(leadDTO.getFirstName());
+    if (!StringUtils.isEmpty(leadDTO.getLastName()))
+      leadEntity.setLastName(leadDTO.getLastName());
+    if (!StringUtils.isEmpty(leadDTO.getCompany()))
+      leadEntity.setCompany(leadDTO.getCompany());
+    if (!StringUtils.isEmpty(leadDTO.getPosition()))
+      leadEntity.setPosition(leadDTO.getPosition());
+    if (!StringUtils.isEmpty(leadDTO.getCountry()))
+      leadEntity.setCountry(leadDTO.getCountry());
+    if (!StringUtils.isEmpty(leadDTO.getStatus()))
+      leadEntity.setStatus(leadDTO.getStatus());
+    if (!StringUtils.isEmpty(leadDTO.getPhone()))
+      leadEntity.setPhone(leadDTO.getPhone());
+    if (!StringUtils.isEmpty(leadDTO.getLanguage()))
+      leadEntity.setLanguage(leadDTO.getLanguage());
+    if (!StringUtils.isEmpty(leadDTO.getAssignee()))
+      leadEntity.setAssignee(leadDTO.getAssignee());
+    if (!StringUtils.isEmpty(leadDTO.getGeographiqueZone()))
+      leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
+    if (!StringUtils.isEmpty(leadDTO.getCaptureMethod()))
+      leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
+    if (!StringUtils.isEmpty(leadDTO.getCaptureType()))
+      leadEntity.setCaptureType(leadDTO.getCaptureType());
+    if (leadDTO.getBlogSubscription() != null && leadDTO.getBlogSubscription() && !leadEntity.getBlogSubscription()) {
       leadEntity.setBlogSubscription(leadDTO.getBlogSubscription());
       leadEntity.setBlogSubscriptionDate(new Date().getTime());
     }
-    if(!StringUtils.isEmpty(leadDTO.getCommunityUserName()))leadEntity.setCommunityUserName(leadDTO.getCommunityUserName());
-    if(leadDTO.getCommunityRegistration()!=null)leadEntity.setCommunityRegistration(leadDTO.getCommunityRegistration());
-    if(!StringUtils.isEmpty(leadDTO.getCommunityRegistrationMethod()))leadEntity.setCommunityRegistrationMethod(leadDTO.getCommunityRegistrationMethod());
-    if(leadDTO.getCommunityRegistrationDate()!=null)leadEntity.setCommunityRegistrationDate(leadDTO.getCommunityRegistrationDate());
+    if (!StringUtils.isEmpty(leadDTO.getCommunityUserName()))
+      leadEntity.setCommunityUserName(leadDTO.getCommunityUserName());
+    if (leadDTO.getCommunityRegistration() != null)
+      leadEntity.setCommunityRegistration(leadDTO.getCommunityRegistration());
+    if (!StringUtils.isEmpty(leadDTO.getCommunityRegistrationMethod()))
+      leadEntity.setCommunityRegistrationMethod(leadDTO.getCommunityRegistrationMethod());
+    if (leadDTO.getCommunityRegistrationDate() != null)
+      leadEntity.setCommunityRegistrationDate(leadDTO.getCommunityRegistrationDate());
     return leadEntity;
   }
 
@@ -127,7 +158,6 @@ public class Utils {
     return fieldEntity;
   }
 
-
   public static FormDTO toFormDto(FormEntity formEntity) {
     FormDTO formDTO = new FormDTO();
     formDTO.setId(formEntity.getId());
@@ -144,13 +174,12 @@ public class Utils {
     return formEntity;
   }
 
-
   public static ResponseDTO toResponseDto(ResponseEntity responseEntity) {
     ResponseDTO responseDTO = new ResponseDTO();
     responseDTO.setId(responseEntity.getId());
     responseDTO.setForm(toFormDto(responseEntity.getFormEntity()));
     List<FieldDTO> fields = new ArrayList<>();
-    for (FieldEntity fieald:responseEntity.getFilelds()){
+    for (FieldEntity fieald : responseEntity.getFilelds()) {
       fields.add(toFieldDto(fieald));
     }
     responseDTO.setFields(fields);
@@ -162,13 +191,56 @@ public class Utils {
     responseEntity.setId(responseDTO.getId());
     responseEntity.setFormEntity(toFormEntity(responseDTO.getForm()));
     List<FieldEntity> fields = new ArrayList<>();
-    for (FieldDTO fieald:responseDTO.getFields()){
+    for (FieldDTO fieald : responseDTO.getFields()) {
       fields.add(toFieldEntity(fieald));
     }
     responseEntity.setFilelds(fields);
     return responseEntity;
   }
 
+  public static JSONObject toFormJson(FormEntity formEntity) throws JSONException {
+    JSONObject formJson = new JSONObject();
+    // JsonArray fields = new JsonArray();
+    /*
+     * for (String field : formEntity.getFields().split(",")){ fields.add(field); }
+     */
+    formJson.put("id", formEntity.getId());
+    formJson.put("name", formEntity.getName());
+    formJson.put("fields", formEntity.getFields().split(","));
+    return formJson;
+  }
+
+  public static JSONObject toResponseJson(ResponseEntity responseEntity) throws JSONException {
+    JSONObject responseJson = new JSONObject();
+    for (FieldEntity field : responseEntity.getFilelds()) {
+      responseJson.put(field.getName(), field.getValue());
+    }
+    responseJson.put("createdDate", formatter.format(new Date(responseEntity.getCreatedDate())));
+    return responseJson;
+  }
+
+
+  public static List<User> getMarketersList() {
+    String groupId = PropertyManager.getProperty(MARKETING_GROUP_NAME_CONFIGURATION);
+    if (groupId == null || groupId.isEmpty()){
+      groupId = "marketing-team";
+    }
+    return getGroupMembers(groupId);
+  }
+
+  public static List<User> getGroupMembers(String groupId) {
+
+    try {
+      OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+      ListAccess<User> engSupportList = organizationService.getUserHandler().findUsersByGroupId(groupId);
+      User[] users = engSupportList.load(0, engSupportList.getSize());
+      return Arrays.asList(users);
+    }
+    catch (Exception e) {
+      LOG.warn("Cannot get the list of group members");
+      return new ArrayList<User>();
+    }
+  }
 
 
 }

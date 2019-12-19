@@ -45,7 +45,7 @@ public class LeadDTO implements Serializable {
 
   private Boolean blogSubscription;
 
-  private Long  blogSubscriptionDate;
+  private Long    blogSubscriptionDate;
 
   private String  communityUserName;
 
@@ -53,7 +53,7 @@ public class LeadDTO implements Serializable {
 
   private String  communityRegistrationMethod;
 
-  private Long  communityRegistrationDate;
+  private Long    communityRegistrationDate;
 
   private String  personSource;
 
@@ -64,4 +64,8 @@ public class LeadDTO implements Serializable {
   private String  personIp;
 
   private String  originalReferrer;
+
+  private String  formattedCreatedDate;
+
+  private String  formattedUpdatedDate;
 }

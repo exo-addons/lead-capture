@@ -1,20 +1,20 @@
 package org.exoplatform.leadcapture.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.exoplatform.leadcapture.dao.LeadDAO;
-import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.leadcapture.dao.LeadDAO;
+import org.exoplatform.leadcapture.entity.LeadEntity;
 
 public abstract class BaseLeadCaptureTest {
 

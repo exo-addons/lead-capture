@@ -4,8 +4,10 @@
             <v-list-item-title>
                 NOTES
             </v-list-item-title>
-            <a @click="addNote()" class="actionIcon" role="button" style="float: right;"> <i
-                    class="uiIconPlus uiIconLightGray"></i> </a>
+
+                                <v-btn fab dark small color="blue darken-2" style="float: right;" @click="addNote()">
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
         </v-list-item>
         <v-list elevation="2">
             <v-list-item :key="item.noteMessage" v-for="item in notes">

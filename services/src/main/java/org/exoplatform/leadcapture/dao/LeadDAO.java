@@ -1,12 +1,12 @@
 package org.exoplatform.leadcapture.dao;
 
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 
 public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
@@ -14,10 +14,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
   public LeadEntity getLeadByMail(String mail) {
 
-    TypedQuery<LeadEntity> query = getEntityManager()
-            .createNamedQuery("LeadEntity.getLeadByMail",
-                    LeadEntity.class)
-            .setParameter("mail", mail);
+    TypedQuery<LeadEntity> query = getEntityManager().createNamedQuery("LeadEntity.getLeadByMail", LeadEntity.class)
+                                                     .setParameter("mail", mail);
 
     try {
       return query.getSingleResult();

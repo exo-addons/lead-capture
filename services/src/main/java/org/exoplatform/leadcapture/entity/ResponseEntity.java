@@ -13,11 +13,9 @@ import lombok.Data;
 @ExoEntity
 @Table(name = "ADDONS_LC_RESPONSE")
 @Data
- @NamedQueries({
-  @NamedQuery(
-          name = "ResponseEntity.getResponsesByForm",
-          query = "SELECT response FROM ResponseEntity response where response.formEntity.id = :formId " )
- })
+@NamedQueries({
+    @NamedQuery(name = "ResponseEntity.getResponsesByFormAndLead", query = "SELECT response FROM ResponseEntity response where response.formEntity.id = :formId and response.leadEntity.id = :leadId"),
+    @NamedQuery(name = "ResponseEntity.getResponsesByLead", query = "SELECT response FROM ResponseEntity response where response.leadEntity.id = :leadId") })
 
 public class ResponseEntity implements Serializable {
 
@@ -25,26 +23,23 @@ public class ResponseEntity implements Serializable {
   @SequenceGenerator(name = "SEQ_ADDONS_LC_RESPONSE_ID", sequenceName = "SEQ_ADDONS_LC_RESPONSE_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_RESPONSE_ID")
   @Column(name = "ID")
-  protected Long    id;
-
+  protected Long                  id;
+  @Column(name = "CREATED_DATE")
+  protected Long                  createdDate;
   @ManyToOne
   @JoinColumn(name = "LC_FORM_ID", nullable = false)
-  private FormEntity formEntity ;
-
+  private FormEntity              formEntity;
   @ManyToOne
   @JoinColumn(name = "LC_LEAD_ID", nullable = false)
-  private LeadEntity leadEntity ;
-
-  @OneToMany
+  private LeadEntity              leadEntity;
+  @OneToMany(orphanRemoval=true)
   @JoinColumn(name = "ID")
   private Collection<FieldEntity> filelds;
 
-  @Column(name = "CREATED_DATE")
-  protected Long    createdDate;
+  public ResponseEntity() {
+  }
 
-  public ResponseEntity() {}
-
-  public ResponseEntity( FormEntity formEntity, LeadEntity leadEntity) {
+  public ResponseEntity(FormEntity formEntity, LeadEntity leadEntity) {
     this.formEntity = formEntity;
     this.leadEntity = leadEntity;
   }

@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class FieldDTO implements Serializable {
-  private Long    id;
+  private Long   id;
 
-  private String  name;
+  private String name;
 
-  private String  value;
+  private String value;
 }

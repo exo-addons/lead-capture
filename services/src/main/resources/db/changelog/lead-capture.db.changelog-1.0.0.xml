@@ -109,28 +109,20 @@
                 <constraints nullable="false" foreignKeyName="FK_LC_RESPONSE" references="ADDONS_LC_RESPONSE(ID)" />
             </column>
             <column name="NAME" type="NVARCHAR(250)">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="VALUE" type="NVARCHAR(250)">
-                <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
-
-
 
         <modifySql dbms="mysql">
             <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
         </modifySql>
 
     </changeSet>
-    <changeSet author="exo-lead-capture" id="1.0.0-2" dbms="oracle,postgresql">
-        <createSequence sequenceName="SEQ_ADDONS_LC_LEAD_ID" startValue="1"/>
-        <createSequence sequenceName="ADDONS_LC_RESPONSE_ID" startValue="1"/>
-        <createSequence sequenceName="ADDONS_LC_FORM_ID" startValue="1"/>
-        <createSequence sequenceName="ADDONS_LC_FORM_FIELD_ID" startValue="1"/>
-    </changeSet>
 
     <changeSet author="exo-lead-capture" id="1.0.0-3" dbms="oracle,postgresql">
+        <createSequence sequenceName="SEQ_ADDONS_LC_LEAD_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_RESPONSE_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_FORM_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_FORM_FIELD_ID" startValue="1"/>

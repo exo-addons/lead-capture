@@ -13,9 +13,7 @@ import lombok.Data;
 @Table(name = "ADDONS_LC_FORM")
 @Data
 @NamedQueries({
-        @NamedQuery(name = "FormEntity.getFormByName", query =
-                "SELECT form FROM FormEntity form where form.name = :name"
-        ) })
+    @NamedQuery(name = "FormEntity.getFormByName", query = "SELECT form FROM FormEntity form where form.name = :name") })
 
 public class FormEntity implements Serializable {
 
@@ -23,17 +21,18 @@ public class FormEntity implements Serializable {
   @SequenceGenerator(name = "SEQ_ADDONS_LC_FORM_ID", sequenceName = "SEQ_ADDONS_LC_FORM_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_FORM_ID")
   @Column(name = "ID")
-  protected Long    id;
+  protected Long   id;
 
   @Column(name = "NAME", nullable = false, unique = true)
-  protected String  name;
+  protected String name;
 
   @Column(name = "FIELDS")
-  protected String  fields;
+  protected String fields;
 
-  public FormEntity() {}
+  public FormEntity() {
+  }
 
-  public FormEntity( String name, String fields) {
+  public FormEntity(String name, String fields) {
     this.name = name;
     this.fields = fields;
   }
