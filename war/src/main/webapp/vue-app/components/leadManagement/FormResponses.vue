@@ -35,7 +35,7 @@
         <v-expansion-panel-header class="panel-header">{{formResponse.form.name}} ({{formResponse.responses.length}})
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-              <responses-list :responses="formResponse.responses" :fields="formResponse.form.fields" :form="formResponse.form.name"/>
+            <responses-list :responses="formResponse.responses" :fields="formResponse.form.fields" :form="formResponse.form.name" />
         </v-expansion-panel-content>
     </v-expansion-panel>
 </v-expansion-panels>
@@ -44,23 +44,21 @@
 <script>
 import responsesList from './ResponsesList.vue';
 export default {
-    props: ['lead','formResponses'],
+    props: ['lead', 'formResponses'],
     components: {
-    responsesList,
-  },
+        responsesList,
+    },
     data() {
         return {
-           // formResponses:[]
+            // formResponses:[]
         }
     },
     created() {
-     //  this.initialize()     
+        //  this.initialize()     
     },
-
 
     methods: {
 
     }
-    };
-
+};
 </script>
