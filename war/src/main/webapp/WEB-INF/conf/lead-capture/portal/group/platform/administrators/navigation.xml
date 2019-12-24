@@ -11,4 +11,12 @@
             <page-reference>group::/platform/administrators::lead_management</page-reference>
         </node>
     </page-nodes>
+    <page-nodes>
+        <node>
+            <uri>mail_templates_management</uri>
+            <name>mail_templates_management</name>
+            <label>Mail templates management</label>
+            <page-reference>group::/platform/administrators::mail_templates_management</page-reference>
+        </node>
+    </page-nodes>
 </node-navigation>

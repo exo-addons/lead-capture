@@ -46,7 +46,8 @@ const config = {
     jquery: '$'
   },
   plugins: [
-    new ExtractTextWebpackPlugin('css/leadsManagement.css')
+    new ExtractTextWebpackPlugin('css/leadsManagement.css'),
+    new ExtractTextWebpackPlugin('css/mailTemplatesManagement.css')
   ]
 
 };

@@ -25,4 +25,24 @@
         </portlet-info>
     </portlet>
 
+    <portlet>
+        <portlet-name>mailTemplatesManagement</portlet-name>
+        <display-name xml:lang="EN">Mail Templates Management Portlet</display-name>
+        <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+        <init-param>
+            <name>portlet-view-dispatched-file-path</name>
+            <value>/mailTemplatesManagement.html</value>
+        </init-param>
+        <expiration-cache>-1</expiration-cache>
+        <cache-scope>PUBLIC</cache-scope>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Mail templates management</title>
+            <keywords>lead-capture</keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

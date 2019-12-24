@@ -38,4 +38,19 @@
             <show-info-bar>false</show-info-bar>
         </portlet-application>
     </page>
+    <page>
+        <name>mail_templates_management</name>
+        <title>Mail templates Management</title>
+        <access-permissions>manager:/platform/administrators</access-permissions>
+        <edit-permission>manager:/platform/administrators</edit-permission>
+        <portlet-application>
+            <portlet>
+                <application-ref>lead-capture</application-ref>
+                <portlet-ref>mailTemplatesManagement</portlet-ref>
+            </portlet>
+            <title>Mail templates management Portlet</title>
+            <access-permissions>*:/platform/administrators</access-permissions>
+            <show-info-bar>false</show-info-bar>
+        </portlet-application>
+    </page>
 </page-set>

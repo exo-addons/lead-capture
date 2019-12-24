@@ -20,7 +20,8 @@ module.exports = merge(webpackCommonConfig, {
     ]
   },
   entry: {
-    leadsManagement: './src/main/webapp/vue-app/leadsManagement-dev.js'
+    leadsManagement: './src/main/webapp/vue-app/leadsManagement-dev.js',
+    mailTemplatesManagement: './src/main/webapp/vue-app/mailTemplatesManagement-dev.js'
   },
   output: {
     path: path.join(__dirname, 'target/lead-capture/'),

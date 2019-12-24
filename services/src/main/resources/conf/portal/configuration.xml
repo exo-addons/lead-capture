@@ -8,7 +8,16 @@
         <type>org.exoplatform.leadcapture.rest.LeadsManagementRest</type>
     </component>
     <component>
+        <type>org.exoplatform.leadcapture.rest.MailTemplatesManagementRest</type>
+    </component>
+    <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagement</type>
+    </component>
+    <component>
+        <type>org.exoplatform.leadcapture.services.LCMailService</type>
+    </component>
+    <component>
+        <type>org.exoplatform.leadcapture.services.MailTemplatesManagement</type>
     </component>
     <external-component-plugins>
         <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
@@ -19,6 +28,16 @@
             <description>description</description>
         </component-plugin>
     </external-component-plugins>
+
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.listener.ListenerService</target-component>
+        <component-plugin>
+            <name>leadCapture.newLead.event</name>
+            <set-method>addListener</set-method>
+            <type>org.exoplatform.leadcapture.listeners.NewLeadListener</type>
+        </component-plugin>
+    </external-component-plugins>
+
     <import>jar:/conf/portal/storage-configuration.xml</import>
 
 </configuration>

@@ -128,7 +128,45 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_FORM_FIELD_ID" startValue="1"/>
     </changeSet>
 
+    <changeSet author="exo-lead-capture" id="1.0.0-4">
+        <createTable tableName="ADDONS_LC_MAIL_TEMPLATE">
 
+            <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_MAIL_TEMPLATE"/>
+            </column>
+            <column name="NAME" type="NVARCHAR(250)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="DESCRIPTION" type="NVARCHAR(250)">
+            </column>
+
+        </createTable>
+
+        <createTable tableName="ADDONS_LC_MAIL_CONTENT">
+
+            <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_MAIL_CONTENT"/>
+            </column>
+            <column name="LANGUAGE" type="NVARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUBJECT" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTENT" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LC_MAIL_TEMPLATE_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_LC_MAIL_TEMPLATE" references="ADDONS_LC_MAIL_TEMPLATE(ID)" />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="exo-lead-capture" id="1.0.0-5" dbms="oracle,postgresql">
+        <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_TEMPLATE_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
+    </changeSet>
 </databaseChangeLog>
 
 

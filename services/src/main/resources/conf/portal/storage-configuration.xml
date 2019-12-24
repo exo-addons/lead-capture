@@ -21,6 +21,14 @@
         <type>org.exoplatform.leadcapture.dao.ResponseDAO</type>
     </component>
 
+    <component>
+        <type>org.exoplatform.leadcapture.dao.MailTemplateDAO</type>
+    </component>
+
+    <component>
+        <type>org.exoplatform.leadcapture.dao.MailContentDAO</type>
+    </component>
+
     <!-- Gamification Connector storage layout (Liquibase initializer) -->
     <external-component-plugins>
         <target-component>org.exoplatform.commons.api.persistence.DataInitializer</target-component>

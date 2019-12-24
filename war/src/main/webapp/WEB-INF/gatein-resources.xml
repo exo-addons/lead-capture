@@ -53,11 +53,35 @@
         </module>
     </portlet>
 
+    <portlet>
+        <name>mailTemplatesManagement</name>
+        <module>
+            <depends>
+                <module>mailTemplatesManagementjs</module>
+            </depends>
+        </module>
+    </portlet>
+
     <module>
         <name>leadsManagementjs</name>
         <script>
             <minify>false</minify>
             <path>/js/leadsManagement.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>mailTemplatesManagementjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/mailTemplatesManagement.bundle.js</path>
         </script>
         <depends>
             <module>jquery</module>
