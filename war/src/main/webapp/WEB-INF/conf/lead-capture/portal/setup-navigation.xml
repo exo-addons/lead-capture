@@ -5,6 +5,11 @@
     <priority>1</priority>
     <page-nodes>
         <node>
+        <uri>leadcapture</uri>
+        <name>leadcapture</name>
+        <label>Lead Capture</label>
+        <page-reference>group::/platform/administrators::lead_management</page-reference>
+        <node>
             <uri>lead_management</uri>
             <name>lead_management</name>
             <label>Lead management</label>
@@ -15,6 +20,7 @@
             <name>mail_templates_management</name>
             <label>Mail templates management</label>
             <page-reference>group::/platform/administrators::mail_templates_management</page-reference>
+        </node>
         </node>
     </page-nodes>
 </node-navigation>

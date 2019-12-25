@@ -11,24 +11,21 @@ import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.services.MailTemplatesManagement;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.RestChecker;
 import org.exoplatform.social.service.rest.Util;
-
-import io.swagger.jaxrs.PATCH;
 
 @Path("/leadcapture/mailtemplatesmanagement")
 @Produces(MediaType.APPLICATION_JSON)
 
 public class MailTemplatesManagementRest implements ResourceContainer {
 
-  private final Log       LOG                 = ExoLogger.getLogger(MailTemplatesManagementRest.class);
+  private final Log               LOG                 = ExoLogger.getLogger(MailTemplatesManagementRest.class);
 
-  private final String    portalContainerName = "portal";
+  private final String            portalContainerName = "portal";
 
-  private final String[]  SUPPORTED_FORMATS   = new String[] { "json" };
+  private final String[]          SUPPORTED_FORMATS   = new String[] { "json" };
 
   private MailTemplatesManagement mailTemplatesManagement;
 
@@ -94,6 +91,5 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
-
 
 }

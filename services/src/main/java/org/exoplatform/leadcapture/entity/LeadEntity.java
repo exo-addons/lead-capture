@@ -1,7 +1,6 @@
 package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import javax.persistence.*;
 
@@ -22,89 +21,89 @@ public class LeadEntity implements Serializable {
   @SequenceGenerator(name = "SEQ_ADDONS_LC_LEAD_ID", sequenceName = "SEQ_ADDONS_LC_LEAD_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_LEAD_ID")
   @Column(name = "ID")
-  protected Long                     id;
+  protected Long    id;
 
   @Column(name = "MAIL", nullable = false, unique = true)
-  protected String                   mail;
+  protected String  mail;
 
   @Column(name = "FIRST_NAME")
-  protected String                   firstName;
+  protected String  firstName;
 
   @Column(name = "LAST_NAME")
-  protected String                   lastName;
+  protected String  lastName;
 
   @Column(name = "COMPANY")
-  protected String                   company;
+  protected String  company;
 
   @Column(name = "POSITION")
-  protected String                   position;
+  protected String  position;
 
   @Column(name = "COUNTRY")
-  protected String                   country;
+  protected String  country;
 
   @Column(name = "STATUS")
-  protected String                   status;
+  protected String  status;
 
   @Column(name = "PHONE")
-  protected String                   phone;
+  protected String  phone;
 
   @Column(name = "CREATED_DATE")
-  protected Long                     createdDate;
+  protected Long    createdDate;
 
   @Column(name = "UPDATED_DATE")
-  protected Long                     updatedDate;
+  protected Long    updatedDate;
 
   @Column(name = "LANGUAGE")
-  protected String                   language;
+  protected String  language;
 
   @Column(name = "ASSIGNEE")
-  protected String                   assignee;
+  protected String  assignee;
 
   @Column(name = "GEOGRAPHIQUE_ZONE")
-  protected String                   geographiqueZone;
+  protected String  geographiqueZone;
 
   @Column(name = "MARKETING_SUSPENDED")
-  protected Boolean                  marketingSuspended;
+  protected Boolean marketingSuspended;
 
   @Column(name = "MARKETING_SUSPENDED_CAUSE")
-  protected String                   marketingSuspendedCause;
+  protected String  marketingSuspendedCause;
 
   @Column(name = "CAPTURE_METHOD")
-  protected String                   captureMethod;
+  protected String  captureMethod;
 
   @Column(name = "CAPTURE_TYPE")
-  protected String                   captureType;
+  protected String  captureType;
 
   @Column(name = "BLOG_SUBSCRIPTION")
-  protected Boolean                  blogSubscription;
+  protected Boolean blogSubscription;
 
   @Column(name = "BLOG_SUBSCRIPTION_DATE")
-  protected Long                     blogSubscriptionDate;
+  protected Long    blogSubscriptionDate;
 
   @Column(name = "COMMUNITY_USER_NAME")
-  protected String                   communityUserName;
+  protected String  communityUserName;
 
   @Column(name = "COMMUNITY_REGISTRATION")
-  protected Boolean                  communityRegistration;
+  protected Boolean communityRegistration;
 
   @Column(name = "COMMUNITY_REGISTRATION_METHOD")
-  protected String                   communityRegistrationMethod;
+  protected String  communityRegistrationMethod;
 
   @Column(name = "COMMUNITY_REGISTRATION_DATE")
-  protected Long                     communityRegistrationDate;
+  protected Long    communityRegistrationDate;
 
   @Column(name = "PERSON_SOURCE")
-  protected String                   personSource;
+  protected String  personSource;
 
   @Column(name = "LANDING_PAGE_INFO")
-  protected String                   landingPageInfo;
+  protected String  landingPageInfo;
 
   @Column(name = "CAPTURE_SOURCE_INFO")
-  protected String                   captureSourceInfo;
+  protected String  captureSourceInfo;
 
   @Column(name = "PERSON_IP")
-  protected String                   personIp;
+  protected String  personIp;
 
   @Column(name = "ORIGINAL_REFERRER")
-  protected String                   originalReferrer;
+  protected String  originalReferrer;
 }

@@ -1,7 +1,6 @@
 package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import javax.persistence.*;
 
@@ -13,6 +12,8 @@ import lombok.Data;
 @ExoEntity
 @Table(name = "ADDONS_LC_MAIL_TEMPLATE")
 @Data
+@NamedQueries({
+    @NamedQuery(name = "MailTemplateEntity.getTemplatesbyEvent", query = "SELECT template FROM MailTemplateEntity template where template.event = :event ") })
 
 public class MailTemplateEntity implements Serializable {
 
@@ -28,9 +29,19 @@ public class MailTemplateEntity implements Serializable {
   @Column(name = "DESCRIPTION")
   protected String description;
 
-/*  @OneToMany(orphanRemoval=true)
-  @JoinColumn(name = "ID")
-  private Collection<MailContentEntity> contents;*/
+  @Column(name = "EVENT")
+  protected String event;
+
+  @Column(name = "FORM")
+  protected String form;
+
+  @Column(name = "FIELD")
+  protected String field;
+
+  /*
+   * @OneToMany(orphanRemoval=true)
+   * @JoinColumn(name = "ID") private Collection<MailContentEntity> contents;
+   */
 
   public MailTemplateEntity() {
   }

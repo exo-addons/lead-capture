@@ -24,15 +24,19 @@ public class ResponseEntity implements Serializable {
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_RESPONSE_ID")
   @Column(name = "ID")
   protected Long                  id;
+
   @Column(name = "CREATED_DATE")
   protected Long                  createdDate;
+
   @ManyToOne
   @JoinColumn(name = "LC_FORM_ID", nullable = false)
   private FormEntity              formEntity;
+
   @ManyToOne
   @JoinColumn(name = "LC_LEAD_ID", nullable = false)
   private LeadEntity              leadEntity;
-  @OneToMany(orphanRemoval=true)
+
+  @OneToMany(orphanRemoval = true)
   @JoinColumn(name = "ID")
   private Collection<FieldEntity> filelds;
 

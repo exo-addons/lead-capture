@@ -18,49 +18,23 @@ package org.exoplatform.leadcapture.listeners;
 
 import java.util.Date;
 
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.exoplatform.commons.api.notification.model.UserSetting;
-import org.exoplatform.commons.api.notification.service.setting.UserSettingService;
-import org.exoplatform.commons.notification.channel.MailChannel;
-import org.exoplatform.commons.notification.channel.WebChannel;
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.services.LeadsManagement;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.core.ManageableRepository;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.jcr.ext.distribution.DataDistributionManager;
-import org.exoplatform.services.jcr.ext.distribution.DataDistributionMode;
-import org.exoplatform.services.jcr.ext.distribution.DataDistributionType;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.listener.Asynchronous;
-import org.exoplatform.services.listener.Event;
-import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserEventListener;
-import org.exoplatform.services.security.ConversationRegistry;
-import org.exoplatform.services.security.ConversationState;
-
 
 @Asynchronous
 public class NewUserListener extends UserEventListener {
 
-  private static final Log LOG = ExoLogger.getLogger(NewUserListener.class);
-
-  private LeadDAO leadDAO;
-
+  private static final Log    LOG        = ExoLogger.getLogger(NewUserListener.class);
   private static final String USERS_PATH = "usersPath";
+  private LeadDAO             leadDAO;
 
-  public NewUserListener( LeadDAO leadDAO) throws Exception {
-      this.leadDAO = leadDAO;
+  public NewUserListener(LeadDAO leadDAO) throws Exception {
+    this.leadDAO = leadDAO;
   }
 
   @Override
@@ -68,8 +42,8 @@ public class NewUserListener extends UserEventListener {
 
     try {
       LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
-      if(leadEntity!=null){
-        if(!leadEntity.getCommunityRegistration()){
+      if (leadEntity != null) {
+        if (!leadEntity.getCommunityRegistration()) {
           leadEntity.setUpdatedDate(new Date().getTime());
           leadEntity.setCommunityRegistration(true);
           leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());

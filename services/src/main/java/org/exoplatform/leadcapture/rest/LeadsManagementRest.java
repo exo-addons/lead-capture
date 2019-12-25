@@ -1,13 +1,14 @@
 package org.exoplatform.leadcapture.rest;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import io.swagger.jaxrs.PATCH;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
@@ -15,14 +16,13 @@ import org.exoplatform.leadcapture.services.LeadsManagement;
 import org.exoplatform.leadcapture.utils.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.RestChecker;
 import org.exoplatform.social.service.rest.Util;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+import io.swagger.jaxrs.PATCH;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)
@@ -61,7 +61,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response add(@Context UriInfo uriInfo, FormInfo lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.addLeadInfo(lead);
+      leadsManagement.addLeadInfo(lead,true);
       return Response.ok("lead synchronized", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -105,7 +105,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response assign(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.assigneLead(lead.getId(),lead.getAssignee());
+      leadsManagement.assigneLead(lead.getId(), lead.getAssignee());
       return Response.ok("lead assigned", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -117,7 +117,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response updateStatus(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.updateStatus(lead.getId(),lead.getStatus());
+      leadsManagement.updateStatus(lead.getId(), lead.getStatus());
       return Response.ok("lead status updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -149,11 +149,11 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       JSONArray marketersList = new JSONArray();
-      for(User user :Utils.getMarketersList()){
+      for (User user : Utils.getMarketersList()) {
         JSONObject marketer = new JSONObject();
-        marketer.put("userName",user.getUserName());
-        marketer.put("fullName",user.getFirstName()+" "+user.getLastName());
-        marketer.put("email",user.getEmail());
+        marketer.put("userName", user.getUserName());
+        marketer.put("fullName", user.getFirstName() + " " + user.getLastName());
+        marketer.put("email", user.getEmail());
         marketersList.put(marketer);
       }
       return Response.ok(marketersList.toString(), mediaType).build();
@@ -161,6 +161,5 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
-
 
 }

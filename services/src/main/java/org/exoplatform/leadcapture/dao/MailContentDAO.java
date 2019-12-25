@@ -6,7 +6,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
-import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.MailContentEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -17,8 +16,10 @@ public class MailContentDAO extends GenericDAOJPAImpl<MailContentEntity, Long> {
 
   public List<MailContentEntity> getContentByTemplate(long templateId) {
 
-    TypedQuery<MailContentEntity> query = getEntityManager().createNamedQuery("MailContentEntity.getContentByTemplate", MailContentEntity.class)
-                                                      .setParameter("templateId", templateId);
+    TypedQuery<MailContentEntity> query = getEntityManager()
+                                                            .createNamedQuery("MailContentEntity.getContentByTemplate",
+                                                                              MailContentEntity.class)
+                                                            .setParameter("templateId", templateId);
 
     try {
       return query.getResultList();

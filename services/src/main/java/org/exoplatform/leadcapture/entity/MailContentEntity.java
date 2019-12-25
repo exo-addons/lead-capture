@@ -21,16 +21,16 @@ public class MailContentEntity implements Serializable {
   @SequenceGenerator(name = "SEQ_ADDONS_LC_MAIL_CONTENT_ID", sequenceName = "SEQ_ADDONS_LC_MAIL_CONTENT_ID")
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_MAIL_CONTENT_ID")
   @Column(name = "ID")
-  protected Long         id;
+  protected Long             id;
 
   @Column(name = "LANGUAGE", nullable = false)
-  protected String       language;
+  protected String           language;
 
   @Column(name = "SUBJECT")
-  protected String       subject;
-  
+  protected String           subject;
+
   @Column(name = "CONTENT")
-  protected String       content;
+  protected String           content;
 
   @ManyToOne
   @JoinColumn(name = "LC_MAIL_TEMPLATE_ID")
