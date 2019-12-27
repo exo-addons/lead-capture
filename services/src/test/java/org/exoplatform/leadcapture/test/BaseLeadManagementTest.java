@@ -1,12 +1,11 @@
 package org.exoplatform.leadcapture.test;
 
-import java.io.Serializable;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.exoplatform.leadcapture.dto.*;
-import org.exoplatform.leadcapture.utils.Utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -17,12 +16,14 @@ import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.dao.ResponseDAO;
+import org.exoplatform.leadcapture.dto.FieldDTO;
+import org.exoplatform.leadcapture.dto.FormDTO;
+import org.exoplatform.leadcapture.dto.LeadDTO;
+import org.exoplatform.leadcapture.dto.ResponseDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
-
-import static org.junit.Assert.*;
 
 public abstract class BaseLeadManagementTest {
 

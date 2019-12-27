@@ -1,17 +1,19 @@
 package org.exoplatform.leadcapture.test.service;
 
-import org.exoplatform.leadcapture.dto.*;
-import org.exoplatform.leadcapture.entity.*;
+import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.json.JSONException;
 import org.junit.Test;
 
+import org.exoplatform.leadcapture.dto.*;
+import org.exoplatform.leadcapture.entity.FieldEntity;
+import org.exoplatform.leadcapture.entity.FormEntity;
+import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LeadsManagement;
 import org.exoplatform.leadcapture.test.BaseLeadManagementTest;
-
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class LeadsManagementTest extends BaseLeadManagementTest {
 
@@ -27,18 +29,17 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
   @Test
   public void addLeadInfo() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
-    FormInfo formInfo= new FormInfo();
+    FormInfo formInfo = new FormInfo();
     formInfo.setLead(newLeadDto());
     formInfo.setResponse(newResponseDTO());
     List<LeadDTO> leads = leadsManagement.getLeads();
     assertNotNull(leads);
     assertEquals(0, leads.size());
-      leadsManagement.addLeadInfo(formInfo,false);
-      leads = leadsManagement.getLeads();
-      assertNotNull(leads);
-      assertEquals(1, leads.size());
-      assertEquals(1,leadsManagement.getResponses(leads.get(0).getId()).length());
-
+    leadsManagement.addLeadInfo(formInfo, false);
+    leads = leadsManagement.getLeads();
+    assertNotNull(leads);
+    assertEquals(1, leads.size());
+    assertEquals(1, leadsManagement.getResponses(leads.get(0).getId()).length());
   }
 
   @Test
@@ -46,53 +47,47 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
     assertNotNull(leadsManagement.getLeadbyId(leadEntity.getId()));
-
-      leadsManagement.deleteLead(leadEntity);
-      assertEquals(null, leadsManagement.getLeadbyId(leadEntity.getId()));
-
+    leadsManagement.deleteLead(leadEntity);
+    assertEquals(null, leadsManagement.getLeadbyId(leadEntity.getId()));
   }
 
   @Test
   public void updateLead() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
-    assertEquals(language,leadEntity.getLanguage());
+    assertEquals(language, leadEntity.getLanguage());
     leadEntity.setLanguage("fr");
-
-      leadsManagement.updateLead(leadsManagement.toLeadDto(leadEntity));
-      leadEntity = leadsManagement.getLeadbyId(leadEntity.getId());
-      assertEquals("fr", leadEntity.getLanguage());
-
+    leadsManagement.updateLead(leadsManagement.toLeadDto(leadEntity));
+    leadEntity = leadsManagement.getLeadbyId(leadEntity.getId());
+    assertEquals("fr", leadEntity.getLanguage());
   }
 
   @Test
   public void updateForm() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     FormEntity formEntity = newForm();
-    assertEquals(formName,formEntity.getName());
+    assertEquals(formName, formEntity.getName());
     formEntity.setName("new name");
-
     formEntity = leadsManagement.updateForm(formEntity);
-    assertEquals("new name",formEntity.getName());
-
+    assertEquals("new name", formEntity.getName());
   }
 
   @Test
   public void assigneLead() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
-    assertEquals(assignee,leadEntity.getAssignee());
-      leadsManagement.assigneLead(leadEntity.getId(),"testUser");
-      leadEntity = leadsManagement.getLeadbyId(leadEntity.getId());
-      assertEquals("testUser", leadEntity.getAssignee());
+    assertEquals(assignee, leadEntity.getAssignee());
+    leadsManagement.assigneLead(leadEntity.getId(), "testUser");
+    leadEntity = leadsManagement.getLeadbyId(leadEntity.getId());
+    assertEquals("testUser", leadEntity.getAssignee());
   }
 
   @Test
   public void updateStatus() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
-    assertEquals(status,leadEntity.getStatus());
-    leadsManagement.updateStatus(leadEntity.getId(),"Accepted");
+    assertEquals(status, leadEntity.getStatus());
+    leadsManagement.updateStatus(leadEntity.getId(), "Accepted");
     leadEntity = leadsManagement.getLeadbyId(leadEntity.getId());
     assertEquals("Accepted", leadEntity.getStatus());
   }
@@ -110,7 +105,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
     assertEquals(0, leadsManagement.getResponses(leadEntity.getId()).length());
-    newResponse(newForm(),leadEntity);
+    newResponse(newForm(), leadEntity);
     assertEquals(1, leadsManagement.getResponses(leadEntity.getId()).length());
   }
 
@@ -119,7 +114,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
     assertEquals(0, leadsManagement.getResponses(leadEntity.getId()).length());
-    leadsManagement.addResponse(newResponseDTO(),leadEntity);
+    leadsManagement.addResponse(newResponseDTO(), leadEntity);
     assertEquals(1, leadsManagement.getResponses(leadEntity.getId()).length());
   }
 
@@ -140,7 +135,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
   @Test
   public void mergeLead() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
-    assertNotNull(leadsManagement.mergeLead(newLead(),newLeadDto()));
+    assertNotNull(leadsManagement.mergeLead(newLead(), newLeadDto()));
   }
 
   @Test
@@ -158,7 +153,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadEntity leadEntity = newLead();
     LeadDTO leadDTO = leadsManagement.toLeadDto(leadEntity);
-    compareLeadResult(leadEntity,leadDTO);
+    compareLeadResult(leadEntity, leadDTO);
   }
 
   @Test
@@ -166,16 +161,16 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     LeadDTO leadDTO = newLeadDto();
     LeadEntity leadEntity = leadsManagement.toLeadEntity(leadDTO);
-    compareLeadResult(leadEntity,leadDTO);
+    compareLeadResult(leadEntity, leadDTO);
   }
 
   @Test
   public void toFieldDto() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
-    ResponseEntity responseEntity = newResponse(newForm(),newLead());
+    ResponseEntity responseEntity = newResponse(newForm(), newLead());
     FieldEntity fieldEntity = newField(responseEntity);
     FieldDTO fieldDTO = leadsManagement.toFieldDto(fieldEntity);
-    compareFieldResult(fieldEntity,fieldDTO);
+    compareFieldResult(fieldEntity, fieldDTO);
   }
 
   @Test
@@ -183,7 +178,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     FieldDTO fieldDTO = newFieldDTO();
     FieldEntity fieldEntity = leadsManagement.toFieldEntity(fieldDTO);
-    compareFieldResult(fieldEntity,fieldDTO);
+    compareFieldResult(fieldEntity, fieldDTO);
   }
 
   @Test
@@ -191,7 +186,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     FormEntity formEntity = newForm();
     FormDTO formDTO = leadsManagement.toFormDto(formEntity);
-    compareFormResult(formEntity,formDTO);
+    compareFormResult(formEntity, formDTO);
   }
 
   @Test
@@ -199,15 +194,15 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     FormDTO formDTO = newFormDto();
     FormEntity formEntity = leadsManagement.toFormEntity(formDTO);
-    compareFormResult(formEntity,formDTO);
+    compareFormResult(formEntity, formDTO);
   }
 
   @Test
   public void toResponseDto() {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
-    ResponseEntity responseEntity = newResponse(newForm(),newLead());
+    ResponseEntity responseEntity = newResponse(newForm(), newLead());
     ResponseDTO responseDTO = leadsManagement.toResponseDto(responseEntity);
-    compareResponseResult(responseEntity,responseDTO);
+    compareResponseResult(responseEntity, responseDTO);
 
   }
 
@@ -216,7 +211,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagement leadsManagement = getService(LeadsManagement.class);
     ResponseDTO responseDTO = newResponseDTO();
     ResponseEntity responseEntity = leadsManagement.toResponseEntity(responseDTO);
-    compareResponseResult(responseEntity,responseDTO);
+    compareResponseResult(responseEntity, responseDTO);
   }
 
 }

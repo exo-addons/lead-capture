@@ -134,6 +134,11 @@ public class MailTemplatesManagement {
     if (mailContentEntity.getMailTemplateEntity() != null) {
       MailTemplateDTO mailTemplateDTO = new MailTemplateDTO();
       mailTemplateDTO.setId(mailContentEntity.getMailTemplateEntity().getId());
+      mailTemplateDTO.setEvent(mailContentEntity.getMailTemplateEntity().getEvent());
+      mailTemplateDTO.setForm(mailContentEntity.getMailTemplateEntity().getForm());
+      mailTemplateDTO.setField(mailContentEntity.getMailTemplateEntity().getField());
+      mailTemplateDTO.setDescription(mailContentEntity.getMailTemplateEntity().getDescription());
+      mailTemplateDTO.setName(mailContentEntity.getMailTemplateEntity().getForm());
       mailContentDTO.setMailTemplateDTO(mailTemplateDTO);
     }
     return mailContentDTO;
