@@ -25,7 +25,7 @@
                     <v-icon large v-else>mdi-account-edit</v-icon>
                 </v-btn>
             </template>
-            <v-btn fab dark small color="blue darken-2" @click="backToList()">
+            <v-btn fab dark small color="blue darken-2" @click="editLead=true">
                 <v-icon>mdi-pencil</v-icon>
             </v-btn>
             <v-btn fab dark small color="blue darken-2" @click="deleteLead()">
@@ -49,6 +49,71 @@
                     </div>
                 </v-card-actions>
             </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="editLead" fullscreen hide-overlay transition="dialog-bottom-transition" scrollable>
+             <v-form ref="form" v-model="valid">
+            <v-card tile>
+               
+                <v-toolbar dark color="primary">
+                    <v-btn icon dark @click="editLead = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Edit Lead</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn :disabled="!valid" dark text @click="saveLead()">
+                            Save
+                        </v-btn>
+                    </v-toolbar-items>
+
+                </v-toolbar>
+                <v-card-text>
+
+                    <v-container>
+                        
+                            <v-row>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.firstName" label="First name"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.lastName" label="Last name"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field :rules="[rules.required, rules.valideMail]" v-model="lead.mail" label="Mail"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.company" label="Company"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.position" label="Position"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.country" label="Country"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.language" label="Language"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field v-model="lead.geographiqueZone" label="Geographique Zone"></v-text-field>
+
+                                </v-col>
+                                <v-col cols="12" sm="6" md="2">
+                                    <v-switch v-model="lead.MarketingSuspended" label="Marketing Suspended"></v-switch>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="10">
+                                    <v-text-field v-model="lead.marketingSuspendedCause" label="Marketing Suspended Cause"></v-text-field>
+                                </v-col>
+                            </v-row>
+                        
+                    </v-container>
+
+                </v-card-text>
+
+                <div style="flex: 1 1 auto;"></div>
+                
+            </v-card>
+            </v-form>
         </v-dialog>
         <div class="container">
             <form method="post">
@@ -148,7 +213,7 @@
                                                 <b>Marketing Suspended:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.MarketingSuspended}}</div>
+                                                <v-checkbox disabled v-model="lead.MarketingSuspended" class="editLead"></v-checkbox>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -291,10 +356,12 @@ export default {
                 title: 'Qualified'
             },
         ],
+        valid: true,
         confirmDialog: false,
         selectedTab: 'leadInfo',
         drawer: null,
         fab: false,
+        editLead: false,
         rules: {
             required: value => !!value || 'Required.',
             counter: value => value.length >= 3 || 'Min 3 characters',
@@ -326,6 +393,10 @@ export default {
         changeStatus(item) {
             this.lead.status = item.title
             this.$emit('changeStatus', this.lead);
+        },
+        saveLead() {
+            this.editLead = false
+            this.$emit('saveLead', this.lead)
         }
 
     },
@@ -382,6 +453,10 @@ b {
     opacity: 0;
     right: 0;
     top: 0;
+}
+
+.profile-head {
+    margin-right: 10px;
 }
 
 .profile-head h5 {
@@ -524,5 +599,13 @@ b {
 
 .manageBoutton {
     top: 79px !important;
+}
+
+.v-dialog__content {
+    z-index: 2000 !important;
+}
+
+.v-toolbar__content {
+    padding: 5px 16px !important;
 }
 </style>

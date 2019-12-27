@@ -13,7 +13,7 @@ import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.services.LeadsManagement;
-import org.exoplatform.leadcapture.utils.Utils;
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
@@ -89,8 +89,8 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @PUT
-  @Path("leads")
-  public Response update(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
+  @Path("leads/{id}")
+  public Response update(@Context UriInfo uriInfo, @PathParam("id") Long id, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagement.updateLead(lead);

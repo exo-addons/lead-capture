@@ -9,14 +9,12 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
+import static org.exoplatform.leadcapture.Constants.*;
 
 public class LCMailService {
 
-  public static final String EMPTY_STR = "";
-  public static final String MAIL_FROM = "user-experience@exoplatform.com";
   private static final Log   LOG       = ExoLogger.getLogger(LCMailService.class);
   private LeadDAO            leadDAO;
-
   private MailService        mailService;
 
   public LCMailService(LeadDAO leadDAO, MailService mailService) {

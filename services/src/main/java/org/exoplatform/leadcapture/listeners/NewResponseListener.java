@@ -13,7 +13,7 @@ import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LCMailService;
 import org.exoplatform.leadcapture.services.MailTemplatesManagement;
-import org.exoplatform.leadcapture.utils.Utils;
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;

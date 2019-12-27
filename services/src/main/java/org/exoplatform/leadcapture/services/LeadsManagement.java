@@ -1,6 +1,5 @@
 package org.exoplatform.leadcapture.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,10 +20,11 @@ import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
-import org.exoplatform.leadcapture.utils.Utils;
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import static org.exoplatform.leadcapture.Constants.*;
 
 public class LeadsManagement {
 
@@ -59,11 +59,14 @@ public class LeadsManagement {
       if (leadEntity == null) {
         lead.setCreatedDate(new Date().getTime());
         lead.setUpdatedDate(new Date().getTime());
+        if(lead.getStatus()==null){
+          lead.setStatus(LEAD_DEFAULT_STATUS);
+        }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
           lead.setBlogSubscriptionDate(new Date().getTime());
         }
         leadEntity = createLead(lead);
-        if(broadcast){listenerService.broadcast("leadCapture.newLead.event", leadEntity, "");}
+        if(broadcast){listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");}
       } else {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date().getTime());
@@ -171,15 +174,15 @@ public class LeadsManagement {
       FormEntity formEntity = formDAO.getFormByName(responseDTO.getFormName());
       if (formEntity == null) {
         String fields = responseDTO.getFields().stream().map(n -> n.getName()).collect(Collectors.joining(","));
-        if (!fields.contains("createdDate")) {
-          fields = (fields.concat(",createdDate"));
+        if (!fields.contains(CREATION_DATE_FIELD_NAME)) {
+          fields = (fields.concat(","+CREATION_DATE_FIELD_NAME));
         }
         formEntity = createForm(new FormEntity(responseDTO.getFormName(), fields));
       } else {
         String fields = formEntity.getFields();
         List<String> fieldList = new ArrayList<String>(Arrays.asList(fields.split(",")));
-        if (!fieldList.contains("createdDate")) {
-          fieldList.add("createdDate");
+        if (!fieldList.contains(CREATION_DATE_FIELD_NAME)) {
+          fieldList.add(CREATION_DATE_FIELD_NAME);
         }
         boolean changed = false;
         for (FieldDTO field : responseDTO.getFields()) {
@@ -189,7 +192,7 @@ public class LeadsManagement {
           }
         }
         if (changed) {
-          fields = fieldList.stream().collect(Collectors.joining(","));
+          fields = fieldList.stream().collect(Collectors.joining(FIELDS_DELIMITER));
           formEntity.setFields(fields);
           updateForm(formEntity);
         }
@@ -201,7 +204,7 @@ public class LeadsManagement {
         FieldEntity fieldEntity = new FieldEntity(field.getName(), field.getValue(), responseEntity);
         fieldDAO.create(fieldEntity);
       }
-      listenerService.broadcast("leadCapture.newResponse.event", leadEntity, responseEntity);
+      listenerService.broadcast(NEW_RESPONSE_EVENT, leadEntity, responseEntity);
     } catch (Exception e) {
       LOG.error(e);
     }

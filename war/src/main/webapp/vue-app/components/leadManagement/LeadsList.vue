@@ -90,7 +90,7 @@
             <template v-slot:no-data>No Leads</template>
         </v-data-table>
     </v-layout>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:save="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
 </v-flex>
 </template>
 
@@ -235,8 +235,10 @@ export default {
         edit(item) {
             this.selectedLead = item
             const telemarketer = this.assignees.find(x => x.userName === item.assignee)
-            this.selectedLead.telemarketerFullName = telemarketer.fullName
-            this.selectedLead.telemarketerMail = telemarketer.mail
+            if (typeof (telemarketer) !== 'undefined') {
+                this.selectedLead.telemarketerFullName = telemarketer.fullName
+                this.selectedLead.telemarketerMail = telemarketer.email
+            }
             this.showTable = false;
             this.showDetails = true;
             fetch(`/portal/rest/leadcapture/leadsmanagement/responses/` + item.id, {
@@ -252,7 +254,7 @@ export default {
             this.showTable = true;
         },
         editItem(item) {
-            fetch(`portal/rest/leadcapture/leadsmanagement/responses/` + item.id, {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + item.id, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
