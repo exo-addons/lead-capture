@@ -317,7 +317,7 @@
         </div>
     </v-container>
     <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
-        <notes-drawer :notes="notes" />
+        <notes-drawer :lead="lead" :comments="comments" />
     </v-navigation-drawer>
 </v-flex>
 </template>
@@ -332,7 +332,7 @@ export default {
         notesDrawer,
         FormResponses
     },
-    props: ['lead', 'formResponses'],
+    props: ['lead', 'formResponses', 'comments'],
     data: () => ({
         statusList: [{
                 title: 'Open'

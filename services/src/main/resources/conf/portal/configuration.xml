@@ -81,8 +81,15 @@
         </component-plugin>
     </external-component-plugins>
 
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.listener.ListenerService</target-component>
+        <component-plugin>
+            <name>exo.task.taskUpdate</name>
+            <set-method>addListener</set-method>
+            <type>org.exoplatform.leadcapture.listeners.TaskUpdateListener</type>
+        </component-plugin>
+    </external-component-plugins>
 
-    <!-- Gamification Connector storage layout (Liquibase initializer) -->
     <external-component-plugins>
         <target-component>org.exoplatform.commons.api.persistence.DataInitializer</target-component>
         <component-plugin>
@@ -98,5 +105,7 @@
             </init-params>
         </component-plugin>
     </external-component-plugins>
+
+
 
 </configuration>

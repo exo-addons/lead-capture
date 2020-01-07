@@ -27,4 +27,19 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     }
   }
 
+  public LeadEntity getLeadByTask(Long taskId) {
+
+    TypedQuery<LeadEntity> query = getEntityManager().createNamedQuery("LeadEntity.getLeadByTask", LeadEntity.class)
+                                                     .setParameter("taskId", taskId);
+
+    try {
+      return query.getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    } catch (Exception e) {
+      LOG.error("Error occurred when trying to get lead by taskId {}", taskId, e);
+      return null;
+    }
+  }
+
 }

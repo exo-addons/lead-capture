@@ -6,6 +6,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.leadcapture.dto.LeadDTO;
+import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.activity.model.ExoSocialActivityImpl;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.identity.provider.SpaceIdentityProvider;
+import org.exoplatform.social.core.manager.ActivityManager;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.domain.Project;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.util.ProjectUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.exoplatform.commons.utils.CommonsUtils;
@@ -77,4 +90,57 @@ public class Utils {
     return formatter;
   }
 
+
+  public static ExoSocialActivity createActivity (LeadEntity lead){
+    String spaceName = PropertyManager.getProperty(MARKETING_SPACE_NAME_CONFIGURATION);
+    if (spaceName == null || spaceName.isEmpty()) {
+      spaceName = DEFAULT_MARKETING_SPACE_NAME;
+    }
+    String botName = PropertyManager.getProperty(LEAD_CAPTURE_BOT_NAME_CONFIGURATION);
+    if (botName == null || botName.isEmpty()) {
+      botName = DEFAULT_LEAD_CAPTURE_BOT_NAME;
+    }
+        SpaceService spaceService= CommonsUtils.getService(SpaceService.class);
+        IdentityManager identityManager= CommonsUtils.getService(IdentityManager.class);
+        ActivityManager activityManager= CommonsUtils.getService(ActivityManager.class);
+        Space space = spaceService.getSpaceByPrettyName(spaceName);
+        if(space==null){
+          LOG.warn("Space not found");
+        }else{
+          Identity spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
+          Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
+
+          if(posterIdentity!=null&&spaceIdentity!=null){
+            ExoSocialActivity activity = new ExoSocialActivityImpl();
+            activity.setType("DEFAULT_ACTIVITY");
+            activity.setTitle("<span id='npsActivity'>\n" +
+                    "A new lead has been created: <br/>\n" +
+                    " <b>Lead mail : </b>"+lead.getMail()+"<br/>\n"
+            );
+            activity.setUserId(posterIdentity.getId());
+            return  activityManager.saveActivity(spaceIdentity, activity);
+          }else{
+            LOG.warn("Not able to create the activity, the Poster or Space Identity is missing");
+          }
+        }
+
+    return null;
+  }
+
+  public static Space getMarketingSpace(){
+    String spaceName = PropertyManager.getProperty(MARKETING_SPACE_NAME_CONFIGURATION);
+    if (spaceName == null || spaceName.isEmpty()) {
+      spaceName = DEFAULT_MARKETING_SPACE_NAME;
+      SpaceService spaceService= CommonsUtils.getService(SpaceService.class);
+      return (spaceService.getSpaceByPrettyName(spaceName));
+    }
+    return null;
+  }
+
+  public static Project getTaskProject(){
+    ProjectService projectService= CommonsUtils.getService(ProjectService.class);
+    Space marketingSpace = Utils.getMarketingSpace();
+    List<Project> projects = ProjectUtil.getProjectTree(marketingSpace.getGroupId(), projectService);
+    return projects.get(0);
+  }
 }

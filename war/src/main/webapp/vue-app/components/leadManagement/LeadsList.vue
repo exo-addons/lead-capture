@@ -90,7 +90,7 @@
             <template v-slot:no-data>No Leads</template>
         </v-data-table>
     </v-layout>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
 </v-flex>
 </template>
 
@@ -140,6 +140,7 @@ export default {
             status: '',
         },
         formResponses: [],
+        comments: [],
         selectedLead: {},
         rules: {
             required: value => !!value || 'Required.',
@@ -241,6 +242,7 @@ export default {
             }
             this.showTable = false;
             this.showDetails = true;
+
             fetch(`/portal/rest/leadcapture/leadsmanagement/responses/` + item.id, {
                     credentials: 'include',
                 })
@@ -248,6 +250,14 @@ export default {
                 .then((resp) => {
                     this.formResponses = resp;
                 });
+
+            fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
+                    credentials: 'include',
+                })
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    this.comments = resp;
+                });    
         },
         backToList() {
             this.showDetails = false;

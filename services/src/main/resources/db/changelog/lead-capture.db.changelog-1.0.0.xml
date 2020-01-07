@@ -168,6 +168,22 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
     </changeSet>
 
+    <changeSet author="exo-lead-capture" id="1.0.0-3">
+        <addColumn tableName="ADDONS_LC_LEAD">
+            <column name="ACTIVITY_ID" type="NVARCHAR(250)">
+            </column>
+            <column name="TASK_ID" type="BIGINT">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="exo-lead-capture" id="1.0.0-4">
+        <addColumn tableName="ADDONS_LC_LEAD">
+            <column name="TASK_URL" type="NVARCHAR(250)">
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
 
 

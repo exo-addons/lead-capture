@@ -1,5 +1,7 @@
 package org.exoplatform.leadcapture.services;
 
+import static org.exoplatform.leadcapture.Constants.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,10 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.util.TaskUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
 import org.exoplatform.leadcapture.dao.LeadDAO;
@@ -20,11 +26,14 @@ import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
-import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import static org.exoplatform.leadcapture.Constants.*;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
 
 public class LeadsManagement {
 
@@ -40,16 +49,28 @@ public class LeadsManagement {
 
   private ListenerService listenerService;
 
+  private TaskService     taskService;
+
+  private StatusService   statusService;
+
+  private ProjectService  projectService;
+
   public LeadsManagement(LeadDAO leadDAO,
                          FormDAO formDAO,
                          FieldDAO fieldDAO,
                          ResponseDAO responseDAO,
+                         TaskService taskService,
+                         StatusService statusService,
+                         ProjectService projectService,
                          ListenerService listenerService) {
     this.leadDAO = leadDAO;
     this.formDAO = formDAO;
     this.fieldDAO = fieldDAO;
     this.responseDAO = responseDAO;
     this.listenerService = listenerService;
+    this.taskService = taskService;
+    this.statusService = statusService;
+    this.projectService = projectService;
   }
 
   public void addLeadInfo(FormInfo leadInfo, boolean broadcast) {
@@ -59,14 +80,16 @@ public class LeadsManagement {
       if (leadEntity == null) {
         lead.setCreatedDate(new Date().getTime());
         lead.setUpdatedDate(new Date().getTime());
-        if(lead.getStatus()==null){
+        if (lead.getStatus() == null) {
           lead.setStatus(LEAD_DEFAULT_STATUS);
         }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
           lead.setBlogSubscriptionDate(new Date().getTime());
         }
         leadEntity = createLead(lead);
-        if(broadcast){listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");}
+        if (broadcast) {
+          listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
+        }
       } else {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date().getTime());
@@ -78,10 +101,11 @@ public class LeadsManagement {
     }
   }
 
-  public LeadEntity createLead(LeadDTO lead){
+  public LeadEntity createLead(LeadDTO lead) {
     return leadDAO.create(toLeadEntity(lead));
   }
-  public void deleteLead(LeadEntity lead){
+
+  public void deleteLead(LeadEntity lead) {
     try {
       List<FieldEntity> fieldEntities = new ArrayList<>();
       List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
@@ -95,7 +119,7 @@ public class LeadsManagement {
     }
   }
 
-  public void updateLead(LeadDTO lead)  {
+  public void updateLead(LeadDTO lead) {
     try {
       lead.setUpdatedDate(new Date().getTime());
       leadDAO.update(toLeadEntity(lead));
@@ -104,12 +128,15 @@ public class LeadsManagement {
     }
   }
 
-  public void assigneLead(Long leadId, String assignee){
+  public void assigneLead(Long leadId, String assignee) {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date().getTime());
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
+      Task task = taskService.getTask(leadEntity.getTaskId());
+      task.setAssignee(assignee);
+      taskService.updateTask(task);
     } catch (Exception e) {
       LOG.error(e);
     }
@@ -121,6 +148,18 @@ public class LeadsManagement {
       leadEntity.setUpdatedDate(new Date().getTime());
       leadEntity.setStatus(status);
       leadDAO.update(leadEntity);
+      Task task = taskService.getTask(leadEntity.getTaskId());
+      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject().getId());
+      Status newStatus = null;
+      for (Status status_ : statuses) {
+        if (status_.getName().equals(status)) {
+          newStatus = status_;
+        }
+      }
+      if (newStatus != null) {
+        task.setStatus(newStatus);
+        taskService.updateTask(task);
+      }
     } catch (Exception e) {
       LOG.error(e);
     }
@@ -175,7 +214,7 @@ public class LeadsManagement {
       if (formEntity == null) {
         String fields = responseDTO.getFields().stream().map(n -> n.getName()).collect(Collectors.joining(","));
         if (!fields.contains(CREATION_DATE_FIELD_NAME)) {
-          fields = (fields.concat(","+CREATION_DATE_FIELD_NAME));
+          fields = (fields.concat("," + CREATION_DATE_FIELD_NAME));
         }
         formEntity = createForm(new FormEntity(responseDTO.getFormName(), fields));
       } else {
@@ -210,28 +249,41 @@ public class LeadsManagement {
     }
   }
 
-  public FormEntity createForm (FormEntity formEntity) {
+  public FormEntity createForm(FormEntity formEntity) {
 
     return formDAO.create(formEntity);
   }
 
-  public FormEntity updateForm (FormEntity formEntity) {
+  public FormEntity updateForm(FormEntity formEntity) {
 
     return formDAO.update(formEntity);
   }
 
-  public ResponseEntity createResponse (ResponseEntity responseEntity) {
+  public ResponseEntity createResponse(ResponseEntity responseEntity) {
     responseEntity.setCreatedDate(new Date().getTime());
     return responseDAO.create(responseEntity);
   }
 
-
   public LeadEntity getLeadbyId(long id) {
-  return leadDAO.find(id);
-}
+    return leadDAO.find(id);
+  }
 
   public LeadEntity getLeadByMail(String mail) {
     return leadDAO.getLeadByMail(mail);
+  }
+
+  public LeadEntity getLeadByTask(Long taslId) {
+    return leadDAO.getLeadByTask(taslId);
+  }
+
+  public List<Comment> getTaskComments(long taskId) {
+    try {
+      ListAccess<Comment> comments = taskService.getComments(taskId);
+      return Arrays.asList(comments.load(0,comments.getSize()));
+    } catch (Exception e) {
+      LOG.error("Cannot get list of comments for the Task");
+    }
+    return null;
   }
 
   public LeadEntity mergeLead(LeadEntity leadEntity, LeadDTO leadDTO) {
@@ -283,7 +335,6 @@ public class LeadsManagement {
     return formJson;
   }
 
-
   public LeadDTO toLeadDto(LeadEntity leadEntity) {
     LeadDTO leadDTO = new LeadDTO();
     leadDTO.setId(leadEntity.getId());
@@ -317,6 +368,9 @@ public class LeadsManagement {
     leadDTO.setCaptureSourceInfo(leadEntity.getCaptureSourceInfo());
     leadDTO.setPersonIp(leadEntity.getPersonIp());
     leadDTO.setOriginalReferrer(leadEntity.getOriginalReferrer());
+    leadDTO.setTaskId(leadEntity.getTaskId());
+    leadDTO.setTaskUrl(leadEntity.getTaskUrl());
+    leadDTO.setActivityId(leadEntity.getActivityId());
     return leadDTO;
   }
 
@@ -351,10 +405,11 @@ public class LeadsManagement {
     leadEntity.setCaptureSourceInfo(leadDTO.getCaptureSourceInfo());
     leadEntity.setPersonIp(leadDTO.getPersonIp());
     leadEntity.setOriginalReferrer(leadDTO.getOriginalReferrer());
+    leadEntity.setTaskId(leadDTO.getTaskId());
+    leadEntity.setTaskUrl(leadDTO.getTaskUrl());
+    leadEntity.setActivityId(leadDTO.getActivityId());
     return leadEntity;
   }
-
-
 
   public FieldDTO toFieldDto(FieldEntity fieldEntity) {
     FieldDTO fieldDTO = new FieldDTO();
@@ -411,6 +466,5 @@ public class LeadsManagement {
     responseEntity.setFilelds(fields);
     return responseEntity;
   }
-
 
 }

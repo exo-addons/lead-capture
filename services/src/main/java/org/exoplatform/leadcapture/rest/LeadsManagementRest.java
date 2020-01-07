@@ -140,6 +140,21 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @GET
+  @Path("comments/{taskid}")
+  public Response getComments(@Context UriInfo uriInfo, @PathParam("taskid") long taskId) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
+    try {
+      return Response.ok(leadsManagement.getTaskComments(taskId), mediaType).build();
+    } catch (Exception e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GET
   @Path("marketers")
   public Response getMarketers(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);

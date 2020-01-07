@@ -13,7 +13,8 @@ import lombok.Data;
 @Table(name = "ADDONS_LC_LEAD")
 @Data
 @NamedQueries({
-    @NamedQuery(name = "LeadEntity.getLeadByMail", query = "SELECT lead FROM LeadEntity lead where lead.mail = :mail ") })
+    @NamedQuery(name = "LeadEntity.getLeadByMail", query = "SELECT lead FROM LeadEntity lead where lead.mail = :mail "),
+        @NamedQuery(name = "LeadEntity.getLeadByTask", query = "SELECT lead FROM LeadEntity lead where lead.taskId = :taskId ") })
 
 public class LeadEntity implements Serializable {
 
@@ -106,4 +107,13 @@ public class LeadEntity implements Serializable {
 
   @Column(name = "ORIGINAL_REFERRER")
   protected String  originalReferrer;
+
+  @Column(name = "ACTIVITY_ID")
+  protected String  activityId;
+
+  @Column(name = "TASK_ID")
+  protected Long  taskId;
+
+  @Column(name = "TASK_URL")
+  protected String  taskUrl;
 }

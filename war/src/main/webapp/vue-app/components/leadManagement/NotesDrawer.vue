@@ -2,18 +2,21 @@
 <v-container class="">
     <v-list-item>
         <v-list-item-title>
-            NOTES
+            <v-btn fab dark small color="blue darken-2" @click="addNote()">
+                <v-icon>mdi-plus</v-icon>
+            </v-btn>
+            Comments
         </v-list-item-title>
+        <a fab dark small style="float: right;" :href="lead.taskUrl" target="_blank">
+            <v-icon>mdi-open-in-new</v-icon>
+        </a>
 
-        <v-btn fab dark small color="blue darken-2" style="float: right;" @click="addNote()">
-            <v-icon>mdi-plus</v-icon>
-        </v-btn>
     </v-list-item>
     <v-list elevation="2">
-        <v-list-item :key="item.noteMessage" v-for="item in notes">
+        <v-list-item :key="item.noteMessage" v-for="item in comments">
             <v-list-item-content>
-                <v-list-item-title>{{ item.noteMessage }}</v-list-item-title>
-                <v-list-item-subtitle>{{ item.noteMessageDate }}</v-list-item-subtitle>
+                <v-list-item-title>{{ item.comment }}</v-list-item-title>
+                <v-list-item-subtitle>{{ item.createdTime }}</v-list-item-subtitle>
                 <v-divider></v-divider>
             </v-list-item-content>
         </v-list-item>
@@ -28,7 +31,7 @@
                 <v-container>
                     <v-row>
                         <v-col>
-                            <v-textarea label="Solo textarea" name="input-7-4" solo v-model="newNote.noteMessage"></v-textarea>
+                            <v-textarea label="Solo textarea" name="input-7-4" solo v-model="newNote.comment"></v-textarea>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -45,7 +48,7 @@
 
 <script>
 export default {
-    props: ['notes'],
+    props: ['lead', 'comments'],
     data: () => ({
         dialog: false,
         newNote: {}
@@ -59,8 +62,8 @@ export default {
             this.dialog = false
         },
         saveNote() {
-            this.newNote.noteMessageDate = "15/12/2010";
-            this.notes.push(this.newNote)
+            this.newNote.createdTime = "15/12/2010";
+            this.comments.push(this.newNote)
             this.newNote = {}
             this.dialog = false
         }

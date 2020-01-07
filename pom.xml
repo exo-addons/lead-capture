@@ -48,6 +48,7 @@
         <platform.version>6.0.0-M09</platform.version>
         <org.lombok.version>1.18.2</org.lombok.version>
         <org.jackson.version>2.4.2</org.jackson.version>
+        <addon.exo.tasks.version>3.0.x-SNAPSHOT</addon.exo.tasks.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -88,6 +89,15 @@
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
                 <version>${org.jackson.version}</version>
+            </dependency>
+
+            <!-- Import Task addon -->
+            <dependency>
+                <groupId>org.exoplatform.addons.task</groupId>
+                <artifactId>task-management-parent</artifactId>
+                <version>${addon.exo.tasks.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
