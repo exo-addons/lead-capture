@@ -1,6 +1,9 @@
 import leadsManagementApp from './components/LeadsManagementApp.vue';
 import './../css/main.less';
+import CKEditor from '@ckeditor/ckeditor5-vue';
+Vue.use(CKEditor);
 Vue.use(Vuetify);
+
 
 const vuetify = new Vuetify({
   dark: true,

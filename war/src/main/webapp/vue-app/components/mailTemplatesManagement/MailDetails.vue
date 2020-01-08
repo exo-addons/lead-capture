@@ -18,14 +18,14 @@
                 <v-text-field v-model="template.description" label="Description"></v-text-field>
 
                 <v-select v-model="template.event" :items="eventList" item-text="title" item-value="value" :rules="[rules.required]" label="Event" required></v-select>
-               <v-row>
-               <v-col cols="12" sm="5">
-                <v-text-field v-if="template.event==='newResponse'" v-model="template.form" label="Form"></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="5">
-                <v-text-field v-if="template.event==='newResponse'" v-model="template.field" label="Field value"></v-text-field>
-                 </v-col>
-                 </v-row>
+                <v-row>
+                    <v-col cols="12" sm="5">
+                        <v-text-field v-if="template.event==='newResponse'" v-model="template.form" label="Form"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="5">
+                        <v-text-field v-if="template.event==='newResponse'" v-model="template.field" label="Field value"></v-text-field>
+                    </v-col>
+                </v-row>
                 <v-card elevation="1" style="    padding: 16px;">
                     <v-card-title class="" primary-title> Contents: </v-card-title>
 
@@ -36,7 +36,7 @@
                     <div>*You can use $FIRST_NAME, $LAST_NAME, $MAIL for lead's fields</div>
 
                 </v-card>
-                
+
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
                     <div class="uiAction">
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import ckEditor from './ckEditor.vue';
+import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
@@ -119,7 +119,7 @@ export default {
         },
 
         save() {
-                        if (this.$refs.ck !== undefined) {
+            if (this.$refs.ck !== undefined) {
                 this.selectedContent.content = this.$refs.ck.getContent();
             }
             if (this.template.id === null || typeof (this.template.id) === 'undefined') {

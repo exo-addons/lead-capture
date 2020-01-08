@@ -13,7 +13,7 @@
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">
                 <v-btn class="notesBoutton" fab dark color="secondary" @click.stop="drawer = !drawer" v-on="on">
-                    <v-icon dark>mdi-note-text</v-icon>
+                    <v-icon dark>mdi-clipboard-text</v-icon>
                 </v-btn>
             </template>
             <span>Notes</span>
@@ -52,26 +52,26 @@
         </v-dialog>
 
         <v-dialog v-model="editLead" fullscreen hide-overlay transition="dialog-bottom-transition" scrollable>
-             <v-form ref="form" v-model="valid">
-            <v-card tile>
-               
-                <v-toolbar dark color="primary">
-                    <v-btn icon dark @click="editLead = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    <v-toolbar-title>Edit Lead</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn :disabled="!valid" dark text @click="saveLead()">
-                            Save
+            <v-form ref="form" v-model="valid">
+                <v-card tile>
+
+                    <v-toolbar dark color="primary">
+                        <v-btn icon dark @click="editLead = false">
+                            <v-icon>mdi-close</v-icon>
                         </v-btn>
-                    </v-toolbar-items>
+                        <v-toolbar-title>Edit Lead</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-toolbar-items>
+                            <v-btn :disabled="!valid" dark text @click="saveLead()">
+                                Save
+                            </v-btn>
+                        </v-toolbar-items>
 
-                </v-toolbar>
-                <v-card-text>
+                    </v-toolbar>
+                    <v-card-text>
 
-                    <v-container>
-                        
+                        <v-container>
+
                             <v-row>
                                 <v-col cols="12" sm="6" md="6">
                                     <v-text-field v-model="lead.firstName" label="First name"></v-text-field>
@@ -105,14 +105,14 @@
                                     <v-text-field v-model="lead.marketingSuspendedCause" label="Marketing Suspended Cause"></v-text-field>
                                 </v-col>
                             </v-row>
-                        
-                    </v-container>
 
-                </v-card-text>
+                        </v-container>
 
-                <div style="flex: 1 1 auto;"></div>
-                
-            </v-card>
+                    </v-card-text>
+
+                    <div style="flex: 1 1 auto;"></div>
+
+                </v-card>
             </v-form>
         </v-dialog>
         <div class="container">

@@ -9,11 +9,11 @@ import javax.ws.rs.core.UriInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.services.LeadsManagement;
-import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
@@ -61,7 +61,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response add(@Context UriInfo uriInfo, FormInfo lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.addLeadInfo(lead,true);
+      leadsManagement.addLeadInfo(lead, true);
       return Response.ok("lead synchronized", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -139,6 +139,22 @@ public class LeadsManagementRest implements ResourceContainer {
     }
   }
 
+  @POST
+  @Path("comments/{taskid}")
+  public Response addComment(@Context UriInfo uriInfo, @PathParam("taskid") long taskId, String comment) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
+    try {
+      return Response.ok(leadsManagement.addTaskComment(taskId, sourceIdentity.getRemoteId(), comment).toString(), mediaType)
+                     .build();
+    } catch (Exception e) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   @GET
   @Path("comments/{taskid}")
   public Response getComments(@Context UriInfo uriInfo, @PathParam("taskid") long taskId) throws Exception {
@@ -148,7 +164,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadsManagement.getTaskComments(taskId), mediaType).build();
+      return Response.ok(leadsManagement.getTaskComments(taskId).toString(), mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }

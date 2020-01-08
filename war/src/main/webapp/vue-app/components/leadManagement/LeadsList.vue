@@ -257,7 +257,7 @@ export default {
                 .then((resp) => resp.json())
                 .then((resp) => {
                     this.comments = resp;
-                });    
+                });
         },
         backToList() {
             this.showDetails = false;

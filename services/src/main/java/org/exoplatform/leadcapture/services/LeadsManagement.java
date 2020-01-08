@@ -9,13 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.util.TaskUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
@@ -29,8 +27,11 @@ import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
@@ -276,12 +277,21 @@ public class LeadsManagement {
     return leadDAO.getLeadByTask(taslId);
   }
 
-  public List<Comment> getTaskComments(long taskId) {
+  public JSONArray getTaskComments(long taskId) {
+    return Utils.getCommentsJson(taskService.getComments(taskId));
+  }
+
+  public JSONObject addTaskComment(long taskId, String username, String comment) {
     try {
-      ListAccess<Comment> comments = taskService.getComments(taskId);
-      return Arrays.asList(comments.load(0,comments.getSize()));
+      Comment comment_ = taskService.addComment(taskId, username, comment);
+      OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+      return Utils.commentToJson(comment_,
+                                 comment_.getAuthor(),
+                                 organizationService.getUserHandler().findUserByName(comment_.getAuthor()).getDisplayName());
+    } catch (EntityNotFoundException enf) {
+      LOG.error("Cannot Add Comment", enf);
     } catch (Exception e) {
-      LOG.error("Cannot get list of comments for the Task");
+      LOG.error("Cannot conevert comment to json", e);
     }
     return null;
   }
