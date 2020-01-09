@@ -5,6 +5,17 @@
         {{message}}
     </div>
     <v-layout>
+        <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
+            <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
+                <v-icon x-large>mdi-settings</v-icon> <br>
+                <div>The lead capture feature should be configured</div>
+            </v-btn>
+            <div v-else class="ConfWarning">
+                <v-icon x-large>mdi-alert</v-icon> <br>
+                The lead capture feature is not configured, please contact your system administrator
+            </div>
+
+        </v-overlay>
         <v-data-table :headers="headers" :items="leadList" :search="search" class="elevation-1" sort-by="id" v-show="showTable">
             <template v-slot:top>
                 <v-toolbar color="white" flat>
@@ -79,7 +90,7 @@
             <template v-slot:item.assignee="{ item }">
                 <!--                                 <v-select :items="assignees" item-text="fullName" item-value="userName" label="" :append-icon="''" dense solo></v-select>
  --> <select v-model="item.assignee" @change="onAssign(item)">
-                    <option :value="null" disabled>Not assigned
+                    <option :value="null">Not assigned
                     </option>
                     <option :key="option.userName" v-bind:value="option.userName" v-for="option in assignees">
                         {{option.fullName}}
@@ -90,7 +101,7 @@
             <template v-slot:no-data>No Leads</template>
         </v-data-table>
     </v-layout>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
 </v-flex>
 </template>
 
@@ -139,6 +150,9 @@ export default {
             country: '',
             status: '',
         },
+        context: {
+            leadCaptureConfigured: true
+        },
         formResponses: [],
         comments: [],
         selectedLead: {},
@@ -149,7 +163,16 @@ export default {
         }
     }),
     created() {
-        this.initialize()
+        fetch(`/portal/rest/leadcapture/lcsettings/context`, {
+                credentials: 'include',
+            })
+            .then((resp) => resp.json())
+            .then((resp) => {
+                this.context = resp;
+                if (this.context.leadCaptureConfigured) {
+                    this.initialize()
+                }
+            });
     },
     watch: {
         dialog(val) {
@@ -195,7 +218,7 @@ export default {
                         if (this.notassigned && this.myLeads) {
                             return false
                         }
-                        return (this.notassigned && !(value === null || value === {} || typeof (value) === 'undefined')) || (this.myLeads && (value !== null && value !== {} && typeof (value) !== 'undefined') && value.userName === this.currentUser)
+                        return (this.notassigned && !(value === null || value === {} || typeof (value) === 'undefined')) || (this.myLeads && (value !== null && value !== {} && typeof (value) !== 'undefined') && value.userName === this.context.currentUser)
 
                     }
                 },
@@ -452,3 +475,18 @@ export default {
     },
 };
 </script>
+
+<style>
+.ConfWarning {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+#LeftNavigation {
+    z-index: 1100;
+}
+</style>

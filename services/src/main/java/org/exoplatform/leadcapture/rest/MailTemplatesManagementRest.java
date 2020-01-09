@@ -8,7 +8,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
-import org.exoplatform.leadcapture.services.MailTemplatesManagement;
+import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
@@ -27,10 +27,10 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   private final String[]          SUPPORTED_FORMATS   = new String[] { "json" };
 
-  private MailTemplatesManagement mailTemplatesManagement;
+  private MailTemplatesManagementService mailTemplatesManagementService;
 
-  public MailTemplatesManagementRest(MailTemplatesManagement mailTemplatesManagement) {
-    this.mailTemplatesManagement = mailTemplatesManagement;
+  public MailTemplatesManagementRest(MailTemplatesManagementService mailTemplatesManagementService) {
+    this.mailTemplatesManagementService = mailTemplatesManagementService;
   }
 
   @GET
@@ -42,7 +42,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(mailTemplatesManagement.getTemplates(), mediaType).build();
+      return Response.ok(mailTemplatesManagementService.getTemplates(), mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
@@ -53,7 +53,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   public Response add(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      mailTemplatesManagement.addTemplate(templateDTO);
+      mailTemplatesManagementService.addTemplate(templateDTO);
       return Response.ok("lead synchronized", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -68,11 +68,11 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      MailTemplateEntity templateEntity = mailTemplatesManagement.getTemplatebyId(id);
+      MailTemplateEntity templateEntity = mailTemplatesManagementService.getTemplatebyId(id);
       if (templateEntity == null) {
         return Response.status(Response.Status.NOT_FOUND).entity("Lead Not found").build();
       }
-      mailTemplatesManagement.deleteTemplate(templateEntity);
+      mailTemplatesManagementService.deleteTemplate(templateEntity);
       LOG.info("Template {} deleted by {}", id, sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
@@ -85,7 +85,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   public Response update(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      mailTemplatesManagement.updateTemplate(templateDTO);
+      mailTemplatesManagementService.updateTemplate(templateDTO);
       return Response.ok("template updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

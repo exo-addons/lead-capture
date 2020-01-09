@@ -1,15 +1,6 @@
 <template>
 <v-flex>
     <v-container id="template">
-        <!--         <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-btn class="returnBoutton" color="secondary" @click="backToList()" fab dark v-on="on">
-                    <v-icon dark>mdi-arrow-left</v-icon>
-                </v-btn>
-            </template>
-            <span>Back to template list</span>
-        </v-tooltip> -->
-
         <v-card outlined style="padding: 16px;">
             <v-form ref="form" v-model="valid">
 

@@ -1,7 +1,8 @@
 package org.exoplatform.leadcapture;
 
-import static org.exoplatform.leadcapture.Constants.*;
+import static org.exoplatform.leadcapture.Utils.*;
 
+import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.commons.api.settings.data.Context;
+import org.exoplatform.commons.api.settings.data.Scope;
+import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
+import org.exoplatform.ws.frameworks.json.JsonGenerator;
+import org.exoplatform.ws.frameworks.json.JsonParser;
+import org.exoplatform.ws.frameworks.json.impl.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,9 +48,23 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
 
 public class Utils {
-  private static final Log        LOG       = ExoLogger.getLogger(Utils.class);
-
-  private static SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+  private static final Log        LOG                                      = ExoLogger.getLogger(Utils.class);
+  public static final String LEAD_DEFAULT_STATUS                           = "Open";
+  public static final String CREATION_DATE_FIELD_NAME                      = "createdDate";
+  public static final String FIELDS_DELIMITER                              = ",";
+  public static final String MAIL_DEFAULT_LANGUAGE                         = "en";
+  public static final String NEW_LEAD_EVENT                                = "leadCapture.newLead.event";
+  public static final String NEW_RESPONSE_EVENT                            = "leadCapture.newResponse.event";
+  public static final String DATE_FORMAT                                   = "yyyy-MM-dd";
+  public static final String EMPTY_STR                                     = "";
+  public static final SimpleDateFormat formatter                           = new SimpleDateFormat(DATE_FORMAT);
+  public static final String LEAD_CAPTURE_SCOPE_NAME                       = "ADDONS_LEAD_CAPTURE";
+  public static final String LEAD_CAPTURE_CONTEXT_NAME                     = "ADDONS_LEAD_CAPTURE";
+  public static final Context LEAD_CAPTURE_CONTEXT                         = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
+  public static final Scope LEAD_CAPTURE_SCOPE                             = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
+  public static final String LEAD_CAPTURE_SETTINGS_KEY_NAME                = "LEAD_CAPTURE_SETTINGS";
+  public static final JsonParser JSON_PARSER                               = new JsonParserImpl();
+  public static final JsonGenerator JSON_GENERATOR                         = new JsonGeneratorImpl();
 
   public static JSONObject toResponseJson(ResponseEntity responseEntity) throws JSONException {
     JSONObject responseJson = new JSONObject();
@@ -51,14 +73,6 @@ public class Utils {
     }
     responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(new Date(responseEntity.getCreatedDate())));
     return responseJson;
-  }
-
-  public static List<User> getMarketersList() {
-    String groupId = PropertyManager.getProperty(MARKETING_GROUP_NAME_CONFIGURATION);
-    if (groupId == null || groupId.isEmpty()) {
-      groupId = DEFAULT_MARKETING_GROUP_NAME;
-    }
-    return getGroupMembers(groupId);
   }
 
   public static List<User> getGroupMembers(String groupId) {
@@ -95,14 +109,9 @@ public class Utils {
   }
 
   public static ExoSocialActivity createActivity(LeadEntity lead) {
-    String spaceName = PropertyManager.getProperty(MARKETING_SPACE_NAME_CONFIGURATION);
-    if (spaceName == null || spaceName.isEmpty()) {
-      spaceName = DEFAULT_MARKETING_SPACE_NAME;
-    }
-    String botName = PropertyManager.getProperty(LEAD_CAPTURE_BOT_NAME_CONFIGURATION);
-    if (botName == null || botName.isEmpty()) {
-      botName = DEFAULT_LEAD_CAPTURE_BOT_NAME;
-    }
+    LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+    String spaceName = leadCaptureSettingsService.getSettings().getMarketingSpace();
+    String botName = leadCaptureSettingsService.getSettings().getMarketingBotUserName();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
     ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
@@ -128,20 +137,21 @@ public class Utils {
     return null;
   }
 
-  public static Space getMarketingSpace() {
-    String spaceName = PropertyManager.getProperty(MARKETING_SPACE_NAME_CONFIGURATION);
-    if (spaceName == null || spaceName.isEmpty()) {
-      spaceName = DEFAULT_MARKETING_SPACE_NAME;
-      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
-      return (spaceService.getSpaceByPrettyName(spaceName));
-    }
-    return null;
-  }
 
   public static Project getTaskProject() {
+    SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+    LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
-    Space marketingSpace = Utils.getMarketingSpace();
+    LeadCaptureSettings settings=leadCaptureSettingsService.getSettings();
+    Space marketingSpace = spaceService.getSpaceByPrettyName(settings.getMarketingSpace());
     List<Project> projects = ProjectUtil.getProjectTree(marketingSpace.getGroupId(), projectService);
+    if(settings.getLeadTaskProject()!=null){
+      for(Project project :projects){
+        if(project.getName().equals(settings.getLeadTaskProject())){
+          return project;
+        }
+      }
+    }
     return projects.get(0);
   }
 
@@ -175,6 +185,27 @@ public class Utils {
       LOG.error("Cannot conevert comment to json", e);
     }
     return null;
+  }
+
+  public static final String toJsonString(Object object) {
+    try {
+      return JSON_GENERATOR.createJsonObject(object).toString();
+    } catch (JsonException e) {
+      throw new IllegalStateException("Error parsing object to string " + object, e);
+    }
+  }
+
+  public static final <T> T fromJsonString(String value, Class<T> resultClass) {
+    try {
+      if (StringUtils.isBlank(value)) {
+        return null;
+      }
+      JsonDefaultHandler jsonDefaultHandler = new JsonDefaultHandler();
+      JSON_PARSER.parse(new ByteArrayInputStream(value.getBytes()), jsonDefaultHandler);
+      return ObjectBuilder.createObject(resultClass, jsonDefaultHandler.getJsonObject());
+    } catch (JsonException e) {
+      throw new IllegalStateException("Error creating object from string : " + value, e);
+    }
   }
 
 }

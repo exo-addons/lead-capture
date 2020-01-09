@@ -1,7 +1,7 @@
 package org.exoplatform.leadcapture.listeners;
 
 import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.services.LeadsManagement;
+import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
@@ -13,10 +13,10 @@ import org.exoplatform.task.service.TaskService;
 public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
   private static final Log  LOG = ExoLogger.getLogger(TaskUpdateListener.class);
 
-  protected LeadsManagement leadsManagement;
+  protected LeadsManagementService leadsManagementService;
 
-  public TaskUpdateListener(LeadsManagement leadsManagement) {
-    this.leadsManagement = leadsManagement;
+  public TaskUpdateListener(LeadsManagementService leadsManagementService) {
+    this.leadsManagementService = leadsManagementService;
   }
 
   @Override
@@ -24,7 +24,7 @@ public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
     TaskPayload data = event.getData();
     Task before = data.before();
     Task after = data.after();
-     LeadEntity leadEntity = leadsManagement.getLeadByTask(before.getId());
+     LeadEntity leadEntity = leadsManagementService.getLeadByTask(before.getId());
      if(leadEntity!=null){
          if (before != null && after != null) {
              if (isDiff(before.getAssignee(), after.getAssignee())) {

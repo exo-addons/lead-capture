@@ -30,20 +30,25 @@
     </component>
 
     <component>
-        <type>org.exoplatform.leadcapture.services.LeadsManagement</type>
+        <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
     <component>
         <type>org.exoplatform.leadcapture.services.LCMailService</type>
     </component>
     <component>
-        <type>org.exoplatform.leadcapture.services.MailTemplatesManagement</type>
+        <type>org.exoplatform.leadcapture.services.MailTemplatesManagementService</type>
     </component>
-
+    <component>
+        <type>org.exoplatform.leadcapture.services.LeadCaptureSettingsService</type>
+    </component>
     <component>
         <type>org.exoplatform.leadcapture.rest.LeadsManagementRest</type>
     </component>
     <component>
         <type>org.exoplatform.leadcapture.rest.MailTemplatesManagementRest</type>
+    </component>
+    <component>
+        <type>org.exoplatform.leadcapture.rest.LeadCaptureSettingsRest</type>
     </component>
 
     <external-component-plugins>

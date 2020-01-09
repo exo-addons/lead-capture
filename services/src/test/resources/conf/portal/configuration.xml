@@ -25,7 +25,7 @@
         <type>org.exoplatform.leadcapture.rest.LeadsManagementRest</type>
     </component>
     <component>
-        <type>org.exoplatform.leadcapture.services.LeadsManagement</type>
+        <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
 
     <component>

@@ -13,7 +13,8 @@ import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.services.LeadsManagement;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
+import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
@@ -29,16 +30,20 @@ import io.swagger.jaxrs.PATCH;
 
 public class LeadsManagementRest implements ResourceContainer {
 
-  private final Log       LOG                 = ExoLogger.getLogger(LeadsManagementRest.class);
+  private final Log                  LOG                 = ExoLogger.getLogger(LeadsManagementRest.class);
 
-  private final String    portalContainerName = "portal";
+  private final String               portalContainerName = "portal";
 
-  private final String[]  SUPPORTED_FORMATS   = new String[] { "json" };
+  private final String[]             SUPPORTED_FORMATS   = new String[] { "json" };
 
-  private LeadsManagement leadsManagement;
+  private LeadsManagementService     leadsManagementService;
 
-  public LeadsManagementRest(LeadsManagement leadsManagement) {
-    this.leadsManagement = leadsManagement;
+  private LeadCaptureSettingsService leadCaptureSettingsService;
+
+  public LeadsManagementRest(LeadsManagementService leadsManagementService,
+                             LeadCaptureSettingsService leadCaptureSettingsService) {
+    this.leadsManagementService = leadsManagementService;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   @GET
@@ -50,7 +55,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadsManagement.getLeads(), mediaType).build();
+      return Response.ok(leadsManagementService.getLeads(), mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
@@ -59,13 +64,16 @@ public class LeadsManagementRest implements ResourceContainer {
   @POST
   @Path("leads")
   public Response add(@Context UriInfo uriInfo, FormInfo lead) throws Exception {
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
-    try {
-      leadsManagement.addLeadInfo(lead, true);
-      return Response.ok("lead synchronized", mediaType).build();
-    } catch (Exception e) {
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
+      return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
     }
+      MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
+      try {
+        leadsManagementService.addLeadInfo(lead, true);
+        return Response.ok("lead synchronized", mediaType).build();
+      } catch (Exception e) {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+      }
   }
 
   @DELETE
@@ -76,11 +84,11 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      LeadEntity lead = leadsManagement.getLeadbyId(id);
+      LeadEntity lead = leadsManagementService.getLeadbyId(id);
       if (lead == null) {
         return Response.status(Response.Status.NOT_FOUND).entity("Lead Not found").build();
       }
-      leadsManagement.deleteLead(lead);
+      leadsManagementService.deleteLead(lead);
       LOG.info("Webhook {} deleted by {}", id, sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
@@ -93,7 +101,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response update(@Context UriInfo uriInfo, @PathParam("id") Long id, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.updateLead(lead);
+      leadsManagementService.updateLead(lead);
       return Response.ok("lead updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -105,7 +113,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response assign(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.assigneLead(lead.getId(), lead.getAssignee());
+      leadsManagementService.assigneLead(lead.getId(), lead.getAssignee());
       return Response.ok("lead assigned", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -117,7 +125,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response updateStatus(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      leadsManagement.updateStatus(lead.getId(), lead.getStatus());
+      leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
       return Response.ok("lead status updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -133,7 +141,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadsManagement.getResponses(id).toString(), mediaType).build();
+      return Response.ok(leadsManagementService.getResponses(id).toString(), mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
@@ -148,7 +156,8 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadsManagement.addTaskComment(taskId, sourceIdentity.getRemoteId(), comment).toString(), mediaType)
+      return Response.ok(leadsManagementService.addTaskComment(taskId, sourceIdentity.getRemoteId(), comment).toString(),
+                         mediaType)
                      .build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -164,7 +173,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadsManagement.getTaskComments(taskId).toString(), mediaType).build();
+      return Response.ok(leadsManagementService.getTaskComments(taskId).toString(), mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
@@ -180,7 +189,7 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       JSONArray marketersList = new JSONArray();
-      for (User user : Utils.getMarketersList()) {
+      for (User user : Utils.getGroupMembers(leadCaptureSettingsService.getSettings().getMarketingGroup())) {
         JSONObject marketer = new JSONObject();
         marketer.put("userName", user.getUserName());
         marketer.put("fullName", user.getFirstName() + " " + user.getLastName());

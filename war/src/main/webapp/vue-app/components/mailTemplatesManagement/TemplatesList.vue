@@ -1,31 +1,38 @@
 <template>
 <v-flex>
+
     <div :class="alert_type" class="alert" id v-if="alert">
         <i :class="alertIcon"></i>
         {{message}}
     </div>
-    <v-layout>
-        <v-data-table :headers="headers" :items="templatesList" :search="search" class="elevation-1" sort-by="id" v-show="showTable">
-            <template v-slot:top>
-      <v-toolbar flat color="white">
-        <v-toolbar-title>Mail templates list</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
-        <v-spacer></v-spacer>
-                    <v-btn color="primary" fab dark class="mb-2" @click="editItem(defaultItem)">
-                        <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-      </v-toolbar>
-    </template>
-            <template v-slot:item.action="{ item }">
-                <v-icon class="mr-2" @click="editItem(item)"> edit </v-icon>
-                <v-icon @click="remove(item)"> delete </v-icon>
-            </template>
-            <template v-slot:no-data>No Mail Templates</template>
-        </v-data-table>
+    <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
+        <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
+            <v-icon x-large>mdi-settings</v-icon> <br>
+            <div>The lead capture feature should be configured</div>
+        </v-btn>
+        <div v-else class="ConfWarning">
+            <v-icon x-large>mdi-alert</v-icon> <br>
+            The lead capture feature is not configured, please contact your system administrator
+        </div>
+
+    </v-overlay>
+    <v-data-table :headers="headers" :items="templatesList" :search="search" class="elevation-1" sort-by="id" v-show="showTable">
+        <template v-slot:top>
+            <v-toolbar flat color="white">
+                <v-toolbar-title>Mail templates list</v-toolbar-title>
+                <v-divider class="mx-4" inset vertical></v-divider>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" fab dark class="mb-2" @click="editItem(defaultItem)">
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+            </v-toolbar>
+        </template>
+        <template v-slot:item.action="{ item }">
+            <v-icon class="mr-2" @click="editItem(item)"> edit </v-icon>
+            <v-icon @click="remove(item)"> delete </v-icon>
+        </template>
+        <template v-slot:no-data>No Mail Templates</template>
+    </v-data-table>
     </v-layout>
 
     <v-dialog max-width="290" v-model="confirmDialog">
@@ -78,6 +85,9 @@ export default {
                 content: ''
             }]
         },
+        context: {
+            leadCaptureConfigured: true
+        },
         defaultItem: {
             name: '',
             description: '',
@@ -93,7 +103,16 @@ export default {
         },
     }),
     created() {
-        this.initialize()
+        fetch(`/portal/rest/leadcapture/lcsettings/context`, {
+                credentials: 'include',
+            })
+            .then((resp) => resp.json())
+            .then((resp) => {
+                this.context = resp;
+                if (this.context.leadCaptureConfigured) {
+                    this.initialize()
+                }
+            });
     },
 
     computed: {
@@ -163,12 +182,12 @@ export default {
                         throw result;
                     }
                 })
-                .then((response) => {                    
+                .then((response) => {
                     this.displaySusccessMessage('template updated');
                     this.backToList()
                 })
                 .catch((result) => {
-                   // this.initialize();
+                    // this.initialize();
                     result.text().then((body) => {
                         this.displayErrorMessage(body);
                     });
@@ -264,3 +283,18 @@ export default {
     },
 };
 </script>
+
+<style>
+.ConfWarning {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+#LeftNavigation {
+    z-index: 1100;
+}
+</style>

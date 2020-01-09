@@ -1,25 +1,29 @@
 package org.exoplatform.leadcapture.services;
 
-import org.apache.commons.lang.StringUtils;
+import static org.exoplatform.leadcapture.Utils.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.utils.StringCommonUtils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
+import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
-import static org.exoplatform.leadcapture.Constants.*;
+
 
 public class LCMailService {
 
   private static final Log   LOG       = ExoLogger.getLogger(LCMailService.class);
   private LeadDAO            leadDAO;
   private MailService        mailService;
+  private LeadCaptureSettingsService        leadCaptureSettingsService;
 
-  public LCMailService(LeadDAO leadDAO, MailService mailService) {
+  public LCMailService(LeadDAO leadDAO, MailService mailService, LeadCaptureSettingsService leadCaptureSettingsService) {
     this.leadDAO = leadDAO;
     this.mailService = mailService;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   public static String convertCodeHTML(String s) {
@@ -41,13 +45,23 @@ public class LCMailService {
   }
 
   public void sendMail(String content, String subject, LeadEntity lead) throws Exception {
-    Message message = new Message();
-    message.setFrom(MAIL_FROM);
-    message.setTo(lead.getMail());
-    message.setMimeType("text/html");
-    message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
-    message.setBody(getContentEmail(content, lead));
-    mailService.sendMessage(message);
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    if(settings.isMailingEnabled()) {
+      if(settings.getSenderMail()!=null){
+        Message message = new Message();
+        message.setFrom(settings.getSenderMail());
+        message.setTo(lead.getMail());
+        message.setMimeType("text/html");
+        message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
+        message.setBody(getContentEmail(content, lead));
+        mailService.sendMessage(message);
+      }else{
+        LOG.warn("Mail sender adress is not defined, cannot send mail to {}",lead.getMail());
+      }
+
+    }else{
+      LOG.warn("Lead Messaging is disabled, cannot send mail to {}",lead.getMail());
+    }
 
   }
 

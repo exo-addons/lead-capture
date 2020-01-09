@@ -21,6 +21,12 @@
             <label>Mail templates management</label>
             <page-reference>group::/platform/administrators::mail_templates_management</page-reference>
         </node>
+            <node>
+            <uri>lead_capture_settings</uri>
+            <name>lead_capture_settings</name>
+            <label>Lead Capture Settings</label>
+            <page-reference>group::/platform/administrators::lead_capture_settings</page-reference>
+        </node>
         </node>
     </page-nodes>
 </node-navigation>

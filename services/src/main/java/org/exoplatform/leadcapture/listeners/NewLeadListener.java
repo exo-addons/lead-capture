@@ -1,9 +1,7 @@
 package org.exoplatform.leadcapture.listeners;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -15,7 +13,8 @@ import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.services.LCMailService;
-import org.exoplatform.leadcapture.services.MailTemplatesManagement;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
+import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
@@ -23,21 +22,12 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.exception.UnAuthorizedOperationException;
 import org.exoplatform.task.service.*;
-import org.exoplatform.task.util.DateUtil;
-import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.task.util.TaskUtil;
-import static org.exoplatform.leadcapture.Constants.*;
+import static org.exoplatform.leadcapture.Utils.*;
 
 public class NewLeadListener extends Listener<LeadEntity, String> {
 
@@ -45,7 +35,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
 
   private LCMailService           lcMailService;
 
-  private MailTemplatesManagement mailTemplatesManagement;
+  private MailTemplatesManagementService mailTemplatesManagementService;
 
   private OrganizationService     organizationService;
 
@@ -57,20 +47,24 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
 
   private LeadDAO                 leadDAO;
 
+  private LeadCaptureSettingsService                 leadCaptureSettingsService;
+
   public NewLeadListener(LCMailService lcMailService,
-                         MailTemplatesManagement mailTemplatesManagement,
+                         MailTemplatesManagementService mailTemplatesManagementService,
                          OrganizationService organizationService,
                          ProjectService projectService,
                          TaskService taskService,
                          StatusService statusService,
-                         LeadDAO leadDAO) {
+                         LeadDAO leadDAO,
+                         LeadCaptureSettingsService leadCaptureSettingsService) {
     this.lcMailService = lcMailService;
-    this.mailTemplatesManagement = mailTemplatesManagement;
+    this.mailTemplatesManagementService = mailTemplatesManagementService;
     this.organizationService = organizationService;
     this.projectService = projectService;
     this.taskService = taskService;
     this.statusService = statusService;
     this.leadDAO = leadDAO;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   @Override
@@ -92,19 +86,19 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
     Status status = statusService.getDefaultStatus(Utils.getTaskProject().getId());
     Task task = new Task();
     task.setTitle(lead.getMail());
-    task.setDescription("description");
+    task.setDescription("");
     task.setStatus(status);
-    task.setCreatedBy(DEFAULT_LEAD_CAPTURE_BOT_NAME);
+    task.setCreatedBy(leadCaptureSettingsService.getSettings().getMarketingBotUserName());
     task.setCreatedTime(new Date());
     task = taskService.createTask(task);
     lead.setTaskId(task.getId());
     lead.setTaskUrl(TaskUtil.buildTaskURL(task));
     leadDAO.update(lead);
 
-    List<MailTemplateEntity> templates = mailTemplatesManagement.getTemplatesbyEvent("newLead");
+    List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newLead");
     for (MailTemplateEntity template : templates) {
       MailContentDTO content = null;
-      MailTemplateDTO mailTemplateDTO = mailTemplatesManagement.toMailTemplateDTO(template);
+      MailTemplateDTO mailTemplateDTO = mailTemplatesManagementService.toMailTemplateDTO(template);
       if (mailTemplateDTO.getContents().size() > 0) {
         content = Utils.getContentForMail(mailTemplateDTO, lead);
         if (content != null) {

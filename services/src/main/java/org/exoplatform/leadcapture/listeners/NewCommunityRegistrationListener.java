@@ -7,7 +7,7 @@ import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.services.LCMailService;
-import org.exoplatform.leadcapture.services.MailTemplatesManagement;
+import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
@@ -20,20 +20,20 @@ public class NewCommunityRegistrationListener extends Listener<LeadEntity, Strin
 
   private LCMailService           lcMailService;
 
-  private MailTemplatesManagement mailTemplatesManagement;
+  private MailTemplatesManagementService mailTemplatesManagementService;
 
-  public NewCommunityRegistrationListener(LCMailService lcMailService, MailTemplatesManagement mailTemplatesManagement) {
+  public NewCommunityRegistrationListener(LCMailService lcMailService, MailTemplatesManagementService mailTemplatesManagementService) {
     this.lcMailService = lcMailService;
-    this.mailTemplatesManagement = mailTemplatesManagement;
+    this.mailTemplatesManagementService = mailTemplatesManagementService;
   }
 
   @Override
   public void onEvent(Event<LeadEntity, String> event) throws Exception {
     LeadEntity lead = event.getSource();
-    List<MailTemplateEntity> templates = mailTemplatesManagement.getTemplatesbyEvent("newCommunityRegistration");
+    List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newCommunityRegistration");
     for (MailTemplateEntity template : templates) {
       MailContentDTO content = null;
-      MailTemplateDTO mailTemplateDTO = mailTemplatesManagement.toMailTemplateDTO(template);
+      MailTemplateDTO mailTemplateDTO = mailTemplatesManagementService.toMailTemplateDTO(template);
       if (mailTemplateDTO.getContents().size() > 0) {
         content = Utils.getContentForMail(mailTemplateDTO, lead);
         if (content != null) {

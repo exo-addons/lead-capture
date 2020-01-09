@@ -1,7 +1,6 @@
 package org.exoplatform.leadcapture.services;
 
-import static org.exoplatform.leadcapture.Constants.*;
-
+import static org.exoplatform.leadcapture.Utils.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,9 +35,9 @@ import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 
-public class LeadsManagement {
+public class LeadsManagementService {
 
-  private final Log       LOG = ExoLogger.getLogger(LeadsManagement.class);
+  private final Log       LOG = ExoLogger.getLogger(LeadsManagementService.class);
 
   private LeadDAO         leadDAO;
 
@@ -56,14 +55,14 @@ public class LeadsManagement {
 
   private ProjectService  projectService;
 
-  public LeadsManagement(LeadDAO leadDAO,
-                         FormDAO formDAO,
-                         FieldDAO fieldDAO,
-                         ResponseDAO responseDAO,
-                         TaskService taskService,
-                         StatusService statusService,
-                         ProjectService projectService,
-                         ListenerService listenerService) {
+  public LeadsManagementService(LeadDAO leadDAO,
+                                FormDAO formDAO,
+                                FieldDAO fieldDAO,
+                                ResponseDAO responseDAO,
+                                TaskService taskService,
+                                StatusService statusService,
+                                ProjectService projectService,
+                                ListenerService listenerService) {
     this.leadDAO = leadDAO;
     this.formDAO = formDAO;
     this.fieldDAO = fieldDAO;

@@ -37,12 +37,13 @@
             <v-card>
                 <v-card-title class="headline">Confirmation</v-card-title>
 
-                <v-card-text>Are you sure to delete the Lead</v-card-text>
+                <v-card-text v-if="context.isManager">Are you sure to delete the Lead</v-card-text>
+                <v-card-text v-else >Only Managers can delete leads, pleas contact your manager.</v-card-text>
 
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
                     <div class="uiAction">
-                        <button @click="remove()" class="btn btn-primary" type="button">Delete
+                        <button v-if="context.isManager" @click="remove()" class="btn btn-primary" type="button">Delete
                         </button>
                         <button @click="confirmDialog = false" class="btn" type="button">Cancel
                         </button>
@@ -332,7 +333,7 @@ export default {
         notesDrawer,
         FormResponses
     },
-    props: ['lead', 'formResponses', 'comments'],
+    props: ['lead', 'formResponses', 'comments', 'context'],
     data: () => ({
         statusList: [{
                 title: 'Open'
