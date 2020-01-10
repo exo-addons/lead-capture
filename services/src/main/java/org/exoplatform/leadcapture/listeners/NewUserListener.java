@@ -30,7 +30,6 @@ import org.exoplatform.services.organization.UserEventListener;
 public class NewUserListener extends UserEventListener {
 
   private static final Log    LOG        = ExoLogger.getLogger(NewUserListener.class);
-  private static final String USERS_PATH = "usersPath";
   private LeadDAO             leadDAO;
 
   public NewUserListener(LeadDAO leadDAO) throws Exception {
@@ -43,7 +42,7 @@ public class NewUserListener extends UserEventListener {
     try {
       LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
       if (leadEntity != null) {
-        if (!leadEntity.getCommunityRegistration()) {
+        if (leadEntity.getCommunityRegistration()==null || !leadEntity.getCommunityRegistration()) {
           leadEntity.setUpdatedDate(new Date().getTime());
           leadEntity.setCommunityRegistration(true);
           leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());
