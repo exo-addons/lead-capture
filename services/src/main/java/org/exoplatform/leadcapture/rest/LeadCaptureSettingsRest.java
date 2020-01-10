@@ -60,10 +60,14 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
   @POST
   @Path("settings")
   public Response save(@Context UriInfo uriInfo, LeadCaptureSettings settings) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadCaptureSettingsService.saveSettings(settings);
-      return Response.ok("settingsUpdated", mediaType).build();
+      LOG.info("Lead capture settings updated by {}",sourceIdentity.getRemoteId());      return Response.ok("settingsUpdated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }

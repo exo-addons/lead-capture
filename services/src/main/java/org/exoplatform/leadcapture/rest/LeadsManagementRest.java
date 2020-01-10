@@ -65,11 +65,13 @@ public class LeadsManagementRest implements ResourceContainer {
   @Path("leads")
   public Response add(@Context UriInfo uriInfo, FormInfo lead) throws Exception {
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
+      LOG.warn("Lead capture not enabled, New lead {} not captured ",lead.getLead().getMail());
       return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
     }
       MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
       try {
         leadsManagementService.addLeadInfo(lead, true);
+        LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_mail:{},form_name:{}\"", lead.getLead().getMail(), lead.getResponse().getFormName());
         return Response.ok("lead synchronized", mediaType).build();
       } catch (Exception e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -89,7 +91,7 @@ public class LeadsManagementRest implements ResourceContainer {
         return Response.status(Response.Status.NOT_FOUND).entity("Lead Not found").build();
       }
       leadsManagementService.deleteLead(lead);
-      LOG.info("Webhook {} deleted by {}", id, sourceIdentity.getRemoteId());
+      LOG.info("Lead {} deleted by {}", lead.getMail(), sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -99,9 +101,14 @@ public class LeadsManagementRest implements ResourceContainer {
   @PUT
   @Path("leads/{id}")
   public Response update(@Context UriInfo uriInfo, @PathParam("id") Long id, LeadDTO lead) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.updateLead(lead);
+      LOG.info("Lead {} edited by {}",lead.getMail(), sourceIdentity.getRemoteId());
       return Response.ok("lead updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -111,9 +118,14 @@ public class LeadsManagementRest implements ResourceContainer {
   @PATCH
   @Path("assign")
   public Response assign(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.assigneLead(lead.getId(), lead.getAssignee());
+      LOG.info("Lead {} assigned to {} by {}",lead.getMail(), lead.getAssignee(), sourceIdentity.getRemoteId());
       return Response.ok("lead assigned", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -123,9 +135,14 @@ public class LeadsManagementRest implements ResourceContainer {
   @PATCH
   @Path("status")
   public Response updateStatus(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
+      LOG.info("Lead {} status updated to {} by {}",lead.getMail(), lead.getStatus(), sourceIdentity.getRemoteId());
       return Response.ok("lead status updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
