@@ -79,8 +79,8 @@ public class Utils {
 
     try {
       OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
-      ListAccess<User> engSupportList = organizationService.getUserHandler().findUsersByGroupId(groupId);
-      User[] users = engSupportList.load(0, engSupportList.getSize());
+      ListAccess<User> grpMembersList = organizationService.getUserHandler().findUsersByGroupId(groupId);
+      User[] users = grpMembersList.load(0, grpMembersList.getSize());
       return Arrays.asList(users);
     } catch (Exception e) {
       LOG.warn("Cannot get the list of group members");

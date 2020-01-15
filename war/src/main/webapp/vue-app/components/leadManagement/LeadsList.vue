@@ -133,6 +133,7 @@ export default {
         zones: ['MEA', 'LATAM', 'APAC', 'Western Eu', 'Eastern EU', 'US-CA'],
 
         leadList: [],
+        allLeads: [],
         editedIndex: -1,
         editedItem: {
             name: '',
@@ -178,6 +179,13 @@ export default {
         dialog(val) {
             return val === true || this.close() === true;
         },
+         myLeads: function (val) {
+             if(val){
+                this.leadList = this.allLeads.filter(item => {return item.assignee===this.context.currentUser})
+             }else{
+                 this.leadList = this.allLeads
+             }
+    }
     },
     computed: {
         headers() {
@@ -210,15 +218,12 @@ export default {
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
-                    filter: value => {
+                    filter: (value) => {
                         console.log(value)
-                        if (!this.notassigned && !this.myLeads) {
+                        if (!this.notassigned ) {
                             return true
                         }
-                        if (this.notassigned && this.myLeads) {
-                            return false
-                        }
-                        return (this.notassigned && !(value === null || value === {} || typeof (value) === 'undefined')) || (this.myLeads && (value !== null && value !== {} && typeof (value) !== 'undefined') && value.userName === this.context.currentUser)
+                        return (this.notassigned && (value === null || value === {} || typeof (value) === 'undefined'))
 
                     }
                 },
@@ -245,6 +250,7 @@ export default {
                 .then((resp) => resp.json())
                 .then((resp) => {
                     this.leadList = resp;
+                    this.allLeads=resp;
                 });
 
             fetch(`/portal/rest/leadcapture/leadsmanagement/marketers`, {
@@ -353,6 +359,7 @@ export default {
         save() {
 
             this.leadList.push(this.editedItem);
+            this.allLeads.push(this.editedItem);
             const newLead = {
                 "lead": this.editedItem
             }

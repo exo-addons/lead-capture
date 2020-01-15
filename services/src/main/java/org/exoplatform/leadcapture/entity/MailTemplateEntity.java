@@ -38,11 +38,6 @@ public class MailTemplateEntity implements Serializable {
   @Column(name = "FIELD")
   protected String field;
 
-  /*
-   * @OneToMany(orphanRemoval=true)
-   * @JoinColumn(name = "ID") private Collection<MailContentEntity> contents;
-   */
-
   public MailTemplateEntity() {
   }
 
