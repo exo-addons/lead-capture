@@ -63,7 +63,12 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @POST
   @Path("leads")
-  public Response add(@Context UriInfo uriInfo, FormInfo lead) throws Exception {
+  public Response add(@Context UriInfo uriInfo,@HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
+    String captureToken = leadCaptureSettingsService.getSettings().getLeadCaptureToken();
+    if (headerToken == null || captureToken==null || !captureToken.equals(headerToken)) {
+      LOG.warn("Access frobidden to the add lead rest service, wrong token: {}",headerToken);
+      return Response.status(Response.Status.FORBIDDEN).build();
+    }
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
       LOG.warn("Lead capture not enabled, New lead {} not captured ",lead.getLead().getMail());
       return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
