@@ -174,6 +174,25 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_TEMPLATE_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
     </changeSet>
+    <changeSet author="exo-lead-capture" id="1.0.0-3">
+        <createTable tableName="ADDONS_LC_NOT_SYNCHRO_LEAD">
+
+            <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_NOT_SYNCHRO_LEAD"/>
+            </column>
+            <column name="LC_LEAD_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_LC_LEAD_NS" references="ADDONS_LC_LEAD(ID)"/>
+            </column>
+            <column name="LC_RESPONSE_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_LC_RESPONSE_NS" references="ADDONS_LC_RESPONSE(ID)"/>
+            </column>
+            <column name="ATTEMPTS_NUMBER" type="INT"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="exo-lead-capture" id="1.0.0-4" dbms="oracle,postgresql">
+        <createSequence sequenceName="SEQ_ADDONS_LC_NOT_SYNCHRO_LEAD_ID" startValue="1"/>
+    </changeSet>
 
 </databaseChangeLog>
 

@@ -1,6 +1,14 @@
 package org.exoplatform.leadcapture.services;
 
 import static org.exoplatform.leadcapture.Utils.*;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,17 +20,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.Utils;
-import org.exoplatform.leadcapture.dao.FieldDAO;
-import org.exoplatform.leadcapture.dao.FormDAO;
-import org.exoplatform.leadcapture.dao.LeadDAO;
-import org.exoplatform.leadcapture.dao.ResponseDAO;
+import org.exoplatform.leadcapture.dao.*;
 import org.exoplatform.leadcapture.dto.*;
-import org.exoplatform.leadcapture.entity.FieldEntity;
-import org.exoplatform.leadcapture.entity.FormEntity;
-import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.entity.ResponseEntity;
+import org.exoplatform.leadcapture.entity.*;
 import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -34,43 +39,53 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import org.exoplatform.ws.frameworks.json.value.impl.ObjectValue;
 
 public class LeadsManagementService {
 
-  private final Log       LOG = ExoLogger.getLogger(LeadsManagementService.class);
+  private final Log                  LOG = ExoLogger.getLogger(LeadsManagementService.class);
 
-  private LeadDAO         leadDAO;
+  private LeadDAO                    leadDAO;
 
-  private FormDAO         formDAO;
+  private FormDAO                    formDAO;
 
-  private FieldDAO        fieldDAO;
+  private FieldDAO                   fieldDAO;
 
-  private ResponseDAO     responseDAO;
+  private ResponseDAO                responseDAO;
 
-  private ListenerService listenerService;
+  private NotSynchronizedLeadsDAO    notSynchronizedLeadsDAO;
 
-  private TaskService     taskService;
+  private ListenerService            listenerService;
 
-  private StatusService   statusService;
+  private TaskService                taskService;
 
-  private ProjectService  projectService;
+  private StatusService              statusService;
+
+  private ProjectService             projectService;
+
+  private LeadCaptureSettingsService leadCaptureSettingsService;
 
   public LeadsManagementService(LeadDAO leadDAO,
                                 FormDAO formDAO,
                                 FieldDAO fieldDAO,
                                 ResponseDAO responseDAO,
+                                NotSynchronizedLeadsDAO notSynchronizedLeadsDAO,
                                 TaskService taskService,
                                 StatusService statusService,
                                 ProjectService projectService,
-                                ListenerService listenerService) {
+                                ListenerService listenerService,
+                                LeadCaptureSettingsService leadCaptureSettingsService) {
     this.leadDAO = leadDAO;
     this.formDAO = formDAO;
     this.fieldDAO = fieldDAO;
     this.responseDAO = responseDAO;
+    this.notSynchronizedLeadsDAO = notSynchronizedLeadsDAO;
     this.listenerService = listenerService;
     this.taskService = taskService;
     this.statusService = statusService;
     this.projectService = projectService;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   public void addLeadInfo(FormInfo leadInfo, boolean broadcast) {
@@ -78,8 +93,11 @@ public class LeadsManagementService {
       LeadDTO lead = leadInfo.getLead();
       LeadEntity leadEntity = leadDAO.getLeadByMail(lead.getMail());
       if (leadEntity == null) {
-        lead.setCreatedDate(new Date().getTime());
-        lead.setUpdatedDate(new Date().getTime());
+        leadInfo.getLead().setId(null);
+        if (lead.getCreatedDate() == null)
+          lead.setCreatedDate(new Date().getTime());
+        if (lead.getUpdatedDate() == null)
+          lead.setUpdatedDate(new Date().getTime());
         if (lead.getStatus() == null) {
           lead.setStatus(LEAD_DEFAULT_STATUS);
         }
@@ -87,6 +105,7 @@ public class LeadsManagementService {
           lead.setBlogSubscriptionDate(new Date().getTime());
         }
         leadEntity = createLead(lead);
+        leadInfo.setLead(toLeadDto(leadEntity));
         if (broadcast) {
           listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
         }
@@ -94,6 +113,7 @@ public class LeadsManagementService {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date().getTime());
         leadEntity = leadDAO.update(leadEntity);
+        leadInfo.setLead(toLeadDto(leadEntity));
       }
       addResponse(leadInfo.getResponse(), leadEntity);
     } catch (Exception e) {
@@ -336,6 +356,56 @@ public class LeadsManagementService {
     return leadEntity;
   }
 
+  public void synchronizeLead(FormInfo leadInfo) throws Exception {
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    if (!settings.isLeadManagementServer()) {
+      String errMessage = "";
+      String url = settings.getLeadManagementServerUrl();
+      JsonValue leadInfo_ = new ObjectValue();
+      leadInfo_.addElement("lead", toJson(leadInfo.getLead()));
+      leadInfo_.addElement("response", toJson(leadInfo.getResponse()));
+      URL obj = new URL(url);
+      HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+      postConnection.setRequestMethod("POST");
+      postConnection.setRequestProperty("Token", settings.getLeadManagementToken());
+      postConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+      postConnection.setDoOutput(true);
+      try (OutputStream os = postConnection.getOutputStream()) {
+        os.write(leadInfo_.toString().getBytes(StandardCharsets.UTF_8));
+        os.flush();
+      } catch (IOException e) {
+        createUnsynchronizedLead(leadInfo);
+        LOG.error("User not synchronized",e.getMessage());
+      }
+      int responseCode = postConnection.getResponseCode();
+      if (responseCode == HttpURLConnection.HTTP_OK) { // success
+        NotSynchroLeadEntity notSynchroLeadEntity = notSynchronizedLeadsDAO.getNotSynchLead(leadInfo.getLead().getId(),
+                leadInfo.getResponse().getId());
+        if (notSynchroLeadEntity != null) {
+          notSynchronizedLeadsDAO.delete(notSynchroLeadEntity);
+        }
+        LOG.info("New lead synchronized with the lead management server");
+      } else {
+        createUnsynchronizedLead(leadInfo);
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getErrorStream()))) {
+          String inputLine;
+          StringBuffer response = new StringBuffer();
+          while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+          }
+          ObjectMapper objectMapper = new ObjectMapper();
+          JsonNode infoNode = objectMapper.readTree(response.toString());
+          errMessage = infoNode.get("message").textValue();
+          if (infoNode.get("errors") != null) {
+            errMessage = errMessage + ": " + infoNode.get("errors").elements().next().get("message").textValue();
+          }
+        } catch (IOException e) {
+          LOG.error(errMessage, e);
+        }
+      }
+    }
+  }
+
   public JSONObject toFormJson(FormEntity formEntity) throws JSONException {
     JSONObject formJson = new JSONObject();
     formJson.put("id", formEntity.getId());
@@ -456,6 +526,7 @@ public class LeadsManagementService {
     ResponseDTO responseDTO = new ResponseDTO();
     responseDTO.setId(responseEntity.getId());
     responseDTO.setForm(toFormDto(responseEntity.getFormEntity()));
+    responseDTO.setFormName(responseEntity.getFormEntity().getName());
     List<FieldDTO> fields = new ArrayList<>();
     for (FieldEntity fieald : fieldDAO.getFileldsByResponse(responseEntity.getId())) {
       fields.add(toFieldDto(fieald));
@@ -474,6 +545,22 @@ public class LeadsManagementService {
     }
     responseEntity.setFilelds(fields);
     return responseEntity;
+  }
+
+  public void createUnsynchronizedLead(FormInfo leadInfo){
+
+      NotSynchroLeadEntity notSynchroLeadEntity = notSynchronizedLeadsDAO.getNotSynchLead(leadInfo.getLead().getId(),
+              leadInfo.getResponse().getId());
+      if (notSynchroLeadEntity == null) {
+        notSynchroLeadEntity = new NotSynchroLeadEntity();
+        notSynchroLeadEntity.setAtteptsNumber(1);
+        notSynchroLeadEntity.setLeadEntity(toLeadEntity(leadInfo.getLead()));
+        notSynchroLeadEntity.setResponseEntity(toResponseEntity(leadInfo.getResponse()));
+        notSynchronizedLeadsDAO.create(notSynchroLeadEntity);
+      } else {
+        notSynchroLeadEntity.setAtteptsNumber(notSynchroLeadEntity.getAtteptsNumber() + 1);
+        notSynchronizedLeadsDAO.create(notSynchroLeadEntity);
+      }
   }
 
 }

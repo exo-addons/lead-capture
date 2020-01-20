@@ -30,6 +30,10 @@
     </component>
 
     <component>
+        <type>org.exoplatform.leadcapture.dao.NotSynchronizedLeadsDAO</type>
+    </component>
+
+    <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
     <component>
@@ -85,7 +89,14 @@
             <type>org.exoplatform.leadcapture.listeners.NewCommunityRegistrationListener</type>
         </component-plugin>
     </external-component-plugins>
-
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.listener.ListenerService</target-component>
+        <component-plugin>
+            <name>leadCapture.newLeadSynchronize.event</name>
+            <set-method>addListener</set-method>
+            <type>org.exoplatform.leadcapture.listeners.LeadSynchronizeListener</type>
+        </component-plugin>
+    </external-component-plugins>
     <external-component-plugins>
         <target-component>org.exoplatform.services.listener.ListenerService</target-component>
         <component-plugin>
@@ -111,6 +122,24 @@
         </component-plugin>
     </external-component-plugins>
 
-
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.scheduler.JobSchedulerService</target-component>
+        <component-plugin>
+            <name>AddCronJob</name>
+            <set-method>addCronJob</set-method>
+            <type>org.exoplatform.services.scheduler.CronJob</type>
+            <description></description>
+            <init-params>
+                <properties-param>
+                    <name>cronjob.info</name>
+                    <description>Configuration for Lead Synchronize Job</description>
+                    <property name="jobName" value="LeadsSynchronizeJob"/>
+                    <property name="groupName" value="group"/>
+                    <property name="job" value="org.exoplatform.leadcapture.job.LeadsSynchronizeJob"/>
+                    <property name="expression" value="0 */15 * ? * *"/>
+                </properties-param>
+            </init-params>
+        </component-plugin>
+    </external-component-plugins>
 
 </configuration>

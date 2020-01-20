@@ -20,6 +20,7 @@ import java.util.Date;
 
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.services.listener.Asynchronous;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -29,30 +30,37 @@ import org.exoplatform.services.organization.UserEventListener;
 @Asynchronous
 public class NewUserListener extends UserEventListener {
 
-  private static final Log    LOG        = ExoLogger.getLogger(NewUserListener.class);
-  private LeadDAO             leadDAO;
+  private static final Log           LOG = ExoLogger.getLogger(NewUserListener.class);
 
-  public NewUserListener(LeadDAO leadDAO) throws Exception {
+  private LeadDAO                    leadDAO;
+
+  private LeadCaptureSettingsService leadCaptureSettingsService;
+
+  public NewUserListener(LeadDAO leadDAO, LeadCaptureSettingsService leadCaptureSettingsService) throws Exception {
     this.leadDAO = leadDAO;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   @Override
   public void postSave(User user, boolean isNew) throws Exception {
 
     try {
-      LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
-      if (leadEntity != null) {
-        if (leadEntity.getCommunityRegistration()==null || !leadEntity.getCommunityRegistration()) {
-          leadEntity.setUpdatedDate(new Date().getTime());
-          leadEntity.setCommunityRegistration(true);
-          leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());
-          leadEntity.setCommunityUserName(user.getUserName());
-          leadDAO.update(leadEntity);
+      if (leadCaptureSettingsService.getSettings().isLeadManagementServer()) {
+        LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
+        if (leadEntity != null) {
+          if (leadEntity.getCommunityRegistration() == null || !leadEntity.getCommunityRegistration()) {
+            leadEntity.setUpdatedDate(new Date().getTime());
+            leadEntity.setCommunityRegistration(true);
+            leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());
+            leadEntity.setCommunityUserName(user.getUserName());
+            leadDAO.update(leadEntity);
+          }
         }
       }
     } catch (Exception e) {
       LOG.error("an error accured", e);
     }
+
   }
 
   @Override
