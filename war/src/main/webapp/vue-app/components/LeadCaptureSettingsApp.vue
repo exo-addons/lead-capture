@@ -9,17 +9,49 @@
                 <v-container id="template">
                     <v-card outlined style="padding: 16px;">
                         <v-form ref="form" v-model="valid">
-                            <v-text-field v-model="setting.marketingGroup" :rules="[rules.required]" label="Marketing Group" required></v-text-field>
-                            <v-text-field v-model="setting.marketingSpace" :rules="[rules.required]" label="Marketing Space" required></v-text-field>
-                            <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
-                            <v-text-field v-model="setting.marketingBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
-                            <v-text-field v-model="setting.senderMail" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
                             <v-row>
-                                <v-col cols="12" sm="6" md="5">
+                                <v-col cols="12" sm="5" md="5">
+                                    <v-text-field v-model="setting.marketingGroup" :rules="[rules.required]" label="Marketing Group" required></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="5" md="5">
+                                    <v-text-field v-model="setting.marketingSpace" :rules="[rules.required]" label="Marketing Space" required></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="5" md="5">
+
+                                    <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="5" md="5">
+
+                                    <v-text-field v-model="setting.marketingBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" sm="6" md="2">
+                                    <v-switch v-model="setting.mailingEnabled" label="Mailing Enabled"></v-switch>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="9">
+                                    <v-text-field v-if="setting.mailingEnabled" v-model="setting.senderMail"  label="Sender mail adress" required></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" sm="6" md="2">
                                     <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>
                                 </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-switch v-model="setting.mailingEnabled" label="Mailing Enabled"></v-switch>
+                                <v-col cols="12" sm="6" md="9">
+                                    <v-text-field v-if="setting.captureEnabled" v-model="setting.leadCaptureToken" label="Lead Capture Token" required></v-text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" sm="6" md="2">
+                                    <v-switch v-model="setting.leadManagementServer" label="Management server"></v-switch>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="9">
+                                    <v-text-field v-if="!setting.leadManagementServer" v-model="setting.leadManagementToken" label="Lead management Token" required></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="2">
+                                </v-col>
+                                <v-col cols="12" sm="6" md="9">
+                                    <v-text-field v-if="!setting.leadManagementServer" v-model="setting.leadManagementServerUrl" label="Lead management Url" required></v-text-field>
                                 </v-col>
                             </v-row>
                             <v-card-actions>
@@ -47,7 +79,7 @@ export default {
         alert_type: '',
         alertIcon: '',
         valid: true,
-        setting:{},
+        setting: {},
         rules: {
             required: value => !!value || 'Required.',
             counter: value => value.length >= 3 || 'Min 3 characters',
@@ -97,7 +129,7 @@ export default {
                     });
                 });
         },
-                displaySusccessMessage(message) {
+        displaySusccessMessage(message) {
             this.message = message;
             this.alert_type = 'alert-success';
             this.alertIcon = 'uiIconSuccess';

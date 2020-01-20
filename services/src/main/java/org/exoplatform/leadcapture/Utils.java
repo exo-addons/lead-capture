@@ -17,6 +17,7 @@ import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.ws.frameworks.json.JsonGenerator;
 import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.impl.*;
+import org.exoplatform.ws.frameworks.json.value.JsonValue;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +56,7 @@ public class Utils {
   public static final String MAIL_DEFAULT_LANGUAGE                         = "en";
   public static final String NEW_LEAD_EVENT                                = "leadCapture.newLead.event";
   public static final String NEW_RESPONSE_EVENT                            = "leadCapture.newResponse.event";
+  public static final String LEAD_SYNCHRONIZE_EVENT                        = "leadCapture.newLeadSynchronize.event";
   public static final String DATE_FORMAT                                   = "yyyy-MM-dd";
   public static final String EMPTY_STR                                     = "";
   public static final SimpleDateFormat formatter                           = new SimpleDateFormat(DATE_FORMAT);
@@ -190,6 +192,14 @@ public class Utils {
   public static final String toJsonString(Object object) {
     try {
       return JSON_GENERATOR.createJsonObject(object).toString();
+    } catch (JsonException e) {
+      throw new IllegalStateException("Error parsing object to string " + object, e);
+    }
+  }
+
+  public static JsonValue toJson(Object object) {
+    try {
+      return JSON_GENERATOR.createJsonObject(object);
     } catch (JsonException e) {
       throw new IllegalStateException("Error parsing object to string " + object, e);
     }
