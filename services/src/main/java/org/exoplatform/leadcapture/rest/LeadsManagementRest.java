@@ -66,7 +66,7 @@ public class LeadsManagementRest implements ResourceContainer {
   public Response add(@Context UriInfo uriInfo,@HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
     String captureToken = leadCaptureSettingsService.getSettings().getLeadCaptureToken();
     if (headerToken == null || captureToken==null || !captureToken.equals(headerToken)) {
-      LOG.warn("Access frobidden to the add lead rest service, wrong token: {}",headerToken);
+      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
       return Response.status(Response.Status.FORBIDDEN).build();
     }
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
@@ -85,7 +85,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @DELETE
   @Path("leads/{id}")
-  public Response deletelead(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
+  public Response deleteLead(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();

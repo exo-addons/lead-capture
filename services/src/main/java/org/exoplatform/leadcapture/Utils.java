@@ -182,7 +182,7 @@ public class Utils {
       commentJson.put(CREATION_DATE_FIELD_NAME, Utils.getFormatter().format(comment.getCreatedTime()));
       return commentJson;
     } catch (Exception e) {
-      LOG.error("Cannot conevert comment to json", e);
+      LOG.error("Cannot convert comment to json", e);
     }
     return null;
   }

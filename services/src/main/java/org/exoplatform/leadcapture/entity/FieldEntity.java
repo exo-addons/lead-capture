@@ -13,7 +13,7 @@ import lombok.Data;
 @Table(name = "ADDONS_LC_FORM_FIELD")
 @Data
 @NamedQueries({
-    @NamedQuery(name = "FieldEntity.getFileldsByResponse", query = "SELECT field FROM FieldEntity field where field.responseEntity.id = :responseId ") })
+    @NamedQuery(name = "FieldEntity.getFieldsByResponse", query = "SELECT field FROM FieldEntity field where field.responseEntity.id = :responseId ") })
 
 public class FieldEntity implements Serializable {
 

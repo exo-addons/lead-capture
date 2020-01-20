@@ -51,7 +51,7 @@ public class NewUserListener extends UserEventListener {
         }
       }
     } catch (Exception e) {
-      LOG.error("an error accured", e);
+      LOG.error("an error occured", e);
     }
   }
 

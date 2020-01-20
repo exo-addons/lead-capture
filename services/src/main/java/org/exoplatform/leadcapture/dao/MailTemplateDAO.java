@@ -26,7 +26,7 @@ public class MailTemplateDAO extends GenericDAOJPAImpl<MailTemplateEntity, Long>
     } catch (NoResultException e) {
       return null;
     } catch (Exception e) {
-      LOG.error("Error occurred when trying to get list of mail templates by evant {}", event, e);
+      LOG.error("Error occurred when trying to get list of mail templates by event {}", event, e);
       return null;
     }
   }
