@@ -98,7 +98,7 @@ public class LeadsManagementService {
       }
       addResponse(leadInfo.getResponse(), leadEntity);
     } catch (Exception e) {
-      LOG.error(e);
+      LOG.error("An error occured when trying to synchronize lead", e);
     }
     return leadEntity;
   }
@@ -247,7 +247,7 @@ public class LeadsManagementService {
       }
       listenerService.broadcast(NEW_RESPONSE_EVENT, leadEntity, responseEntity);
     } catch (Exception e) {
-      LOG.error(e);
+      LOG.error("An error occured when trying to add response", e);
     }
   }
 
