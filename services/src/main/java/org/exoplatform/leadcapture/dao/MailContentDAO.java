@@ -1,11 +1,13 @@
 package org.exoplatform.leadcapture.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.MailContentEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -24,10 +26,10 @@ public class MailContentDAO extends GenericDAOJPAImpl<MailContentEntity, Long> {
     try {
       return query.getResultList();
     } catch (NoResultException e) {
-      return null;
+      return new ArrayList<MailContentEntity>();
     } catch (Exception e) {
       LOG.error("Error occurred when trying to get list of mail content by formId {}", templateId, e);
-      return null;
+      return new ArrayList<MailContentEntity>();
     }
   }
 }

@@ -57,6 +57,7 @@ public class LeadsManagementRest implements ResourceContainer {
     try {
       return Response.ok(leadsManagementService.getLeads(), mediaType).build();
     } catch (Exception e) {
+      LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -64,21 +65,22 @@ public class LeadsManagementRest implements ResourceContainer {
   @POST
   @Path("leads")
   public Response add(@Context UriInfo uriInfo,@HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
-    String captureToken = leadCaptureSettingsService.getSettings().getLeadCaptureToken();
+/*    String captureToken = leadCaptureSettingsService.getSettings().getLeadCaptureToken();
     if (headerToken == null || captureToken==null || !captureToken.equals(headerToken)) {
       LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
       return Response.status(Response.Status.FORBIDDEN).build();
-    }
+    }*/
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
-      LOG.warn("Lead capture not enabled, New lead {} not captured ",lead.getLead().getMail());
+      LOG.warn("Lead capture not enabled, New lead {} not captured ",lead.getLead().getId());
       return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
     }
       MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
       try {
         leadsManagementService.addLeadInfo(lead, true);
-        LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_mail:{},form_name:{}\"", lead.getLead().getMail(), lead.getResponse().getFormName());
+        LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_id:{},form_name:{}\"", lead.getLead().getId(), lead.getResponse().getFormName());
         return Response.ok("lead synchronized", mediaType).build();
       } catch (Exception e) {
+        LOG.error("An error occured when trying to synchronise lead {}",lead.getLead(), e);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
       }
   }
@@ -96,7 +98,7 @@ public class LeadsManagementRest implements ResourceContainer {
         return Response.status(Response.Status.NOT_FOUND).entity("Lead Not found").build();
       }
       leadsManagementService.deleteLead(lead);
-      LOG.info("Lead {} deleted by {}", lead.getMail(), sourceIdentity.getRemoteId());
+      LOG.info("Lead {} deleted by {}", lead.getId(), sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -113,7 +115,7 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.updateLead(lead);
-      LOG.info("Lead {} edited by {}",lead.getMail(), sourceIdentity.getRemoteId());
+      LOG.info("Lead {} edited by {}",lead.getId(), sourceIdentity.getRemoteId());
       return Response.ok("lead updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -130,7 +132,7 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.assigneLead(lead.getId(), lead.getAssignee());
-      LOG.info("Lead {} assigned to {} by {}",lead.getMail(), lead.getAssignee(), sourceIdentity.getRemoteId());
+      LOG.info("Lead {} assigned to {} by {}",lead.getId(), lead.getAssignee(), sourceIdentity.getRemoteId());
       return Response.ok("lead assigned", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -147,7 +149,7 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
-      LOG.info("Lead {} status updated to {} by {}",lead.getMail(), lead.getStatus(), sourceIdentity.getRemoteId());
+      LOG.info("Lead {} status updated to {} by {}",lead.getId(), lead.getStatus(), sourceIdentity.getRemoteId());
       return Response.ok("lead status updated", mediaType).build();
     } catch (Exception e) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

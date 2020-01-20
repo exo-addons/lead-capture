@@ -29,9 +29,11 @@ public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
          if (before != null && after != null) {
              if (isDiff(before.getAssignee(), after.getAssignee())) {
                  leadEntity.setAssignee(after.getAssignee());
+                 LOG.info("Lead {} associated to the Task {} has been assigned to {}",leadEntity.getId(), after.getId(), after.getAssignee());
              }
              if (isDiff(before.getStatus(), after.getStatus())) {
                  leadEntity.setStatus(after.getStatus().getName());
+                 LOG.info("Status of the lead {} associated to the Task {} has been cahanged to {}",leadEntity.getId(), after.getId(), after.getStatus().getName());
              }
          }
      }

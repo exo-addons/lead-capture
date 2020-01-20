@@ -66,12 +66,16 @@ public class Utils {
   public static final JsonParser JSON_PARSER                               = new JsonParserImpl();
   public static final JsonGenerator JSON_GENERATOR                         = new JsonGeneratorImpl();
 
-  public static JSONObject toResponseJson(ResponseEntity responseEntity) throws JSONException {
+  public static JSONObject toResponseJson(ResponseEntity responseEntity) {
     JSONObject responseJson = new JSONObject();
-    for (FieldEntity field : responseEntity.getFilelds()) {
-      responseJson.put(field.getName(), field.getValue());
+    try {
+      for (FieldEntity field : responseEntity.getFilelds()) {
+        responseJson.put(field.getName(), field.getValue());
+      }
+      responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(new Date(responseEntity.getCreatedDate())));
+    } catch (JSONException e) {
+      LOG.error("Cannot convert response {} to json",responseEntity.getId(), e);
     }
-    responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(new Date(responseEntity.getCreatedDate())));
     return responseJson;
   }
 
@@ -83,7 +87,7 @@ public class Utils {
       User[] users = grpMembersList.load(0, grpMembersList.getSize());
       return Arrays.asList(users);
     } catch (Exception e) {
-      LOG.warn("Cannot get the list of group members");
+      LOG.error("Cannot get the list of group {} members",groupId, e);
       return new ArrayList<User>();
     }
   }
@@ -168,7 +172,7 @@ public class Utils {
       }
       return commentsList;
     } catch (Exception e) {
-      LOG.error("Cannot get list of comments for the Task", e);
+      LOG.error("Cannot convert the list of comments to json", e);
     }
     return null;
   }
@@ -182,7 +186,7 @@ public class Utils {
       commentJson.put(CREATION_DATE_FIELD_NAME, Utils.getFormatter().format(comment.getCreatedTime()));
       return commentJson;
     } catch (Exception e) {
-      LOG.error("Cannot convert comment to json", e);
+      LOG.error("Cannot convert comment {} to json",comment.getId(), e);
     }
     return null;
   }

@@ -1,5 +1,6 @@
 package org.exoplatform.leadcapture.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -14,18 +15,18 @@ public class FieldDAO extends GenericDAOJPAImpl<FieldEntity, Long> {
 
   private static final Log LOG = ExoLogger.getLogger(FieldDAO.class);
 
-  public List<FieldEntity> getFileldsByResponse(long responseId) {
+  public List<FieldEntity> getFieldsByResponse(long responseId) {
 
-    TypedQuery<FieldEntity> query = getEntityManager().createNamedQuery("FieldEntity.getFileldsByResponse", FieldEntity.class)
+    TypedQuery<FieldEntity> query = getEntityManager().createNamedQuery("FieldEntity.getFieldsByResponse", FieldEntity.class)
                                                       .setParameter("responseId", responseId);
 
     try {
       return query.getResultList();
     } catch (NoResultException e) {
-      return null;
+      return new ArrayList<FieldEntity>();
     } catch (Exception e) {
       LOG.error("Error occurred when trying to get list of fields by formId {}", responseId, e);
-      return null;
+      return new ArrayList<FieldEntity>();
     }
   }
 }

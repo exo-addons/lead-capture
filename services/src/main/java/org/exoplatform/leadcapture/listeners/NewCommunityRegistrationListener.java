@@ -38,6 +38,8 @@ public class NewCommunityRegistrationListener extends Listener<LeadEntity, Strin
         content = Utils.getContentForMail(mailTemplateDTO, lead);
         if (content != null) {
           lcMailService.sendMail(content.getContent(), content.getSubject(), lead);
+          LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"", lead.getId(), mailTemplateDTO.getId(), mailTemplateDTO.getName());
+
         }
       }
 

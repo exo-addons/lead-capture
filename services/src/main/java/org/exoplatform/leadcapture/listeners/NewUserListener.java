@@ -48,6 +48,7 @@ public class NewUserListener extends UserEventListener {
           leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());
           leadEntity.setCommunityUserName(user.getUserName());
           leadDAO.update(leadEntity);
+          LOG.info("Lead {} has been associated to the community user {}",leadEntity.getId(),user.getUserName());
         }
       }
     } catch (Exception e) {

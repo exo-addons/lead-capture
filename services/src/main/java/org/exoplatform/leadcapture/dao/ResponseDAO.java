@@ -1,11 +1,13 @@
 package org.exoplatform.leadcapture.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
+import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -25,10 +27,10 @@ public class ResponseDAO extends GenericDAOJPAImpl<ResponseEntity, Long> {
     try {
       return query.getResultList();
     } catch (NoResultException e) {
-      return null;
+      return new ArrayList<ResponseEntity>();
     } catch (Exception e) {
       LOG.error("Error occurred when trying to get list of responses by formId {}", formId, e);
-      return null;
+      return new ArrayList<ResponseEntity>();
     }
   }
 
@@ -40,10 +42,10 @@ public class ResponseDAO extends GenericDAOJPAImpl<ResponseEntity, Long> {
     try {
       return query.getResultList();
     } catch (NoResultException e) {
-      return null;
+      return new ArrayList<ResponseEntity>();
     } catch (Exception e) {
       LOG.error("Error occurred when trying to get list of responses by lead {}", leadId, e);
-      return null;
+      return new ArrayList<ResponseEntity>();
     }
   }
 }

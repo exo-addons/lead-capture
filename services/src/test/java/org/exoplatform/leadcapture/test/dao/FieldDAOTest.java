@@ -34,10 +34,10 @@ public class FieldDAOTest extends BaseLeadManagementTest {
     LeadEntity leadEntity = newLead();
     FormEntity formEntity = newForm();
     ResponseEntity responseEntity = newResponse(formEntity, leadEntity);
-    List<FieldEntity> entities = fieldDAO.getFileldsByResponse(responseEntity.getId());
+    List<FieldEntity> entities = fieldDAO.getFieldsByResponse(responseEntity.getId());
     assertEquals(0, entities.size());
     newField(responseEntity);
-    entities = fieldDAO.getFileldsByResponse(responseEntity.getId());
+    entities = fieldDAO.getFieldsByResponse(responseEntity.getId());
     assertNotNull(entities);
     assertEquals(1, entities.size());
   }

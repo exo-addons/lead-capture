@@ -44,6 +44,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
     try {
       return Response.ok(mailTemplatesManagementService.getTemplates(), mediaType).build();
     } catch (Exception e) {
+      LOG.error("An error occured when trying to get templates list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -56,6 +57,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       mailTemplatesManagementService.addTemplate(templateDTO);
       return Response.ok("lead synchronized", mediaType).build();
     } catch (Exception e) {
+      LOG.error("An error occured when trying to add new template {}",templateDTO.getName(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -76,6 +78,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       LOG.info("Template {} deleted by {}", id, sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
+      LOG.error("An error occured when trying to delete template {}",id, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
@@ -88,6 +91,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       mailTemplatesManagementService.updateTemplate(templateDTO);
       return Response.ok("template updated", mediaType).build();
     } catch (Exception e) {
+      LOG.error("An error occured when trying to update template {}",templateDTO.getId(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }

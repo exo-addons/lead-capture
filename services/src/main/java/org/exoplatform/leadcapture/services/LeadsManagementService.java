@@ -73,10 +73,11 @@ public class LeadsManagementService {
     this.projectService = projectService;
   }
 
-  public void addLeadInfo(FormInfo leadInfo, boolean broadcast) {
+  public LeadEntity addLeadInfo(FormInfo leadInfo, boolean broadcast) {
+    LeadEntity leadEntity = null;
     try {
       LeadDTO lead = leadInfo.getLead();
-      LeadEntity leadEntity = leadDAO.getLeadByMail(lead.getMail());
+      leadEntity = leadDAO.getLeadByMail(lead.getMail());
       if (leadEntity == null) {
         lead.setCreatedDate(new Date().getTime());
         lead.setUpdatedDate(new Date().getTime());
@@ -99,6 +100,7 @@ public class LeadsManagementService {
     } catch (Exception e) {
       LOG.error(e);
     }
+    return leadEntity;
   }
 
   public LeadEntity createLead(LeadDTO lead) {
@@ -110,7 +112,7 @@ public class LeadsManagementService {
       List<FieldEntity> fieldEntities = new ArrayList<>();
       List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
       for (ResponseEntity responseEntity : responseEntities) {
-        fieldDAO.deleteAll(fieldDAO.getFileldsByResponse(responseEntity.getId()));
+        fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
       }
       responseDAO.deleteAll(responseEntities);
       leadDAO.delete(lead);
@@ -191,7 +193,7 @@ public class LeadsManagementService {
           for (ResponseEntity responseEntity : responsesEntities) {
 
             if (responseEntity != null) {
-              responseEntity.setFilelds(fieldDAO.getFileldsByResponse(responseEntity.getId()));
+              responseEntity.setFilelds(fieldDAO.getFieldsByResponse(responseEntity.getId()));
               responsesList.put(Utils.toResponseJson(responseEntity));
             }
           }
@@ -457,7 +459,7 @@ public class LeadsManagementService {
     responseDTO.setId(responseEntity.getId());
     responseDTO.setForm(toFormDto(responseEntity.getFormEntity()));
     List<FieldDTO> fields = new ArrayList<>();
-    for (FieldEntity fieald : fieldDAO.getFileldsByResponse(responseEntity.getId())) {
+    for (FieldEntity fieald : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
       fields.add(toFieldDto(fieald));
     }
     responseDTO.setFields(fields);

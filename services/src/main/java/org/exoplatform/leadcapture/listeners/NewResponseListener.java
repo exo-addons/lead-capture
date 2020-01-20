@@ -47,7 +47,7 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
         content = Utils.getContentForMail(mailTemplateDTO, lead);
         if (content != null && shouldBeSend(template, responseEntity)) {
           lcMailService.sendMail(content.getContent(), content.getSubject(), lead);
-          LOG.info("Mail sent to {}",lead.getMail());
+          LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"", lead.getId(), mailTemplateDTO.getId(), mailTemplateDTO.getName());
         }
       }
 
@@ -60,7 +60,7 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
     if (StringUtils.isEmpty(template.getField()) && responseEntity.getFormEntity().getName().equals(template.getForm()))
       return true;
     if (responseEntity.getFormEntity().getName().equals(template.getForm())) {
-      List<FieldEntity> fields = fieldDAO.getFileldsByResponse(responseEntity.getId());
+      List<FieldEntity> fields = fieldDAO.getFieldsByResponse(responseEntity.getId());
       for (FieldEntity fieldEntity : fields) {
         if (fieldEntity.getValue().equals(template.getField()))
           return true;
