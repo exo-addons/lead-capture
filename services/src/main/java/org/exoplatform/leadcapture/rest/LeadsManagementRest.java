@@ -2,10 +2,7 @@ package org.exoplatform.leadcapture.rest;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,6 +69,7 @@ public class LeadsManagementRest implements ResourceContainer {
       LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
       return Response.status(Response.Status.FORBIDDEN).build();
     }*/
+LOG.info("start adding lead {}",lead.toString());
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
       LOG.warn("Lead capture not enabled, New lead {} not captured ",lead.getLead().getId());
       return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
