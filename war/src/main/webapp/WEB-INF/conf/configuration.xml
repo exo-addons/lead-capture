@@ -27,5 +27,6 @@
     <import>war:/conf/lead-capture/portal/menu-configuration.xml</import>
     <import>war:/conf/lead-capture/portal/portal-configuration.xml</import>
     <import>war:/conf/lead-capture/bundle/bundle-configuration.xml</import>
+    <import>war:/conf/lead-capture/organization/organization-configuration.xml</import>
 
 </configuration>

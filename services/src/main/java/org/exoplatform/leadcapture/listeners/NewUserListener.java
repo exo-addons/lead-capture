@@ -43,9 +43,9 @@ public class NewUserListener extends UserEventListener {
       LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
       if (leadEntity != null) {
         if (leadEntity.getCommunityRegistration()==null || !leadEntity.getCommunityRegistration()) {
-          leadEntity.setUpdatedDate(new Date().getTime());
+          leadEntity.setUpdatedDate(new Date());
           leadEntity.setCommunityRegistration(true);
-          leadEntity.setCommunityRegistrationDate(user.getCreatedDate().getTime());
+          leadEntity.setCommunityRegistrationDate(user.getCreatedDate());
           leadEntity.setCommunityUserName(user.getUserName());
           leadDAO.update(leadEntity);
           LOG.info("Lead {} has been associated to the community user {}",leadEntity.getId(),user.getUserName());

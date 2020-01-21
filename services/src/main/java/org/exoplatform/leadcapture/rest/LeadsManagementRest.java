@@ -1,5 +1,6 @@
 package org.exoplatform.leadcapture.rest;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -48,6 +49,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @GET
   @Path("leads")
+  @RolesAllowed("ux-team")
   public Response getLeads(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -87,6 +89,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @DELETE
   @Path("leads/{id}")
+  @RolesAllowed("ux-team")
   public Response deleteLead(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -107,6 +110,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @PUT
   @Path("leads/{id}")
+  @RolesAllowed("ux-team")
   public Response update(@Context UriInfo uriInfo, @PathParam("id") Long id, LeadDTO lead) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -124,6 +128,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @PATCH
   @Path("assign")
+  @RolesAllowed("ux-team")
   public Response assign(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -141,6 +146,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @PATCH
   @Path("status")
+  @RolesAllowed("ux-team")
   public Response updateStatus(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -158,6 +164,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @GET
   @Path("responses/{id}")
+  @RolesAllowed("ux-team")
   public Response getResponses(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -173,6 +180,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @POST
   @Path("comments/{taskid}")
+  @RolesAllowed("ux-team")
   public Response addComment(@Context UriInfo uriInfo, @PathParam("taskid") long taskId, String comment) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -190,6 +198,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @GET
   @Path("comments/{taskid}")
+  @RolesAllowed("ux-team")
   public Response getComments(@Context UriInfo uriInfo, @PathParam("taskid") long taskId) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -205,6 +214,7 @@ public class LeadsManagementRest implements ResourceContainer {
 
   @GET
   @Path("marketers")
+  @RolesAllowed("ux-team")
   public Response getMarketers(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -213,7 +223,7 @@ public class LeadsManagementRest implements ResourceContainer {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       JSONArray marketersList = new JSONArray();
-      for (User user : Utils.getGroupMembers(leadCaptureSettingsService.getSettings().getMarketingGroup())) {
+      for (User user : Utils.getGroupMembers(leadCaptureSettingsService.getSettings().getUserExperienceGroup())) {
         JSONObject marketer = new JSONObject();
         marketer.put("userName", user.getUserName());
         marketer.put("fullName", user.getFirstName() + " " + user.getLastName());

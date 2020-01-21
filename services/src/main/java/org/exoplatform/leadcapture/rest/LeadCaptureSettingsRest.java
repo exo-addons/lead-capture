@@ -79,7 +79,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
 
   @GET
   @Path("context")
-  @RolesAllowed("users")
+  @RolesAllowed("ux-team")
   public Response getContext(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -91,7 +91,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
       JSONObject context = new JSONObject();
       context.put("currentUser", sourceIdentity.getRemoteId());
       context.put("currentUserFullName", sourceIdentity.getProfile().getFullName());
-      context.put("isManager", isManager(sourceIdentity.getRemoteId(), settings.getMarketingGroup()));
+      context.put("isManager", isManager(sourceIdentity.getRemoteId(), settings.getUserExperienceGroup()));
       context.put("leadCaptureConfigured", isConfigured(settings));
       return Response.ok(context.toString(), mediaType).build();
     } catch (Exception e) {
@@ -115,8 +115,8 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
   }
 
   public boolean isConfigured(LeadCaptureSettings settings) {
-    if (StringUtils.isNotEmpty(settings.getMarketingGroup()) && StringUtils.isNotEmpty(settings.getMarketingBotUserName())
-        && StringUtils.isNotEmpty(settings.getMarketingSpace()) && StringUtils.isNotEmpty(settings.getSenderMail())) {
+    if (StringUtils.isNotEmpty(settings.getUserExperienceGroup()) && StringUtils.isNotEmpty(settings.getUserExperienceGroup())
+        && StringUtils.isNotEmpty(settings.getUserExperienceSpace()) && StringUtils.isNotEmpty(settings.getSenderMail())) {
       return true;
     }
     return false;

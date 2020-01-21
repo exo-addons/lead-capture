@@ -77,7 +77,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
       if (users.getSize() > 0) {
         User communityUser = users.load(0, 1)[0];
         lead.setCommunityUserName(communityUser.getUserName());
-        lead.setCommunityRegistrationDate(communityUser.getCreatedDate().getTime());
+        lead.setCommunityRegistrationDate(communityUser.getCreatedDate());
         LOG.info("Lead {} has been associated to the community user {}",lead.getId(),communityUser.getUserName());
       }
     }
@@ -89,7 +89,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
     task.setTitle(lead.getMail());
     task.setDescription("");
     task.setStatus(status);
-    task.setCreatedBy(leadCaptureSettingsService.getSettings().getMarketingBotUserName());
+    task.setCreatedBy(leadCaptureSettingsService.getSettings().getUserExperienceBotUserName());
     task.setCreatedTime(new Date());
     task = taskService.createTask(task);
     lead.setTaskId(task.getId());

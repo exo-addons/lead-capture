@@ -131,19 +131,19 @@ public abstract class BaseLeadManagementTest {
     leadEntity.setLanguage(language);
     leadEntity.setAssignee(assignee);
     leadEntity.setPhone(phone);
-    leadEntity.setCreatedDate(new Date().getTime());
-    leadEntity.setUpdatedDate(new Date().getTime());
+    leadEntity.setCreatedDate(new Date());
+    leadEntity.setUpdatedDate(new Date());
     leadEntity.setGeographiqueZone(geographiqueZone);
     leadEntity.setMarketingSuspended(marketingSuspended);
     leadEntity.setMarketingSuspendedCause(marketingSuspendedCause);
     leadEntity.setCaptureMethod(captureMethod);
     leadEntity.setCaptureType(captureType);
     leadEntity.setBlogSubscription(blogSubscription);
-    leadEntity.setBlogSubscriptionDate(new Date().getTime());
+    leadEntity.setBlogSubscriptionDate(new Date());
     leadEntity.setCommunityUserName(communityUserName);
     leadEntity.setCommunityRegistration(communityRegistration);
     leadEntity.setCommunityRegistrationMethod(communityRegistrationMethod);
-    leadEntity.setCommunityRegistrationDate(new Date().getTime());
+    leadEntity.setCommunityRegistrationDate(new Date());
     leadEntity.setPersonSource(personSource);
     leadEntity.setLandingPageInfo(landingPageInfo);
     leadEntity.setCaptureSourceInfo(captureSourceInfo);
@@ -171,11 +171,11 @@ public abstract class BaseLeadManagementTest {
     leadDTO.setCaptureMethod(captureMethod);
     leadDTO.setCaptureType(captureType);
     leadDTO.setBlogSubscription(blogSubscription);
-    leadDTO.setBlogSubscriptionDate(new Date().getTime());
+    leadDTO.setBlogSubscriptionDate(new Date());
     leadDTO.setCommunityUserName(communityUserName);
     leadDTO.setCommunityRegistration(communityRegistration);
     leadDTO.setCommunityRegistrationMethod(communityRegistrationMethod);
-    leadDTO.setCommunityRegistrationDate(new Date().getTime());
+    leadDTO.setCommunityRegistrationDate(new Date());
     leadDTO.setPersonSource(personSource);
     leadDTO.setLandingPageInfo(landingPageInfo);
     leadDTO.setCaptureSourceInfo(captureSourceInfo);
@@ -205,7 +205,7 @@ public abstract class BaseLeadManagementTest {
     ResponseEntity responseEntity = new ResponseEntity();
     responseEntity.setFormEntity(formEntity);
     responseEntity.setLeadEntity(leadEntity);
-    responseEntity.setCreatedDate(new Date().getTime());
+    responseEntity.setCreatedDate(new Date());
     responseEntity = responseDAO.create(responseEntity);
     return responseEntity;
   }

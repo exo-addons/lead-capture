@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -25,9 +26,9 @@ public class LeadDTO implements Serializable {
 
   private String  phone;
 
-  private Long    createdDate;
+  private Date createdDate;
 
-  private Long    updatedDate;
+  private Date    updatedDate;
 
   private String  language;
 
@@ -45,7 +46,7 @@ public class LeadDTO implements Serializable {
 
   private Boolean blogSubscription;
 
-  private Long    blogSubscriptionDate;
+  private Date    blogSubscriptionDate;
 
   private String  communityUserName;
 
@@ -53,7 +54,7 @@ public class LeadDTO implements Serializable {
 
   private String  communityRegistrationMethod;
 
-  private Long    communityRegistrationDate;
+  private Date    communityRegistrationDate;
 
   private String  personSource;
 

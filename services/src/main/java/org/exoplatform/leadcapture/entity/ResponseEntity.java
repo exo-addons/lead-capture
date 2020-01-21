@@ -2,6 +2,7 @@ package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -26,7 +27,7 @@ public class ResponseEntity implements Serializable {
   protected Long                  id;
 
   @Column(name = "CREATED_DATE")
-  protected Long                  createdDate;
+  protected Date createdDate;
 
   @ManyToOne
   @JoinColumn(name = "LC_FORM_ID", nullable = false)

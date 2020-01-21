@@ -31,9 +31,9 @@
             </column>
             <column name="PHONE" type="NVARCHAR(150)">
             </column>
-            <column name="CREATED_DATE" type="BIGINT">
+            <column name="CREATED_DATE" type="TIMESTAMP">
             </column>
-            <column name="UPDATED_DATE" type="BIGINT">
+            <column name="UPDATED_DATE" type="TIMESTAMP">
             </column>
             <column name="LANGUAGE" type="NVARCHAR(150)">
             </column>
@@ -51,7 +51,7 @@
             </column>
             <column name="BLOG_SUBSCRIPTION" type="BOOLEAN">
             </column>
-            <column name="BLOG_SUBSCRIPTION_DATE" type="BIGINT">
+            <column name="BLOG_SUBSCRIPTION_DATE" type="TIMESTAMP">
             </column>
             <column name="COMMUNITY_USER_NAME" type="NVARCHAR(200)">
             </column>
@@ -59,7 +59,7 @@
             </column>
             <column name="COMMUNITY_REGISTRATION_METHOD" type="NVARCHAR(150)">
             </column>
-            <column name="COMMUNITY_REGISTRATION_DATE" type="BIGINT">
+            <column name="COMMUNITY_REGISTRATION_DATE" type="TIMESTAMP">
             </column>
             <column name="PERSON_SOURCE" type="NVARCHAR(250)">
             </column>
@@ -102,7 +102,7 @@
             <column name="LC_LEAD_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="FK_LC_LEAD" references="ADDONS_LC_LEAD(ID)"/>
             </column>
-            <column name="CREATED_DATE" type="BIGINT">
+            <column name="CREATED_DATE" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -43,6 +43,7 @@ public class LeadCaptureSettingsService {
     } else {
       leadCaptureSettings = fromJsonString(settingsValueString, org.exoplatform.leadcapture.dto.LeadCaptureSettings.class);
     }
+    if(leadCaptureSettings.getUserExperienceGroup()==null){leadCaptureSettings.setUserExperienceGroup(USERS_EXPERENCE_GROUP_NAME);}
     this.configuredLeadCaptureSettings = leadCaptureSettings;
     return this.configuredLeadCaptureSettings;
   }

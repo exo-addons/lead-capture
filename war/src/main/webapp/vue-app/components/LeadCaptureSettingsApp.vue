@@ -9,11 +9,12 @@
                 <v-container id="template">
                     <v-card outlined style="padding: 16px;">
                         <v-form ref="form" v-model="valid">
-                            <v-text-field v-model="setting.marketingGroup" :rules="[rules.required]" label="Marketing Group" required></v-text-field>
+                            <v-text-field v-model="setting.userExperienceGroup" :rules="[rules.required]" label="Marketing Group" required></v-text-field>
                             <v-text-field v-model="setting.marketingSpace" :rules="[rules.required]" label="Marketing Space" required></v-text-field>
                             <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
-                            <v-text-field v-model="setting.marketingBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
+                            <v-text-field v-model="setting.userExperienceBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
                             <v-text-field v-model="setting.senderMail" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
+                            <v-text-field v-model="setting.leadCaptureToken" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
                             <v-row>
                                 <v-col cols="12" sm="6" md="5">
                                     <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>

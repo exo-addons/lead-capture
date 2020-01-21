@@ -8,25 +8,25 @@
         <uri>leadcapture</uri>
         <name>leadcapture</name>
         <label>Lead Capture</label>
-        <page-reference>group::/platform/administrators::lead_management</page-reference>
+        <page-reference>group::/platform/ux-team::lead_management</page-reference>
         <node>
             <uri>lead_management</uri>
             <name>lead_management</name>
             <label>Lead management</label>
-            <page-reference>group::/platform/administrators::lead_management</page-reference>
+            <page-reference>group::/platform/ux-team::lead_management</page-reference>
         </node>
         <node>
             <uri>mail_templates_management</uri>
             <name>mail_templates_management</name>
             <label>Mail templates management</label>
-            <page-reference>group::/platform/administrators::mail_templates_management</page-reference>
+            <page-reference>group::/platform/ux-team::mail_templates_management</page-reference>
         </node>
-            <node>
+        </node>
+        <node>
             <uri>lead_capture_settings</uri>
             <name>lead_capture_settings</name>
             <label>Lead Capture Settings</label>
             <page-reference>group::/platform/administrators::lead_capture_settings</page-reference>
-        </node>
         </node>
     </page-nodes>
 </node-navigation>

@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
@@ -15,5 +16,5 @@ public class ResponseDTO implements Serializable {
 
   private List<FieldDTO> fields;
 
-  private Long           createdDate;
+  private Date createdDate;
 }

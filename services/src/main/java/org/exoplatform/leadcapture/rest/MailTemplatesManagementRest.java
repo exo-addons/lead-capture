@@ -1,5 +1,6 @@
 package org.exoplatform.leadcapture.rest;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -35,6 +36,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @GET
   @Path("template")
+  @RolesAllowed("ux-team")
   public Response getTemplates(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -51,6 +53,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @POST
   @Path("template")
+  @RolesAllowed("ux-team")
   public Response add(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
@@ -64,6 +67,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @DELETE
   @Path("template/{id}")
+  @RolesAllowed("ux-team")
   public Response delete(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
@@ -85,6 +89,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @PUT
   @Path("template")
+  @RolesAllowed("ux-team")
   public Response update(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {

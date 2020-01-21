@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -49,10 +50,10 @@ public class LeadEntity implements Serializable {
   protected String  phone;
 
   @Column(name = "CREATED_DATE")
-  protected Long    createdDate;
+  protected Date    createdDate;
 
   @Column(name = "UPDATED_DATE")
-  protected Long    updatedDate;
+  protected Date    updatedDate;
 
   @Column(name = "LANGUAGE")
   protected String  language;
@@ -79,7 +80,7 @@ public class LeadEntity implements Serializable {
   protected Boolean blogSubscription;
 
   @Column(name = "BLOG_SUBSCRIPTION_DATE")
-  protected Long    blogSubscriptionDate;
+  protected Date blogSubscriptionDate;
 
   @Column(name = "COMMUNITY_USER_NAME")
   protected String  communityUserName;
@@ -91,7 +92,7 @@ public class LeadEntity implements Serializable {
   protected String  communityRegistrationMethod;
 
   @Column(name = "COMMUNITY_REGISTRATION_DATE")
-  protected Long    communityRegistrationDate;
+  protected Date    communityRegistrationDate;
 
   @Column(name = "PERSON_SOURCE")
   protected String  personSource;

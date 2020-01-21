@@ -79,13 +79,13 @@ public class LeadsManagementService {
       LeadDTO lead = leadInfo.getLead();
       leadEntity = leadDAO.getLeadByMail(lead.getMail());
       if (leadEntity == null) {
-        lead.setCreatedDate(new Date().getTime());
-        lead.setUpdatedDate(new Date().getTime());
+        lead.setCreatedDate(new Date());
+        lead.setUpdatedDate(new Date());
         if (lead.getStatus() == null) {
           lead.setStatus(LEAD_DEFAULT_STATUS);
         }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
-          lead.setBlogSubscriptionDate(new Date().getTime());
+          lead.setBlogSubscriptionDate(new Date());
         }
         leadEntity = createLead(lead);
         if (broadcast) {
@@ -93,7 +93,7 @@ public class LeadsManagementService {
         }
       } else {
         leadEntity = mergeLead(leadEntity, lead);
-        leadEntity.setUpdatedDate(new Date().getTime());
+        leadEntity.setUpdatedDate(new Date());
         leadEntity = leadDAO.update(leadEntity);
       }
       addResponse(leadInfo.getResponse(), leadEntity);
@@ -109,7 +109,6 @@ public class LeadsManagementService {
 
   public void deleteLead(LeadEntity lead) {
     try {
-      List<FieldEntity> fieldEntities = new ArrayList<>();
       List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
       for (ResponseEntity responseEntity : responseEntities) {
         fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
@@ -123,7 +122,7 @@ public class LeadsManagementService {
 
   public void updateLead(LeadDTO lead) {
     try {
-      lead.setUpdatedDate(new Date().getTime());
+      lead.setUpdatedDate(new Date());
       leadDAO.update(toLeadEntity(lead));
     } catch (Exception e) {
       LOG.error(e);
@@ -133,7 +132,7 @@ public class LeadsManagementService {
   public void assigneLead(Long leadId, String assignee) {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
-      leadEntity.setUpdatedDate(new Date().getTime());
+      leadEntity.setUpdatedDate(new Date());
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
       Task task = taskService.getTask(leadEntity.getTaskId());
@@ -147,7 +146,7 @@ public class LeadsManagementService {
   public void updateStatus(Long leadId, String status) {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
-      leadEntity.setUpdatedDate(new Date().getTime());
+      leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
       leadDAO.update(leadEntity);
       Task task = taskService.getTask(leadEntity.getTaskId());
@@ -262,7 +261,7 @@ public class LeadsManagementService {
   }
 
   public ResponseEntity createResponse(ResponseEntity responseEntity) {
-    responseEntity.setCreatedDate(new Date().getTime());
+    responseEntity.setCreatedDate(new Date());
     return responseDAO.create(responseEntity);
   }
 
@@ -325,7 +324,7 @@ public class LeadsManagementService {
       leadEntity.setCaptureType(leadDTO.getCaptureType());
     if (leadDTO.getBlogSubscription() != null && leadDTO.getBlogSubscription() && !leadEntity.getBlogSubscription()) {
       leadEntity.setBlogSubscription(leadDTO.getBlogSubscription());
-      leadEntity.setBlogSubscriptionDate(new Date().getTime());
+      leadEntity.setBlogSubscriptionDate(new Date());
     }
     if (!StringUtils.isEmpty(leadDTO.getCommunityUserName()))
       leadEntity.setCommunityUserName(leadDTO.getCommunityUserName());
@@ -358,9 +357,9 @@ public class LeadsManagementService {
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
     leadDTO.setCreatedDate(leadEntity.getCreatedDate());
-    leadDTO.setFormattedCreatedDate(Utils.getFormatter().format(new Date(leadEntity.getCreatedDate())));
+    leadDTO.setFormattedCreatedDate(Utils.getFormatter().format(leadEntity.getCreatedDate()));
     leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
-    leadDTO.setFormattedUpdatedDate(Utils.getFormatter().format(new Date(leadEntity.getUpdatedDate())));
+    leadDTO.setFormattedUpdatedDate(Utils.getFormatter().format(leadEntity.getUpdatedDate()));
     leadDTO.setLanguage(leadEntity.getLanguage());
     leadDTO.setAssignee(leadEntity.getAssignee());
     leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());

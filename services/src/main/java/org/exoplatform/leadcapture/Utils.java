@@ -63,6 +63,7 @@ public class Utils {
   public static final Context LEAD_CAPTURE_CONTEXT                         = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
   public static final Scope LEAD_CAPTURE_SCOPE                             = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
   public static final String LEAD_CAPTURE_SETTINGS_KEY_NAME                = "LEAD_CAPTURE_SETTINGS";
+  public static final String USERS_EXPERENCE_GROUP_NAME                    = "/platform/ux-team";
   public static final JsonParser JSON_PARSER                               = new JsonParserImpl();
   public static final JsonGenerator JSON_GENERATOR                         = new JsonGeneratorImpl();
 
@@ -72,7 +73,7 @@ public class Utils {
       for (FieldEntity field : responseEntity.getFilelds()) {
         responseJson.put(field.getName(), field.getValue());
       }
-      responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(new Date(responseEntity.getCreatedDate())));
+      responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(responseEntity.getCreatedDate()));
     } catch (JSONException e) {
       LOG.error("Cannot convert response {} to json",responseEntity.getId(), e);
     }
@@ -114,8 +115,8 @@ public class Utils {
 
   public static ExoSocialActivity createActivity(LeadEntity lead) {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
-    String spaceName = leadCaptureSettingsService.getSettings().getMarketingSpace();
-    String botName = leadCaptureSettingsService.getSettings().getMarketingBotUserName();
+    String spaceName = leadCaptureSettingsService.getSettings().getUserExperienceSpace();
+    String botName = leadCaptureSettingsService.getSettings().getUserExperienceBotUserName();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
     ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
@@ -147,7 +148,7 @@ public class Utils {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
     LeadCaptureSettings settings=leadCaptureSettingsService.getSettings();
-    Space marketingSpace = spaceService.getSpaceByPrettyName(settings.getMarketingSpace());
+    Space marketingSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
     List<Project> projects = ProjectUtil.getProjectTree(marketingSpace.getGroupId(), projectService);
     if(settings.getLeadTaskProject()!=null){
       for(Project project :projects){

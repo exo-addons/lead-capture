@@ -11,15 +11,17 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
 
   private Integer                 dataVersion      = 0;
 
-  private String                  marketingSpace    = null;
+  private String                  userExperienceSpace    = null;
 
-  private String                  marketingGroup    = null;
+  private String                  userExperienceGroup    = null;
 
-  private String                  marketingBotUserName  = null;
+  private String                  userExperienceBotUserName  = null;
 
   private String                  leadTaskProject  = null;
 
   private String                  senderMail  = null;
+
+  private String                  leadCaptureToken  = null;
 
   private boolean                 mailingEnabled;
 
