@@ -14,7 +14,6 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.service.rest.RestChecker;
 import org.exoplatform.social.service.rest.Util;
 
 @Path("/leadcapture/mailtemplatesmanagement")
@@ -22,11 +21,9 @@ import org.exoplatform.social.service.rest.Util;
 
 public class MailTemplatesManagementRest implements ResourceContainer {
 
-  private final Log               LOG                 = ExoLogger.getLogger(MailTemplatesManagementRest.class);
+  private final Log                      LOG                 = ExoLogger.getLogger(MailTemplatesManagementRest.class);
 
-  private final String            portalContainerName = "portal";
-
-  private final String[]          SUPPORTED_FORMATS   = new String[] { "json" };
+  private final String                   portalContainerName = "portal";
 
   private MailTemplatesManagementService mailTemplatesManagementService;
 
@@ -36,15 +33,15 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @GET
   @Path("template")
+  @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response getTemplates(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(mailTemplatesManagementService.getTemplates(), mediaType).build();
+      return Response.ok(mailTemplatesManagementService.getTemplates()).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get templates list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -53,14 +50,14 @@ public class MailTemplatesManagementRest implements ResourceContainer {
 
   @POST
   @Path("template")
+  @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response add(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       mailTemplatesManagementService.addTemplate(templateDTO);
-      return Response.ok("lead synchronized", mediaType).build();
+      return Response.ok("lead synchronized").build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to add new template {}",templateDTO.getName(), e);
+      LOG.error("An error occured when trying to add new template {}", templateDTO.getName(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -82,21 +79,21 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       LOG.info("Template {} deleted by {}", id, sourceIdentity.getRemoteId());
       return Response.ok().build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to delete template {}",id, e);
+      LOG.error("An error occured when trying to delete template {}", id, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
 
   @PUT
   @Path("template")
+  @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response update(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       mailTemplatesManagementService.updateTemplate(templateDTO);
-      return Response.ok("template updated", mediaType).build();
+      return Response.ok("template updated").build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to update template {}",templateDTO.getId(), e);
+      LOG.error("An error occured when trying to update template {}", templateDTO.getId(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }

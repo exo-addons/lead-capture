@@ -1,34 +1,26 @@
 package org.exoplatform.leadcapture;
 
-import static org.exoplatform.leadcapture.Utils.*;
-
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.commons.api.settings.data.Context;
-import org.exoplatform.commons.api.settings.data.Scope;
-import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
-import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
-import org.exoplatform.ws.frameworks.json.JsonGenerator;
-import org.exoplatform.ws.frameworks.json.JsonParser;
-import org.exoplatform.ws.frameworks.json.impl.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.exoplatform.commons.api.settings.data.Context;
+import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -46,26 +38,46 @@ import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
+import org.exoplatform.ws.frameworks.json.JsonGenerator;
+import org.exoplatform.ws.frameworks.json.JsonParser;
+import org.exoplatform.ws.frameworks.json.impl.*;
 
 public class Utils {
-  private static final Log        LOG                                      = ExoLogger.getLogger(Utils.class);
-  public static final String LEAD_DEFAULT_STATUS                           = "Open";
-  public static final String CREATION_DATE_FIELD_NAME                      = "createdDate";
-  public static final String FIELDS_DELIMITER                              = ",";
-  public static final String MAIL_DEFAULT_LANGUAGE                         = "en";
-  public static final String NEW_LEAD_EVENT                                = "leadCapture.newLead.event";
-  public static final String NEW_RESPONSE_EVENT                            = "leadCapture.newResponse.event";
-  public static final String DATE_FORMAT                                   = "yyyy-MM-dd";
-  public static final String EMPTY_STR                                     = "";
-  public static final SimpleDateFormat formatter                           = new SimpleDateFormat(DATE_FORMAT);
-  public static final String LEAD_CAPTURE_SCOPE_NAME                       = "ADDONS_LEAD_CAPTURE";
-  public static final String LEAD_CAPTURE_CONTEXT_NAME                     = "ADDONS_LEAD_CAPTURE";
-  public static final Context LEAD_CAPTURE_CONTEXT                         = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
-  public static final Scope LEAD_CAPTURE_SCOPE                             = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
-  public static final String LEAD_CAPTURE_SETTINGS_KEY_NAME                = "LEAD_CAPTURE_SETTINGS";
-  public static final String USERS_EXPERENCE_GROUP_NAME                    = "/platform/ux-team";
-  public static final JsonParser JSON_PARSER                               = new JsonParserImpl();
-  public static final JsonGenerator JSON_GENERATOR                         = new JsonGeneratorImpl();
+  private static final Log             LOG                            = ExoLogger.getLogger(Utils.class);
+
+  public static final String           LEAD_DEFAULT_STATUS            = "Open";
+
+  public static final String           CREATION_DATE_FIELD_NAME       = "createdDate";
+
+  public static final String           FIELDS_DELIMITER               = ",";
+
+  public static final String           MAIL_DEFAULT_LANGUAGE          = "en";
+
+  public static final String           NEW_LEAD_EVENT                 = "leadCapture.newLead.event";
+
+  public static final String           NEW_RESPONSE_EVENT             = "leadCapture.newResponse.event";
+
+  public static final String           DATE_FORMAT                    = "yyyy-MM-dd";
+
+  public static final String           EMPTY_STR                      = "";
+
+  public static final SimpleDateFormat formatter                      = new SimpleDateFormat(DATE_FORMAT);
+
+  public static final String           LEAD_CAPTURE_SCOPE_NAME        = "ADDONS_LEAD_CAPTURE_SCOPE";
+
+  public static final String           LEAD_CAPTURE_CONTEXT_NAME      = "ADDONS_LEAD_CAPTURE_CONTEXT";
+
+  public static final Context          LEAD_CAPTURE_CONTEXT           = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
+
+  public static final Scope            LEAD_CAPTURE_SCOPE             = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
+
+  public static final String           LEAD_CAPTURE_SETTINGS_KEY_NAME = "LEAD_CAPTURE_SETTINGS";
+
+  public static final String           USERS_EXPERENCE_GROUP_NAME     = "/platform/ux-team";
+
+  public static final JsonParser       JSON_PARSER                    = new JsonParserImpl();
+
+  public static final JsonGenerator    JSON_GENERATOR                 = new JsonGeneratorImpl();
 
   public static JSONObject toResponseJson(ResponseEntity responseEntity) {
     JSONObject responseJson = new JSONObject();
@@ -75,7 +87,7 @@ public class Utils {
       }
       responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(responseEntity.getCreatedDate()));
     } catch (JSONException e) {
-      LOG.error("Cannot convert response {} to json",responseEntity.getId(), e);
+      LOG.error("Cannot convert response {} to json", responseEntity.getId(), e);
     }
     return responseJson;
   }
@@ -88,7 +100,7 @@ public class Utils {
       User[] users = grpMembersList.load(0, grpMembersList.getSize());
       return Arrays.asList(users);
     } catch (Exception e) {
-      LOG.error("Cannot get the list of group {} members",groupId, e);
+      LOG.error("Cannot get the list of group {} members", groupId, e);
       return new ArrayList<User>();
     }
   }
@@ -142,17 +154,12 @@ public class Utils {
     return null;
   }
 
-
-  public static Project getTaskProject() {
-    SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
-    LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+  public static Project getTaskProject(String groupId, String taskProject) {
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
-    LeadCaptureSettings settings=leadCaptureSettingsService.getSettings();
-    Space marketingSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
-    List<Project> projects = ProjectUtil.getProjectTree(marketingSpace.getGroupId(), projectService);
-    if(settings.getLeadTaskProject()!=null){
-      for(Project project :projects){
-        if(project.getName().equals(settings.getLeadTaskProject())){
+    List<Project> projects = ProjectUtil.getProjectTree(groupId, projectService);
+    if (taskProject != null) {
+      for (Project project : projects) {
+        if (project.getName().equals(taskProject)) {
           return project;
         }
       }
@@ -187,7 +194,7 @@ public class Utils {
       commentJson.put(CREATION_DATE_FIELD_NAME, Utils.getFormatter().format(comment.getCreatedTime()));
       return commentJson;
     } catch (Exception e) {
-      LOG.error("Cannot convert comment {} to json",comment.getId(), e);
+      LOG.error("Cannot convert comment {} to json", comment.getId(), e);
     }
     return null;
   }

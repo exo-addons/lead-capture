@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
@@ -24,9 +25,10 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
@@ -41,8 +43,6 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
 
   private OrganizationService            organizationService;
 
-  private ProjectService                 projectService;
-
   private StatusService                  statusService;
 
   private TaskService                    taskService;
@@ -54,7 +54,6 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
   public NewLeadListener(LCMailService lcMailService,
                          MailTemplatesManagementService mailTemplatesManagementService,
                          OrganizationService organizationService,
-                         ProjectService projectService,
                          TaskService taskService,
                          StatusService statusService,
                          LeadDAO leadDAO,
@@ -62,7 +61,6 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
     this.lcMailService = lcMailService;
     this.mailTemplatesManagementService = mailTemplatesManagementService;
     this.organizationService = organizationService;
-    this.projectService = projectService;
     this.taskService = taskService;
     this.statusService = statusService;
     this.leadDAO = leadDAO;
@@ -89,18 +87,23 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
       if (activity != null) {
         lead.setActivityId(activity.getId());
       }
-      Status status = statusService.getDefaultStatus(Utils.getTaskProject().getId());
-      Task task = new Task();
-      task.setTitle(lead.getMail());
-      task.setDescription("");
-      task.setStatus(status);
-      task.setCreatedBy(leadCaptureSettingsService.getSettings().getUserExperienceBotUserName());
-      task.setCreatedTime(new Date());
-      task = taskService.createTask(task);
-      lead.setTaskId(task.getId());
-      lead.setTaskUrl(TaskUtil.buildTaskURL(task));
-      leadDAO.update(lead);
-      LOG.info("new task with id = {} has been associated to the lead {}", task.getId(), lead.getId());
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
+      if (uxSpace != null) {
+        Status status = statusService.getDefaultStatus(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
+                                                            .getId());
+        Task task = new Task();
+        task.setTitle(lead.getMail());
+        task.setDescription("");
+        task.setStatus(status);
+        task.setCreatedBy(leadCaptureSettingsService.getSettings().getUserExperienceBotUserName());
+        task.setCreatedTime(new Date());
+        task = taskService.createTask(task);
+        lead.setTaskId(task.getId());
+        lead.setTaskUrl(TaskUtil.buildTaskURL(task));
+        leadDAO.update(lead);
+        LOG.info("new task with id = {} has been associated to the lead {}", task.getId(), lead.getId());
+      }
     }
 
     List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newLead");

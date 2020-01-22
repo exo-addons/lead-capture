@@ -53,4 +53,19 @@
             <show-info-bar>false</show-info-bar>
         </portlet-application>
     </page>
+    <page>
+        <name>lead_capture_settings</name>
+        <title>Lead Capture Settings</title>
+        <access-permissions>manager:/platform/ux-team</access-permissions>
+        <edit-permission>manager:/platform/administrators</edit-permission>
+        <portlet-application>
+            <portlet>
+                <application-ref>lead-capture</application-ref>
+                <portlet-ref>leadCaptureSettings</portlet-ref>
+            </portlet>
+            <title>Lead Capture Settings Portlet</title>
+            <access-permissions>manager:/platform/ux-team</access-permissions>
+            <show-info-bar>false</show-info-bar>
+        </portlet-application>
+    </page>
 </page-set>

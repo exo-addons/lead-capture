@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -150,7 +152,11 @@ public class LeadsManagementService {
       leadEntity.setStatus(status);
       leadDAO.update(leadEntity);
       Task task = taskService.getTask(leadEntity.getTaskId());
-      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject().getId());
+      LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+      LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
+      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject()).getId());
       Status newStatus = null;
       for (Status status_ : statuses) {
         if (status_.getName().equals(status)) {
