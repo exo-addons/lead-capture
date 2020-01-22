@@ -27,6 +27,8 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
 
   private boolean                 captureEnabled;
 
+  private String                 allowedCaptureSourceDomain;
+
   public LeadCaptureSettings clone() { // NOSONAR
     try {
       return (LeadCaptureSettings) super.clone();

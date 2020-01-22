@@ -4,6 +4,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,6 +23,10 @@ import org.exoplatform.social.service.rest.RestChecker;
 import org.exoplatform.social.service.rest.Util;
 
 import io.swagger.jaxrs.PATCH;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)
@@ -64,7 +69,8 @@ public class LeadsManagementRest implements ResourceContainer {
   @POST
   @Path("leads")
   public Response add(@Context UriInfo uriInfo,@HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
-/*    String captureToken = leadCaptureSettingsService.getSettings().getLeadCaptureToken();
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+/*    String captureToken = settings().getLeadCaptureToken();
     if (headerToken == null || captureToken==null || !captureToken.equals(headerToken)) {
       LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
       return Response.status(Response.Status.FORBIDDEN).build();
@@ -76,9 +82,10 @@ LOG.info("start adding lead {}",lead.toString());
     }
       MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
       try {
+        List<String> allowedOrigins = new ArrayList<String>(Arrays.asList(settings.getAllowedCaptureSourceDomain().split(",")));
         leadsManagementService.addLeadInfo(lead, true);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_id:{},form_name:{}\"", lead.getLead().getId(), lead.getResponse().getFormName());
-        return Response.ok("lead synchronized", mediaType).build();
+        return Response.ok("lead synchronized", mediaType).header("access-control-allow-origin", allowedOrigins).build();
       } catch (Exception e) {
         LOG.error("An error occured when trying to synchronise lead {}",lead.getLead(), e);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
