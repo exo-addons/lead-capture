@@ -14,7 +14,7 @@
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_LEAD"/>
             </column>
-            <column name="MAIL" type="NVARCHAR(150)">
+            <column name="MAIL" type="NVARCHAR(256)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="COMPANY" type="NVARCHAR(256)">

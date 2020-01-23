@@ -75,6 +75,10 @@ public class Utils {
 
   public static final String           USERS_EXPERENCE_GROUP_NAME     = "/platform/ux-team";
 
+  public static final String           ALLOWED_MAIL_DOMAIN            = "leadCapture.allowed.mail.domain";
+
+  public static final String           LEAD_CAPTURE_TOKEN             = "leadCapture.security.token";
+
   public static final JsonParser       JSON_PARSER                    = new JsonParserImpl();
 
   public static final JsonGenerator    JSON_GENERATOR                 = new JsonGeneratorImpl();
@@ -135,23 +139,25 @@ public class Utils {
     Space space = spaceService.getSpaceByPrettyName(spaceName);
     if (space == null) {
       LOG.warn("Space not found");
-    } else {
-      Identity spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
-      Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
-
-      if (posterIdentity != null && spaceIdentity != null) {
-        ExoSocialActivity activity = new ExoSocialActivityImpl();
-        activity.setType("DEFAULT_ACTIVITY");
-        activity.setTitle("<span id='npsActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Lead mail : </b>"
-            + lead.getMail() + "<br/>\n");
-        activity.setUserId(posterIdentity.getId());
-        return activityManager.saveActivity(spaceIdentity, activity);
-      } else {
-        LOG.warn("Not able to create the activity, the Poster or Space Identity is missing");
-      }
+      return null;
     }
+    Identity spaceIdentity = identityManager.getOrCreateIdentity(SpaceIdentityProvider.NAME, space.getPrettyName());
+    if (spaceIdentity == null) {
+      LOG.warn("Not able to create the activity, the Space Identity is missing");
+      return null;
+    }
+    Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
+    if (posterIdentity == null) {
+      LOG.warn("Not able to create the activity, the Poster Identity is missing");
+      return null;
+    }
+    ExoSocialActivity activity = new ExoSocialActivityImpl();
+    activity.setType("DEFAULT_ACTIVITY");
+    activity.setTitle("<span id='npsActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Lead mail : </b>"
+        + lead.getMail() + "<br/>\n");
+    activity.setUserId(posterIdentity.getId());
+    return activityManager.saveActivity(spaceIdentity, activity);
 
-    return null;
   }
 
   public static Project getTaskProject(String groupId, String taskProject) {

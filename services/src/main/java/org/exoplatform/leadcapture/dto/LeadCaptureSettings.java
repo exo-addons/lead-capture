@@ -21,7 +21,6 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
 
   private String                  senderMail  = null;
 
-  private String                  leadCaptureToken  = null;
 
   private boolean                 mailingEnabled;
 

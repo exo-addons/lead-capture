@@ -1,8 +1,10 @@
 package org.exoplatform.leadcapture.services;
 
-import static org.exoplatform.leadcapture.Utils.*;
+import static org.exoplatform.leadcapture.Utils.ALLOWED_MAIL_DOMAIN;
+import static org.exoplatform.leadcapture.Utils.EMPTY_STR;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.exoplatform.commons.utils.StringCommonUtils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
@@ -12,16 +14,15 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
 
-
 public class LCMailService {
 
-  private static final Log   LOG       = ExoLogger.getLogger(LCMailService.class);
-  private LeadDAO            leadDAO;
-  private MailService        mailService;
-  private LeadCaptureSettingsService        leadCaptureSettingsService;
+  private static final Log           LOG = ExoLogger.getLogger(LCMailService.class);
 
-  public LCMailService(LeadDAO leadDAO, MailService mailService, LeadCaptureSettingsService leadCaptureSettingsService) {
-    this.leadDAO = leadDAO;
+  private MailService                mailService;
+
+  private LeadCaptureSettingsService leadCaptureSettingsService;
+
+  public LCMailService(MailService mailService, LeadCaptureSettingsService leadCaptureSettingsService) {
     this.mailService = mailService;
     this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
@@ -46,23 +47,27 @@ public class LCMailService {
 
   public void sendMail(String content, String subject, LeadEntity lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-    if(settings.isMailingEnabled()) {
-      if(settings.getSenderMail()!=null){
-        Message message = new Message();
-        message.setFrom(settings.getSenderMail());
-        message.setTo(lead.getMail());
-        message.setMimeType("text/html");
-        message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
-        message.setBody(getContentEmail(content, lead));
-        mailService.sendMessage(message);
-      }else{
-        LOG.warn("Mail sender adress is not defined, cannot send mail to {}",lead.getMail());
+    if (settings.isMailingEnabled()) {
+      String allowedMailDomain = System.getProperty(ALLOWED_MAIL_DOMAIN);
+      if (StringUtils.isEmpty(allowedMailDomain) || lead.getMail().contains(allowedMailDomain)) {
+        if (settings.getSenderMail() != null) {
+          Message message = new Message();
+          message.setFrom(settings.getSenderMail());
+          message.setTo(lead.getMail());
+          message.setMimeType("text/html");
+          message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
+          message.setBody(getContentEmail(content, lead));
+          mailService.sendMessage(message);
+        } else {
+          LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
+        }
+      } else {
+        LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
       }
 
-    }else{
-      LOG.warn("Lead Messaging is disabled, cannot send mail to {}",lead.getMail());
+    } else {
+      LOG.warn("Cannot send mail to lead{}, mail domain not allowed", lead.getId());
     }
-
   }
 
   public String getContentEmail(String content, LeadEntity lead) {
