@@ -98,7 +98,9 @@ public class LeadsManagementService {
         leadEntity.setUpdatedDate(new Date());
         leadEntity = leadDAO.update(leadEntity);
       }
-      addResponse(leadInfo.getResponse(), leadEntity);
+      if(leadInfo.getResponse()!=null){
+        addResponse(leadInfo.getResponse(), leadEntity);
+      }
     } catch (Exception e) {
       LOG.error("An error occured when trying to synchronize lead", e);
     }
@@ -328,8 +330,8 @@ public class LeadsManagementService {
       leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
     if (!StringUtils.isEmpty(leadDTO.getCaptureType()))
       leadEntity.setCaptureType(leadDTO.getCaptureType());
-    if (leadDTO.getBlogSubscription() != null && leadDTO.getBlogSubscription() && !leadEntity.getBlogSubscription()) {
-      leadEntity.setBlogSubscription(leadDTO.getBlogSubscription());
+    if ((leadEntity.getBlogSubscription()==null || !leadEntity.getBlogSubscription()) && leadDTO.getBlogSubscription() != null ) {
+      leadEntity.setBlogSubscription(true);
       leadEntity.setBlogSubscriptionDate(new Date());
     }
     if (!StringUtils.isEmpty(leadDTO.getCommunityUserName()))
@@ -362,10 +364,10 @@ public class LeadsManagementService {
     leadDTO.setCountry(leadEntity.getCountry());
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
-    leadDTO.setCreatedDate(leadEntity.getCreatedDate());
-    leadDTO.setFormattedCreatedDate(Utils.getFormatter().format(leadEntity.getCreatedDate()));
+    if(leadEntity.getCreatedDate()!=null)leadDTO.setCreatedDate(leadEntity.getCreatedDate());
+    leadDTO.setFormattedCreatedDate(formatter.format(leadEntity.getCreatedDate()));
     leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
-    leadDTO.setFormattedUpdatedDate(Utils.getFormatter().format(leadEntity.getUpdatedDate()));
+    if(leadEntity.getUpdatedDate()!=null)leadDTO.setFormattedUpdatedDate(formatter.format(leadEntity.getUpdatedDate()));
     leadDTO.setLanguage(leadEntity.getLanguage());
     leadDTO.setAssignee(leadEntity.getAssignee());
     leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());
@@ -375,10 +377,12 @@ public class LeadsManagementService {
     leadDTO.setCaptureType(leadEntity.getCaptureType());
     leadDTO.setBlogSubscription(leadEntity.getBlogSubscription());
     leadDTO.setBlogSubscriptionDate(leadEntity.getBlogSubscriptionDate());
+    if(leadEntity.getBlogSubscriptionDate()!=null)leadDTO.setFormattedBlogSubscriptionDate(formatter.format(leadEntity.getBlogSubscriptionDate()));
     leadDTO.setCommunityUserName(leadEntity.getCommunityUserName());
     leadDTO.setCommunityRegistration(leadEntity.getCommunityRegistration());
     leadDTO.setCommunityRegistrationMethod(leadEntity.getCommunityRegistrationMethod());
     leadDTO.setCommunityRegistrationDate(leadEntity.getCommunityRegistrationDate());
+    if(leadEntity.getCommunityRegistrationDate()!=null)leadDTO.setFormattedCommunityRegistrationDate(formatter.format(leadEntity.getCommunityRegistrationDate()));
     leadDTO.setPersonSource(leadEntity.getPersonSource());
     leadDTO.setLandingPageInfo(leadEntity.getLandingPageInfo());
     leadDTO.setCaptureSourceInfo(leadEntity.getCaptureSourceInfo());

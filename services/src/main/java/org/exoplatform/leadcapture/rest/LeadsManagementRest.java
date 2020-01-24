@@ -108,7 +108,7 @@ public class LeadsManagementRest implements ResourceContainer {
       leadsManagementService.addLeadInfo(lead, true);
       LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_id:{},form_name:{}\"",
                lead.getLead().getId(),
-               lead.getResponse().getFormName());
+              lead.getResponse()!=null?lead.getResponse().getFormName():"");
 
       return Response.ok("lead synchronized")
                      .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())

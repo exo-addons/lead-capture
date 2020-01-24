@@ -57,7 +57,7 @@ public class Utils {
 
   public static final String           NEW_RESPONSE_EVENT             = "leadCapture.newResponse.event";
 
-  public static final String           DATE_FORMAT                    = "yyyy-MM-dd";
+  public static final String           DATE_FORMAT                    = "d MMM yyyy HH:mm:ss";
 
   public static final String           EMPTY_STR                      = "";
 
@@ -125,9 +125,6 @@ public class Utils {
     return (mailTemplateDTO.getContents().get(0));
   }
 
-  public static SimpleDateFormat getFormatter() {
-    return formatter;
-  }
 
   public static ExoSocialActivity createActivity(LeadEntity lead) {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
@@ -197,7 +194,7 @@ public class Utils {
       commentJson.put("comment", comment.getComment());
       commentJson.put("author", author);
       commentJson.put("authorName", authorName);
-      commentJson.put(CREATION_DATE_FIELD_NAME, Utils.getFormatter().format(comment.getCreatedTime()));
+      commentJson.put(CREATION_DATE_FIELD_NAME, formatter.format(comment.getCreatedTime()));
       return commentJson;
     } catch (Exception e) {
       LOG.error("Cannot convert comment {} to json", comment.getId(), e);

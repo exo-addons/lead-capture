@@ -26,7 +26,7 @@
                     <b>Community Registration Date</b>
                 </div>
                 <div class="col-md-8">
-                    <div>{{lead.communityRegistrationDate}}</div>
+                    <div>{{lead.formattedCommunityRegistrationDate}}</div>
                 </div>
             </div>
         </v-expansion-panel-content>

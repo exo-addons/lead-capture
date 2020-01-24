@@ -70,6 +70,10 @@ public class LeadDTO implements Serializable {
 
   private String  formattedUpdatedDate;
 
+  private String  formattedCommunityRegistrationDate;
+
+  private String  formattedBlogSubscriptionDate;
+
   private String  activityId;
 
   private Long  taskId;

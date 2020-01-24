@@ -302,7 +302,7 @@
                                                 <b>Blog Subscription Date</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.blogSubscriptionDate}}</div>
+                                                <div>{{lead.formattedBlogSubscriptionDate}}</div>
                                             </div>
                                         </div>
 
