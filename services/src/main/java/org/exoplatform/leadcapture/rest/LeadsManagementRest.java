@@ -95,7 +95,7 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
     if (lead.getLead() == null || StringUtils.isEmpty(lead.getLead().getMail())) {
-      LOG.warn("Lead not captured, mail needs");
+      LOG.warn("Lead not captured, mail needed");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
     }
 
