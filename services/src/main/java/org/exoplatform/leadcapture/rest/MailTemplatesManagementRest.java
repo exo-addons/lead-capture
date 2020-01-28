@@ -55,7 +55,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   public Response add(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     try {
       mailTemplatesManagementService.addTemplate(templateDTO);
-      return Response.ok("lead synchronized").build();
+      return Response.status(Response.Status.NO_CONTENT).entity("Mail template created").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to add new template {}", templateDTO.getName(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -77,7 +77,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       }
       mailTemplatesManagementService.deleteTemplate(templateEntity);
       LOG.info("Template {} deleted by {}", id, sourceIdentity.getRemoteId());
-      return Response.ok().build();
+      return Response.status(Response.Status.NO_CONTENT).entity("Mail template deleted").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to delete template {}", id, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -91,7 +91,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   public Response update(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
     try {
       mailTemplatesManagementService.updateTemplate(templateDTO);
-      return Response.ok("template updated").build();
+      return Response.status(Response.Status.NO_CONTENT).entity("Mail template updated").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to update template {}", templateDTO.getId(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

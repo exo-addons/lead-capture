@@ -95,12 +95,13 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.BAD_REQUEST).build();
     }
     if (lead.getLead() == null || StringUtils.isEmpty(lead.getLead().getMail())) {
+      LOG.warn("Lead not captured, mail needs");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
     }
 
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
       LOG.warn("Lead capture not enabled, New lead {} not captured ", lead.getLead().getId());
-      return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+      return Response.status(Response.Status.NOT_FOUND).build();
     }
     LOG.info("start adding lead {}", lead.toString());
     try {
@@ -110,7 +111,7 @@ public class LeadsManagementRest implements ResourceContainer {
                lead.getLead().getId(),
               lead.getResponse()!=null?lead.getResponse().getFormName():"");
 
-      return Response.ok("lead synchronized")
+      return Response.status(Response.Status.NO_CONTENT).entity("lead synchronized")
                      .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
                      .build();
 
@@ -139,7 +140,7 @@ public class LeadsManagementRest implements ResourceContainer {
       }
       leadsManagementService.deleteLead(lead);
       LOG.info("Lead {} deleted by {}", lead.getId(), sourceIdentity.getRemoteId());
-      return Response.ok().build();
+      return Response.status(Response.Status.NO_CONTENT).entity("lead deleted").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to delete lead {}", id, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -158,10 +159,36 @@ public class LeadsManagementRest implements ResourceContainer {
     try {
       leadsManagementService.updateLead(lead);
       LOG.info("Lead {} edited by {}", lead.getId(), sourceIdentity.getRemoteId());
-      return Response.ok("lead updated").build();
+      return Response.status(Response.Status.NO_CONTENT).entity("lead updated").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to update lead {}", id, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GET
+  @Path("suspend/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response suspend(@Context UriInfo uriInfo, @HeaderParam("token") String headerToken, @PathParam("id") Long id) throws Exception {
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+/*    String captureToken  = System.getProperty(LEAD_CAPTURE_TOKEN);
+    if (headerToken == null) {
+      LOG.warn("Security Token for Lead capture not defined");
+      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, Security Token not defined").build();
+    }
+    if (captureToken == null || !captureToken.equals(headerToken)) {
+      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
+      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, wrong token").build();
+    }*/
+    try {
+      leadsManagementService.suspendLead(id);
+      LOG.info("Lead {} suspended", id);
+      return Response.status(Response.Status.NO_CONTENT).entity("lead suspended")
+              .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
+              .build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to suspend lead {}", id, e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain()).build();
     }
   }
 
@@ -177,7 +204,7 @@ public class LeadsManagementRest implements ResourceContainer {
     try {
       leadsManagementService.assigneLead(lead.getId(), lead.getAssignee());
       LOG.info("Lead {} assigned to {} by {}", lead.getId(), lead.getAssignee(), sourceIdentity.getRemoteId());
-      return Response.ok("lead assigned").build();
+      return Response.status(Response.Status.NO_CONTENT).entity("lead assigned").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to assign lead {} to {}", lead.getId(), lead.getAssignee(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -196,7 +223,7 @@ public class LeadsManagementRest implements ResourceContainer {
     try {
       leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
       LOG.info("Lead {} status updated to {} by {}", lead.getId(), lead.getStatus(), sourceIdentity.getRemoteId());
-      return Response.ok("lead status updated").build();
+      return Response.status(Response.Status.NO_CONTENT).entity("lead status updated").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to update lead {} status to {}", lead.getId(), lead.getStatus(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

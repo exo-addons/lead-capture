@@ -1,10 +1,7 @@
 package org.exoplatform.leadcapture.rest;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,15 +40,15 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
 
   @GET
   @Path("settings")
+  @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("administrators")
   public Response getSettings(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
-      return Response.ok(leadCaptureSettingsService.getSettings(), mediaType).build();
+      return Response.ok(leadCaptureSettingsService.getSettings()).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get capture settings",e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -60,17 +57,17 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
 
   @POST
   @Path("settings")
+  @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("administrators")
   public Response save(@Context UriInfo uriInfo, LeadCaptureSettings settings) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       leadCaptureSettingsService.saveSettings(settings);
       LOG.info("Lead capture settings updated by {}", sourceIdentity.getRemoteId());
-      return Response.ok("settingsUpdated", mediaType).build();
+      return Response.status(Response.Status.NO_CONTENT).entity("Settings updated").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to set capture settings",e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -79,13 +76,13 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
 
   @GET
   @Path("context")
+  @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response getContext(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    MediaType mediaType = RestChecker.checkSupportedFormat("json", SUPPORTED_FORMATS);
     try {
       LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
       JSONObject context = new JSONObject();
@@ -93,7 +90,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
       context.put("currentUserFullName", sourceIdentity.getProfile().getFullName());
       context.put("isManager", isManager(sourceIdentity.getRemoteId(), settings.getUserExperienceGroup()));
       context.put("leadCaptureConfigured", isConfigured(settings));
-      return Response.ok(context.toString(), mediaType).build();
+      return Response.ok(context.toString()).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get capture context",e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
