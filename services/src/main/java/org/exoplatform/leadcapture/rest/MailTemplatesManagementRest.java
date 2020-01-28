@@ -32,7 +32,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   }
 
   @GET
-  @Path("template")
+  @Path("templates")
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response getTemplates(@Context UriInfo uriInfo) throws Exception {
@@ -49,7 +49,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   }
 
   @POST
-  @Path("template")
+  @Path("templates")
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response add(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
@@ -63,7 +63,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   }
 
   @DELETE
-  @Path("template/{id}")
+  @Path("templates/{id}")
   @RolesAllowed("ux-team")
   public Response delete(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
@@ -85,7 +85,7 @@ public class MailTemplatesManagementRest implements ResourceContainer {
   }
 
   @PUT
-  @Path("template")
+  @Path("templates")
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response update(@Context UriInfo uriInfo, MailTemplateDTO templateDTO) throws Exception {
