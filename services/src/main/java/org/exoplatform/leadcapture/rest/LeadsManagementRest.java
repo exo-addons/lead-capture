@@ -92,7 +92,8 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, wrong token").build();
     }*/
     if (lead == null) {
-      return Response.status(Response.Status.BAD_REQUEST).build();
+      LOG.warn("Lead not captured, lead is null");
+      return Response.status(Response.Status.BAD_REQUEST).entity("Lead is null").build();
     }
     if (lead.getLead() == null || StringUtils.isEmpty(lead.getLead().getMail())) {
       LOG.warn("Lead not captured, mail needed");
