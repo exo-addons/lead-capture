@@ -1,0 +1,121 @@
+<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
+                  xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
+
+
+    <portal-skin>
+        <skin-name>Default</skin-name>
+        <skin-module>lead-capture</skin-module>
+        <css-path>/css/platform.css</css-path>
+        <css-priority>10</css-priority>
+    </portal-skin>
+
+    <portal-skin>
+        <skin-name>Enterprise</skin-name>
+        <skin-module>lead-capture</skin-module>
+        <css-path>/css/platform.css</css-path>
+        <css-priority>10</css-priority>
+    </portal-skin>
+
+    <portal-skin>
+        <skin-name>Default</skin-name>
+        <skin-module>customModuleVuetify</skin-module>
+        <css-path>/../eXoSkin/skin/css/vuetify/vuetify-all.css</css-path>
+        <css-priority>10</css-priority>
+    </portal-skin>
+    <portal-skin>
+        <skin-name>Enterprise</skin-name>
+        <skin-module>customModuleVuetify</skin-module>
+        <css-path>/../EnterpriseSkin/skin/css/vuetify/vuetify-all.css</css-path>
+        <css-priority>10</css-priority>
+    </portal-skin>
+
+    <portal-skin>
+        <skin-name>Default</skin-name>
+        <skin-module>customModuleLeadCapture</skin-module>
+        <css-path>/css/leadsManagement.css</css-path>
+        <css-priority>11</css-priority>
+    </portal-skin>
+
+    <portal-skin>
+        <skin-name>Enterprise</skin-name>
+        <skin-module>customModuleLeadCapture</skin-module>
+        <css-path>/css/leadsManagement.css</css-path>
+        <css-priority>11</css-priority>
+    </portal-skin>
+
+    <portlet>
+        <name>leadsManagement</name>
+        <module>
+            <depends>
+                <module>leadsManagementjs</module>
+            </depends>
+        </module>
+    </portlet>
+
+    <portlet>
+        <name>mailTemplatesManagement</name>
+        <module>
+            <depends>
+                <module>mailTemplatesManagementjs</module>
+            </depends>
+        </module>
+    </portlet>
+
+    <portlet>
+        <name>leadCaptureSettings</name>
+        <module>
+            <depends>
+                <module>leadCaptureSettingsjs</module>
+            </depends>
+        </module>
+    </portlet>
+
+    <module>
+        <name>leadsManagementjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/leadsManagement.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>mailTemplatesManagementjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/mailTemplatesManagement.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+    </module>
+
+    <module>
+        <name>leadCaptureSettingsjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/leadCaptureSettings.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+    </module>
+
+
+</gatein-resources>
+

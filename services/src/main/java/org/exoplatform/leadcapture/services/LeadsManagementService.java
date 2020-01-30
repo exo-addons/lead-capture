@@ -1,0 +1,490 @@
+package org.exoplatform.leadcapture.services;
+
+import static org.exoplatform.leadcapture.Utils.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.leadcapture.Utils;
+import org.exoplatform.leadcapture.dao.FieldDAO;
+import org.exoplatform.leadcapture.dao.FormDAO;
+import org.exoplatform.leadcapture.dao.LeadDAO;
+import org.exoplatform.leadcapture.dao.ResponseDAO;
+import org.exoplatform.leadcapture.dto.*;
+import org.exoplatform.leadcapture.entity.FieldEntity;
+import org.exoplatform.leadcapture.entity.FormEntity;
+import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.entity.ResponseEntity;
+import org.exoplatform.services.listener.ListenerService;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Status;
+import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.service.TaskService;
+
+public class LeadsManagementService {
+
+  private final Log       LOG = ExoLogger.getLogger(LeadsManagementService.class);
+
+  private LeadDAO         leadDAO;
+
+  private FormDAO         formDAO;
+
+  private FieldDAO        fieldDAO;
+
+  private ResponseDAO     responseDAO;
+
+  private ListenerService listenerService;
+
+  private TaskService     taskService;
+
+  private StatusService   statusService;
+
+  private ProjectService  projectService;
+
+  public LeadsManagementService(LeadDAO leadDAO,
+                                FormDAO formDAO,
+                                FieldDAO fieldDAO,
+                                ResponseDAO responseDAO,
+                                TaskService taskService,
+                                StatusService statusService,
+                                ProjectService projectService,
+                                ListenerService listenerService) {
+    this.leadDAO = leadDAO;
+    this.formDAO = formDAO;
+    this.fieldDAO = fieldDAO;
+    this.responseDAO = responseDAO;
+    this.listenerService = listenerService;
+    this.taskService = taskService;
+    this.statusService = statusService;
+    this.projectService = projectService;
+  }
+
+  public LeadEntity addLeadInfo(FormInfo leadInfo, boolean broadcast) {
+    LeadEntity leadEntity = null;
+    try {
+      LeadDTO lead = leadInfo.getLead();
+      leadEntity = leadDAO.getLeadByMail(lead.getMail());
+      if (leadEntity == null) {
+        lead.setCreatedDate(new Date());
+        lead.setUpdatedDate(new Date());
+        if (lead.getStatus() == null) {
+          lead.setStatus(LEAD_DEFAULT_STATUS);
+        }
+        if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
+          lead.setBlogSubscriptionDate(new Date());
+        }
+        leadEntity = createLead(lead);
+        if (broadcast) {
+          listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
+        }
+      } else {
+        leadEntity = mergeLead(leadEntity, lead);
+        leadEntity.setUpdatedDate(new Date());
+        leadEntity = leadDAO.update(leadEntity);
+      }
+      if(leadInfo.getResponse()!=null){
+        addResponse(leadInfo.getResponse(), leadEntity);
+      }
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to synchronize lead", e);
+    }
+    return leadEntity;
+  }
+
+  public LeadEntity createLead(LeadDTO lead) {
+    return leadDAO.create(toLeadEntity(lead));
+  }
+
+  public void deleteLead(LeadEntity lead) {
+    try {
+      List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
+      for (ResponseEntity responseEntity : responseEntities) {
+        fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
+      }
+      responseDAO.deleteAll(responseEntities);
+      leadDAO.delete(lead);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void updateLead(LeadDTO lead) {
+    try {
+      lead.setUpdatedDate(new Date());
+      leadDAO.update(toLeadEntity(lead));
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void assigneLead(Long leadId, String assignee) {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setUpdatedDate(new Date());
+      leadEntity.setAssignee(assignee);
+      leadDAO.update(leadEntity);
+      Task task = taskService.getTask(leadEntity.getTaskId());
+      task.setAssignee(assignee);
+      taskService.updateTask(task);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public void updateStatus(Long leadId, String status) {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setUpdatedDate(new Date());
+      leadEntity.setStatus(status);
+      leadDAO.update(leadEntity);
+      Task task = taskService.getTask(leadEntity.getTaskId());
+      LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+      LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
+      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject()).getId());
+      Status newStatus = null;
+      for (Status status_ : statuses) {
+        if (status_.getName().equals(status)) {
+          newStatus = status_;
+        }
+      }
+      if (newStatus != null) {
+        task.setStatus(newStatus);
+        taskService.updateTask(task);
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
+  public List<LeadDTO> getLeads() {
+    List<LeadDTO> leadsList = new ArrayList<>();
+    List<LeadEntity> leadsEntities = leadDAO.findAll();
+    if (leadsEntities != null) {
+      for (LeadEntity leadEntity : leadsEntities) {
+        if (leadEntity != null) {
+          leadsList.add(toLeadDto(leadEntity));
+        }
+      }
+    }
+    return leadsList;
+  }
+
+  public JSONArray getResponses(long leadId) {
+    JSONArray formResponsesList = new JSONArray();
+    List<FormEntity> formEntities = formDAO.findAll();
+    for (FormEntity formEntity : formEntities) {
+      try {
+        JSONObject formResponse = new JSONObject();
+        formResponse.put("form", toFormJson(formEntity));
+        List<ResponseEntity> responsesEntities = responseDAO.getResponsesByForm(formEntity.getId(), leadId);
+        if (responsesEntities != null && responsesEntities.size() > 0) {
+          JSONArray responsesList = new JSONArray();
+          for (ResponseEntity responseEntity : responsesEntities) {
+
+            if (responseEntity != null) {
+              responseEntity.setFilelds(fieldDAO.getFieldsByResponse(responseEntity.getId()));
+              responsesList.put(Utils.toResponseJson(responseEntity));
+            }
+          }
+          formResponse.put("responses", responsesList);
+          formResponsesList.put(formResponse);
+        }
+      } catch (Exception e) {
+        LOG.error("Cannot get responses for form {}", formEntity.getName(), e);
+      }
+
+    }
+
+    return formResponsesList;
+  }
+
+  public void addResponse(ResponseDTO responseDTO, LeadEntity leadEntity) {
+
+    try {
+      FormEntity formEntity = formDAO.getFormByName(responseDTO.getFormName());
+      if (formEntity == null) {
+        String fields = responseDTO.getFields().stream().map(n -> n.getName()).collect(Collectors.joining(","));
+        if (!fields.contains(CREATION_DATE_FIELD_NAME)) {
+          fields = (fields.concat("," + CREATION_DATE_FIELD_NAME));
+        }
+        formEntity = createForm(new FormEntity(responseDTO.getFormName(), fields));
+      } else {
+        String fields = formEntity.getFields();
+        List<String> fieldList = new ArrayList<String>(Arrays.asList(fields.split(",")));
+        if (!fieldList.contains(CREATION_DATE_FIELD_NAME)) {
+          fieldList.add(CREATION_DATE_FIELD_NAME);
+        }
+        boolean changed = false;
+        for (FieldDTO field : responseDTO.getFields()) {
+          if (!fieldList.contains(field.getName())) {
+            fieldList.add(field.getName());
+            changed = true;
+          }
+        }
+        if (changed) {
+          fields = fieldList.stream().collect(Collectors.joining(FIELDS_DELIMITER));
+          formEntity.setFields(fields);
+          updateForm(formEntity);
+        }
+      }
+      ResponseEntity responseEntity = new ResponseEntity(formEntity, leadEntity);
+      responseEntity = createResponse(responseEntity);
+
+      for (FieldDTO field : responseDTO.getFields()) {
+        FieldEntity fieldEntity = new FieldEntity(field.getName(), field.getValue(), responseEntity);
+        fieldDAO.create(fieldEntity);
+      }
+      listenerService.broadcast(NEW_RESPONSE_EVENT, leadEntity, responseEntity);
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to add response", e);
+    }
+  }
+
+  public FormEntity createForm(FormEntity formEntity) {
+
+    return formDAO.create(formEntity);
+  }
+
+  public FormEntity updateForm(FormEntity formEntity) {
+
+    return formDAO.update(formEntity);
+  }
+
+  public ResponseEntity createResponse(ResponseEntity responseEntity) {
+    responseEntity.setCreatedDate(new Date());
+    return responseDAO.create(responseEntity);
+  }
+
+  public LeadEntity getLeadbyId(long id) {
+    return leadDAO.find(id);
+  }
+
+  public LeadEntity getLeadByMail(String mail) {
+    return leadDAO.getLeadByMail(mail);
+  }
+
+  public LeadEntity getLeadByTask(Long taslId) {
+    return leadDAO.getLeadByTask(taslId);
+  }
+
+  public JSONArray getTaskComments(long taskId) {
+    return Utils.getCommentsJson(taskService.getComments(taskId));
+  }
+
+  public JSONObject addTaskComment(long taskId, String username, String comment) {
+    try {
+      Comment comment_ = taskService.addComment(taskId, username, comment);
+      OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
+      return Utils.commentToJson(comment_,
+                                 comment_.getAuthor(),
+                                 organizationService.getUserHandler().findUserByName(comment_.getAuthor()).getDisplayName());
+    } catch (EntityNotFoundException enf) {
+      LOG.error("Cannot Add Comment", enf);
+    } catch (Exception e) {
+      LOG.error("Cannot conevert comment to json", e);
+    }
+    return null;
+  }
+
+  public LeadEntity mergeLead(LeadEntity leadEntity, LeadDTO leadDTO) {
+
+    if (!StringUtils.isEmpty(leadDTO.getFirstName()))
+      leadEntity.setFirstName(leadDTO.getFirstName());
+    if (!StringUtils.isEmpty(leadDTO.getLastName()))
+      leadEntity.setLastName(leadDTO.getLastName());
+    if (!StringUtils.isEmpty(leadDTO.getCompany()))
+      leadEntity.setCompany(leadDTO.getCompany());
+    if (!StringUtils.isEmpty(leadDTO.getPosition()))
+      leadEntity.setPosition(leadDTO.getPosition());
+    if (!StringUtils.isEmpty(leadDTO.getCountry()))
+      leadEntity.setCountry(leadDTO.getCountry());
+    if (!StringUtils.isEmpty(leadDTO.getStatus()))
+      leadEntity.setStatus(leadDTO.getStatus());
+    if (!StringUtils.isEmpty(leadDTO.getPhone()))
+      leadEntity.setPhone(leadDTO.getPhone());
+    if (!StringUtils.isEmpty(leadDTO.getLanguage()))
+      leadEntity.setLanguage(leadDTO.getLanguage());
+    if (!StringUtils.isEmpty(leadDTO.getAssignee()))
+      leadEntity.setAssignee(leadDTO.getAssignee());
+    if (!StringUtils.isEmpty(leadDTO.getGeographiqueZone()))
+      leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
+    if (!StringUtils.isEmpty(leadDTO.getCaptureMethod()))
+      leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
+    if (!StringUtils.isEmpty(leadDTO.getCaptureType()))
+      leadEntity.setCaptureType(leadDTO.getCaptureType());
+    if ((leadEntity.getBlogSubscription()==null || !leadEntity.getBlogSubscription()) && leadDTO.getBlogSubscription() != null ) {
+      leadEntity.setBlogSubscription(true);
+      leadEntity.setBlogSubscriptionDate(new Date());
+    }
+    if (!StringUtils.isEmpty(leadDTO.getCommunityUserName()))
+      leadEntity.setCommunityUserName(leadDTO.getCommunityUserName());
+    if (leadDTO.getCommunityRegistration() != null)
+      leadEntity.setCommunityRegistration(leadDTO.getCommunityRegistration());
+    if (!StringUtils.isEmpty(leadDTO.getCommunityRegistrationMethod()))
+      leadEntity.setCommunityRegistrationMethod(leadDTO.getCommunityRegistrationMethod());
+    if (leadDTO.getCommunityRegistrationDate() != null)
+      leadEntity.setCommunityRegistrationDate(leadDTO.getCommunityRegistrationDate());
+    return leadEntity;
+  }
+
+  public JSONObject toFormJson(FormEntity formEntity) throws JSONException {
+    JSONObject formJson = new JSONObject();
+    formJson.put("id", formEntity.getId());
+    formJson.put("name", formEntity.getName());
+    formJson.put("fields", formEntity.getFields().split(","));
+    return formJson;
+  }
+
+  public LeadDTO toLeadDto(LeadEntity leadEntity) {
+    LeadDTO leadDTO = new LeadDTO();
+    leadDTO.setId(leadEntity.getId());
+    leadDTO.setMail(leadEntity.getMail());
+    leadDTO.setFirstName(leadEntity.getFirstName());
+    leadDTO.setLastName(leadEntity.getLastName());
+    leadDTO.setCompany(leadEntity.getCompany());
+    leadDTO.setPosition(leadEntity.getPosition());
+    leadDTO.setCountry(leadEntity.getCountry());
+    leadDTO.setStatus(leadEntity.getStatus());
+    leadDTO.setPhone(leadEntity.getPhone());
+    if(leadEntity.getCreatedDate()!=null)leadDTO.setCreatedDate(leadEntity.getCreatedDate());
+    leadDTO.setFormattedCreatedDate(formatter.format(leadEntity.getCreatedDate()));
+    leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
+    if(leadEntity.getUpdatedDate()!=null)leadDTO.setFormattedUpdatedDate(formatter.format(leadEntity.getUpdatedDate()));
+    leadDTO.setLanguage(leadEntity.getLanguage());
+    leadDTO.setAssignee(leadEntity.getAssignee());
+    leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());
+    leadDTO.setMarketingSuspended(leadEntity.getMarketingSuspended());
+    leadDTO.setMarketingSuspendedCause(leadEntity.getMarketingSuspendedCause());
+    leadDTO.setCaptureMethod(leadEntity.getCaptureMethod());
+    leadDTO.setCaptureType(leadEntity.getCaptureType());
+    leadDTO.setBlogSubscription(leadEntity.getBlogSubscription());
+    leadDTO.setBlogSubscriptionDate(leadEntity.getBlogSubscriptionDate());
+    if(leadEntity.getBlogSubscriptionDate()!=null)leadDTO.setFormattedBlogSubscriptionDate(formatter.format(leadEntity.getBlogSubscriptionDate()));
+    leadDTO.setCommunityUserName(leadEntity.getCommunityUserName());
+    leadDTO.setCommunityRegistration(leadEntity.getCommunityRegistration());
+    leadDTO.setCommunityRegistrationMethod(leadEntity.getCommunityRegistrationMethod());
+    leadDTO.setCommunityRegistrationDate(leadEntity.getCommunityRegistrationDate());
+    if(leadEntity.getCommunityRegistrationDate()!=null)leadDTO.setFormattedCommunityRegistrationDate(formatter.format(leadEntity.getCommunityRegistrationDate()));
+    leadDTO.setPersonSource(leadEntity.getPersonSource());
+    leadDTO.setLandingPageInfo(leadEntity.getLandingPageInfo());
+    leadDTO.setCaptureSourceInfo(leadEntity.getCaptureSourceInfo());
+    leadDTO.setPersonIp(leadEntity.getPersonIp());
+    leadDTO.setOriginalReferrer(leadEntity.getOriginalReferrer());
+    leadDTO.setTaskId(leadEntity.getTaskId());
+    leadDTO.setTaskUrl(leadEntity.getTaskUrl());
+    leadDTO.setActivityId(leadEntity.getActivityId());
+    return leadDTO;
+  }
+
+  public LeadEntity toLeadEntity(LeadDTO leadDTO) {
+    LeadEntity leadEntity = new LeadEntity();
+    leadEntity.setId(leadDTO.getId());
+    leadEntity.setMail(leadDTO.getMail());
+    leadEntity.setFirstName(leadDTO.getFirstName());
+    leadEntity.setLastName(leadDTO.getLastName());
+    leadEntity.setCompany(leadDTO.getCompany());
+    leadEntity.setPosition(leadDTO.getPosition());
+    leadEntity.setCountry(leadDTO.getCountry());
+    leadEntity.setStatus(leadDTO.getStatus());
+    leadEntity.setPhone(leadDTO.getPhone());
+    leadEntity.setCreatedDate(leadDTO.getCreatedDate());
+    leadEntity.setUpdatedDate(leadDTO.getUpdatedDate());
+    leadEntity.setLanguage(leadDTO.getLanguage());
+    leadEntity.setAssignee(leadDTO.getAssignee());
+    leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
+    leadEntity.setMarketingSuspended(leadDTO.getMarketingSuspended());
+    leadEntity.setMarketingSuspendedCause(leadDTO.getMarketingSuspendedCause());
+    leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
+    leadEntity.setCaptureType(leadDTO.getCaptureType());
+    leadEntity.setBlogSubscription(leadDTO.getBlogSubscription());
+    leadEntity.setBlogSubscriptionDate(leadDTO.getBlogSubscriptionDate());
+    leadEntity.setCommunityUserName(leadDTO.getCommunityUserName());
+    leadEntity.setCommunityRegistration(leadDTO.getCommunityRegistration());
+    leadEntity.setCommunityRegistrationMethod(leadDTO.getCommunityRegistrationMethod());
+    leadEntity.setCommunityRegistrationDate(leadDTO.getCommunityRegistrationDate());
+    leadEntity.setPersonSource(leadDTO.getPersonSource());
+    leadEntity.setLandingPageInfo(leadDTO.getLandingPageInfo());
+    leadEntity.setCaptureSourceInfo(leadDTO.getCaptureSourceInfo());
+    leadEntity.setPersonIp(leadDTO.getPersonIp());
+    leadEntity.setOriginalReferrer(leadDTO.getOriginalReferrer());
+    leadEntity.setTaskId(leadDTO.getTaskId());
+    leadEntity.setTaskUrl(leadDTO.getTaskUrl());
+    leadEntity.setActivityId(leadDTO.getActivityId());
+    return leadEntity;
+  }
+
+  public FieldDTO toFieldDto(FieldEntity fieldEntity) {
+    FieldDTO fieldDTO = new FieldDTO();
+    fieldDTO.setId(fieldEntity.getId());
+    fieldDTO.setName(fieldEntity.getName());
+    fieldDTO.setValue(fieldEntity.getValue());
+    return fieldDTO;
+  }
+
+  public FieldEntity toFieldEntity(FieldDTO fieldDTO) {
+    FieldEntity fieldEntity = new FieldEntity();
+    fieldEntity.setId(fieldDTO.getId());
+    fieldEntity.setName(fieldDTO.getName());
+    fieldEntity.setValue(fieldDTO.getValue());
+    return fieldEntity;
+  }
+
+  public FormDTO toFormDto(FormEntity formEntity) {
+    FormDTO formDTO = new FormDTO();
+    formDTO.setId(formEntity.getId());
+    formDTO.setName(formEntity.getName());
+    formDTO.setFields(formEntity.getFields());
+    return formDTO;
+  }
+
+  public FormEntity toFormEntity(FormDTO formDTO) {
+    FormEntity formEntity = new FormEntity();
+    formEntity.setId(formDTO.getId());
+    formEntity.setName(formDTO.getName());
+    formEntity.setFields(formDTO.getFields());
+    return formEntity;
+  }
+
+  public ResponseDTO toResponseDto(ResponseEntity responseEntity) {
+    ResponseDTO responseDTO = new ResponseDTO();
+    responseDTO.setId(responseEntity.getId());
+    responseDTO.setForm(toFormDto(responseEntity.getFormEntity()));
+    List<FieldDTO> fields = new ArrayList<>();
+    for (FieldEntity fieald : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
+      fields.add(toFieldDto(fieald));
+    }
+    responseDTO.setFields(fields);
+    return responseDTO;
+  }
+
+  public ResponseEntity toResponseEntity(ResponseDTO responseDTO) {
+    ResponseEntity responseEntity = new ResponseEntity();
+    responseEntity.setId(responseDTO.getId());
+    responseEntity.setFormEntity(toFormEntity(responseDTO.getForm()));
+    List<FieldEntity> fields = new ArrayList<>();
+    for (FieldDTO fieald : responseDTO.getFields()) {
+      fields.add(toFieldEntity(fieald));
+    }
+    responseEntity.setFilelds(fields);
+    return responseEntity;
+  }
+
+}
