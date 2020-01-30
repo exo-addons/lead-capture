@@ -7,31 +7,31 @@ import lombok.Data;
 @Data
 public class LeadCaptureSettings implements Serializable, Cloneable {
 
-  private static final long serialVersionUID          = -5725443183560646198L;
+  private static final long serialVersionUID           = -5725443183560646198L;
 
-  private Integer           dataVersion               = 0;
+  private Integer           dataVersion                = 0;
 
-  private String            userExperienceSpace       = null;
+  private String            userExperienceSpace        = null;
 
-  private String            userExperienceGroup       = null;
+  private String            userExperienceGroup        = null;
 
-  private String            userExperienceBotUserName = null;
+  private String            userExperienceBotUserName  = null;
 
-  private String            leadTaskProject           = null;
+  private String            leadTaskProject            = null;
 
-  private String            senderMail                = null;
+  private String            senderMail                 = null;
 
-  private boolean           mailingEnabled;
+  private boolean           mailingEnabled             =false;
 
-  private boolean           captureEnabled;
+  private boolean           captureEnabled             =false;
 
-  private String            allowedCaptureSourceDomain;
+  private String            allowedCaptureSourceDomain = null;
 
-  private String            resourcesIdentifier;
+  private String            resourcesIdentifier        = null;
 
-  private String            mailsBlackList;
+  private String            mailsBlackList             = null;
 
-  private String            autoOpeningForms;
+  private String            autoOpeningForms           = null;
 
   public LeadCaptureSettings clone() { // NOSONAR
     try {

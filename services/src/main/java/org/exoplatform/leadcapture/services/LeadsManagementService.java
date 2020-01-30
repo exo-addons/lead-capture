@@ -115,6 +115,7 @@ public class LeadsManagementService {
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
               leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
+              lead.setStatus(LEAD_OPEN_STATUS);
             }
           }
         }
@@ -191,7 +192,7 @@ public class LeadsManagementService {
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
       if (leadEntity.getTaskId() == null) {
-        if (status != LEAD_DEFAULT_STATUS) {
+        if (!status.equals(LEAD_DEFAULT_STATUS)) {
           Task task_ = createTask(leadEntity);
           if (task_ != null) {
             leadEntity.setTaskId(task_.getId());
@@ -370,6 +371,9 @@ public class LeadsManagementService {
                                                           .getId());
       Task task = new Task();
       task.setTitle(lead.getMail());
+      if(StringUtils.isNoneEmpty(lead.getFirstName())&&StringUtils.isNoneEmpty(lead.getLastName())){
+        task.setTitle(lead.getFirstName()+" "+lead.getLastName());
+      }
       task.setDescription("");
       task.setStatus(status);
       task.setCreatedBy(settings.getUserExperienceBotUserName());

@@ -127,7 +127,7 @@
                     </div>
                     <div class="col-md-5">
                         <div class="profile-head">
-                            <h1>{{lead.name}}</h1>
+                            <h1>{{lead.firstName}} {{lead.lastName}}</h1>
                             <h4>{{lead.mail}}</h4>
                             <h6>{{lead.company}}</h6>
                             <h6>{{lead.position}}</h6>
