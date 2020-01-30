@@ -48,17 +48,5 @@ export default {
     components: {
         responsesList,
     },
-    data() {
-        return {
-            // formResponses:[]
-        }
-    },
-    created() {
-        //  this.initialize()     
-    },
-
-    methods: {
-
-    }
 };
 </script>

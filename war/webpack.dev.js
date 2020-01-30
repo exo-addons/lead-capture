@@ -22,6 +22,7 @@ module.exports = merge(webpackCommonConfig, {
   entry: {
     leadsManagement: './src/main/webapp/vue-app/leadsManagement-dev.js',
     mailTemplatesManagement: './src/main/webapp/vue-app/mailTemplatesManagement-dev.js',
+    resourcesManagement: './src/main/webapp/vue-app/resourcesManagement-dev.js',
     leadCaptureSettings: './src/main/webapp/vue-app/leadCaptureSettings-dev.js'
   },
   output: {

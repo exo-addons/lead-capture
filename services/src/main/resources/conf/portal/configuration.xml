@@ -30,6 +30,10 @@
     </component>
 
     <component>
+        <type>org.exoplatform.leadcapture.dao.ResourceDAO</type>
+    </component>
+
+    <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
     <component>
@@ -42,6 +46,9 @@
         <type>org.exoplatform.leadcapture.services.LeadCaptureSettingsService</type>
     </component>
     <component>
+        <type>org.exoplatform.leadcapture.services.ResourcesManagementService</type>
+    </component>
+    <component>
         <type>org.exoplatform.leadcapture.rest.LeadsManagementRest</type>
     </component>
     <component>
@@ -49,6 +56,9 @@
     </component>
     <component>
         <type>org.exoplatform.leadcapture.rest.LeadCaptureSettingsRest</type>
+    </component>
+    <component>
+        <type>org.exoplatform.leadcapture.rest.ResoucesManagementRest</type>
     </component>
 
     <external-component-plugins>
@@ -110,7 +120,6 @@
             </init-params>
         </component-plugin>
     </external-component-plugins>
-
 
 
 </configuration>

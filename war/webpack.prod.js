@@ -21,6 +21,7 @@ const config = merge(webpackCommonConfig, {
   entry: {
     leadsManagement: './src/main/webapp/vue-app/leadsManagement.js',
     mailTemplatesManagement: './src/main/webapp/vue-app/mailTemplatesManagement.js',
+    resourcesManagement: './src/main/webapp/vue-app/resourcesManagement.js',
     leadCaptureSettings: './src/main/webapp/vue-app/leadCaptureSettings.js'
 
   },

@@ -45,7 +45,9 @@ import org.exoplatform.ws.frameworks.json.impl.*;
 public class Utils {
   private static final Log             LOG                            = ExoLogger.getLogger(Utils.class);
 
-  public static final String           LEAD_DEFAULT_STATUS            = "Open";
+  public static final String           LEAD_DEFAULT_STATUS            = "Raw";
+
+  public static final String           LEAD_OPEN_STATUS            = "Open";
 
   public static final String           CREATION_DATE_FIELD_NAME       = "createdDate";
 
@@ -78,6 +80,12 @@ public class Utils {
   public static final String           ALLOWED_MAIL_DOMAIN            = "leadCapture.allowed.mail.domain";
 
   public static final String           LEAD_CAPTURE_TOKEN             = "leadCapture.security.token";
+
+  public static final String[]         LC_STATUSES                    = { "Open", "Attempted", "Contacted", "Qualified","Recycled", "Accepted"};
+
+  public static final String           CASE_STUDY                     = "case-study";
+
+  public static final String           WHITE_PAPER                    = "white-paper";
 
   public static final JsonParser       JSON_PARSER                    = new JsonParserImpl();
 
@@ -124,7 +132,6 @@ public class Utils {
     }
     return (mailTemplateDTO.getContents().get(0));
   }
-
 
   public static ExoSocialActivity createActivity(LeadEntity lead) {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);

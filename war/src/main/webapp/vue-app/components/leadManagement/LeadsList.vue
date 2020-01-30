@@ -21,7 +21,7 @@
                 <v-toolbar color="white" flat>
                     <div class="flex-grow-1"></div>
                     <v-col cols="8" md="2" sm="4">
-                        <v-select :items="zones" label="Geo Zone"></v-select>
+                        <v-select :items="statusList" label="Status"></v-select>
                     </v-col>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-switch class="mt-2" label="Only unassigned" v-model="notassigned"></v-switch>
@@ -112,6 +112,34 @@ export default {
         leadDetails,
     },
     data: () => ({
+        statusList: [{
+                title: 'All'
+            },
+            {
+                title: 'Raw'
+            },
+            {
+                title: 'Open'
+            },
+            {
+                title: 'Attempted'
+            },
+            {
+                title: 'Contacted'
+            },
+            {
+                title: 'Qualified'
+            },
+            {
+                title: 'Recycled'
+            },
+            {
+                title: 'Accepted'
+            },
+            {
+                title: 'Qualified'
+            },
+        ],
         valid: true,
         notassigned: false,
         myLeads: false,
@@ -179,13 +207,15 @@ export default {
         dialog(val) {
             return val === true || this.close() === true;
         },
-         myLeads: function (val) {
-             if(val){
-                this.leadList = this.allLeads.filter(item => {return item.assignee===this.context.currentUser})
-             }else{
-                 this.leadList = this.allLeads
-             }
-    }
+        myLeads: function (val) {
+            if (val) {
+                this.leadList = this.allLeads.filter(item => {
+                    return item.assignee === this.context.currentUser
+                })
+            } else {
+                this.leadList = this.allLeads
+            }
+        }
     },
     computed: {
         headers() {
@@ -202,25 +232,25 @@ export default {
                     value: 'mail',
                 },
                 {
-                    text: 'Company',
+                    text: 'Created Date',
                     align: 'center',
                     sortable: true,
-                    value: 'company',
+                    value: 'formattedCreatedDate',
                 },
                 {
-                    text: 'Position',
+                    text: 'Capture Method',
                     align: 'center',
                     sortable: true,
-                    value: 'position',
+                    value: 'captureMethod',
                 },
                 {
-                    text: 'Assignee',
+                    text: 'Owner',
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
                     filter: (value) => {
                         console.log(value)
-                        if (!this.notassigned ) {
+                        if (!this.notassigned) {
                             return true
                         }
                         return (this.notassigned && (value === null || value === {} || typeof (value) === 'undefined'))
@@ -250,7 +280,7 @@ export default {
                 .then((resp) => resp.json())
                 .then((resp) => {
                     this.leadList = resp;
-                    this.allLeads=resp;
+                    this.allLeads = resp;
                 });
 
             fetch(`/portal/rest/leadcapture/leadsmanagement/marketers`, {

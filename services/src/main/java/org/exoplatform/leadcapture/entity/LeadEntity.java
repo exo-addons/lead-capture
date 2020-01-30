@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 @NamedQueries({
     @NamedQuery(name = "LeadEntity.getLeadByMail", query = "SELECT lead FROM LeadEntity lead where lead.mail = :mail "),
-        @NamedQuery(name = "LeadEntity.getLeadByTask", query = "SELECT lead FROM LeadEntity lead where lead.taskId = :taskId ") })
+    @NamedQuery(name = "LeadEntity.getLeadByTask", query = "SELECT lead FROM LeadEntity lead where lead.taskId = :taskId ") })
 
 public class LeadEntity implements Serializable {
 
@@ -80,7 +80,7 @@ public class LeadEntity implements Serializable {
   protected Boolean blogSubscription;
 
   @Column(name = "BLOG_SUBSCRIPTION_DATE")
-  protected Date blogSubscriptionDate;
+  protected Date    blogSubscriptionDate;
 
   @Column(name = "COMMUNITY_USER_NAME")
   protected String  communityUserName;
@@ -113,8 +113,21 @@ public class LeadEntity implements Serializable {
   protected String  activityId;
 
   @Column(name = "TASK_ID")
-  protected Long  taskId;
+  protected Long    taskId;
 
   @Column(name = "TASK_URL")
   protected String  taskUrl;
+
+  @Column(name = "GOAL")
+  protected String  goal;
+
+  @Column(name = "USERS_NUMBER")
+  protected String  usersNumber;
+
+  @Column(name = "CURRENT_SOLUTION")
+  protected String  currentSolution;
+
+  @Column(name = "INTERACTION_SUMMARY")
+  protected String  interactionSummary;
+
 }

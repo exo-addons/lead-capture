@@ -30,6 +30,14 @@ select {
     box-shadow: none;
 }
 
+
+#leadsManagementApp .v-input textarea {
+    margin-bottom: 0;
+    border: 0 !important;
+    box-shadow: none;
+}
+
+
 #leadsManagementApp .v-toolbar .v-input {
     margin-left: 18px;
 }

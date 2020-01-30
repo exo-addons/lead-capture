@@ -148,7 +148,7 @@ export default {
     },
     methods: {
         initialize() {
-            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/template`, {
+            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/templates`, {
                     credentials: 'include',
                 })
                 .then((resp) => resp.json())
@@ -170,7 +170,7 @@ export default {
             this.showTable = true;
         },
         edit(item) {
-            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/template`, {
+            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/templates`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
@@ -204,7 +204,7 @@ export default {
         },
 
         delete_(item) {
-            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/template/` + item.id, {
+            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/templates/` + item.id, {
                     method: 'delete',
                     credentials: 'include',
                     headers: {
@@ -236,7 +236,7 @@ export default {
 
             this.templatesList.push(item);
 
-            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/template`, {
+            fetch(`/portal/rest/leadcapture/mailtemplatesmanagement/templates`, {
                     method: 'post',
                     credentials: 'include',
                     headers: {

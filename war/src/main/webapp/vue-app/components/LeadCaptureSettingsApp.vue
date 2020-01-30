@@ -1,44 +1,46 @@
 <template>
-    <v-app class="VuetifyApp" color="transaprent" id="leadCaptureSettingsApp">
-        <main>
-            <div :class="alert_type" class="alert" id v-if="alert">
-                <i :class="alertIcon"></i>
-                {{message}}
-            </div>
-            <v-flex>
-                <v-container id="template">
-                    <v-card outlined style="padding: 16px;">
-                        <v-form ref="form" v-model="valid">
-                            <v-text-field v-model="setting.userExperienceGroup" :rules="[rules.required]" label="UX team Group" required></v-text-field>
-                            <v-text-field v-model="setting.userExperienceSpace" :rules="[rules.required]" label="Lead Capture Space" required></v-text-field>
-                            <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
-                            <v-text-field v-model="setting.userExperienceBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
-                            <v-text-field v-model="setting.senderMail" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
-                            <v-text-field v-model="setting.leadCaptureToken" :rules="[rules.required]" label="Lead Capture Token" required></v-text-field>
-                            <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" label="Allowed lead Source Domain" required></v-text-field>
-                            <v-row>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-switch v-model="setting.mailingEnabled" label="Mailing Enabled"></v-switch>
-                                </v-col>
-                            </v-row>
-                            <v-card-actions>
-                                <div class="flex-grow-1"></div>
-                                <div class="uiAction">
-                                    <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">Save
-                                    </button>
-                                    <button @click="cancel()" class="btn" type="button">close
-                                    </button>
-                                </div>
-                            </v-card-actions>
-                        </v-form>
-                    </v-card>
-                </v-container>
-            </v-flex>
-        </main>
-    </v-app>
+<v-app class="VuetifyApp" color="transaprent" id="leadCaptureSettingsApp">
+    <main>
+        <div :class="alert_type" class="alert" id v-if="alert">
+            <i :class="alertIcon"></i>
+            {{message}}
+        </div>
+        <v-flex>
+            <v-container id="template">
+                <v-card outlined style="padding: 16px;">
+                    <v-form ref="form" v-model="valid">
+                        <v-text-field v-model="setting.userExperienceGroup" :rules="[rules.required]" label="UX team Group" required></v-text-field>
+                        <v-text-field v-model="setting.userExperienceSpace" :rules="[rules.required]" label="Lead Capture Space" required></v-text-field>
+                        <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
+                        <v-text-field v-model="setting.userExperienceBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
+                        <v-text-field v-model="setting.senderMail" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
+                        <v-text-field v-model="setting.resourcesIdentifier" label="Resources identifiers"></v-text-field>
+                        <v-text-field v-model="setting.autoOpeningForms" label="Auto opening forms"></v-text-field>
+                        <v-text-field v-model="setting.mailsBlackList" label="Mails Black List"></v-text-field>
+                        <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" label="Allowed lead Source Domain" required></v-text-field>
+                        <v-row>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-switch v-model="setting.mailingEnabled" label="Mailing Enabled"></v-switch>
+                            </v-col>
+                        </v-row>
+                        <v-card-actions>
+                            <div class="flex-grow-1"></div>
+                            <div class="uiAction">
+                                <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">Save
+                                </button>
+                                <button @click="cancel()" class="btn" type="button">close
+                                </button>
+                            </div>
+                        </v-card-actions>
+                    </v-form>
+                </v-card>
+            </v-container>
+        </v-flex>
+    </main>
+</v-app>
 </template>
 
 <script>
@@ -49,7 +51,7 @@ export default {
         alert_type: '',
         alertIcon: '',
         valid: true,
-        setting:{},
+        setting: {},
         rules: {
             required: value => !!value || 'Required.',
             counter: value => value.length >= 3 || 'Min 3 characters',
@@ -99,7 +101,7 @@ export default {
                     });
                 });
         },
-                displaySusccessMessage(message) {
+        displaySusccessMessage(message) {
             this.message = message;
             this.alert_type = 'alert-success';
             this.alertIcon = 'uiIconSuccess';

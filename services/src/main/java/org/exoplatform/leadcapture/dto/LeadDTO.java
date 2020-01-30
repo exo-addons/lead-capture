@@ -26,7 +26,7 @@ public class LeadDTO implements Serializable {
 
   private String  phone;
 
-  private Date createdDate;
+  private Date    createdDate;
 
   private Date    updatedDate;
 
@@ -76,7 +76,16 @@ public class LeadDTO implements Serializable {
 
   private String  activityId;
 
-  private Long  taskId;
+  private Long    taskId;
 
   private String  taskUrl;
+
+  private String  goal;
+
+  private String  usersNumber;
+
+  private String  currentSolution;
+
+  private String  interactionSummary;
+
 }

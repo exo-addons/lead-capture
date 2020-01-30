@@ -21,6 +21,12 @@
                 <label>Mail templates management</label>
                 <page-reference>group::/platform/ux-team::mail_templates_management</page-reference>
             </node>
+            <node>
+                <uri>resources_management</uri>
+                <name>resources_management</name>
+                <label>Resources management</label>
+                <page-reference>group::/platform/ux-team::resources_management</page-reference>
+            </node>
                 <node>
                     <uri>lead_capture_settings</uri>
                     <name>lead_capture_settings</name>

@@ -99,9 +99,13 @@ public class LeadsManagementRest implements ResourceContainer {
       LOG.warn("Lead not captured, mail needed");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
     }
+    if (isBlacklisted(lead.getLead().getMail())) {
+      LOG.warn("Cannot capture lead {}, lead mail blacklisted", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName());
+      return Response.status(Response.Status.UNAUTHORIZED).entity("lead mail blacklisted").build();
+    }
 
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
-      LOG.warn("Lead capture not enabled, New lead {} not captured ", lead.getLead().getId());
+      LOG.warn("Lead capture not enabled, New lead {} not captured ", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName());
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     LOG.info("start adding lead {}", lead.toString());
@@ -117,7 +121,7 @@ public class LeadsManagementRest implements ResourceContainer {
                      .build();
 
     } catch (Exception e) {
-      LOG.error("An error occured when trying to synchronise lead {}", lead.getLead(), e);
+      LOG.error("An error occured when trying to synchronise lead {}", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                      .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
                      .entity(e.getMessage())
@@ -304,6 +308,19 @@ public class LeadsManagementRest implements ResourceContainer {
       LOG.error("An error occured when trying to get marketers list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
+  }
+
+  public boolean isBlacklisted(String leadMail) {
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    String blackList = settings.getMailsBlackList();
+    if (StringUtils.isNotEmpty(blackList)) {
+      for (String mail_ : blackList.split(FIELDS_DELIMITER)) {
+        if (leadMail.contains(mail_)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 }

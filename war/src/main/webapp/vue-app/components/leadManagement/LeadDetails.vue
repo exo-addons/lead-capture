@@ -38,7 +38,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text v-if="context.isManager">Are you sure to delete the Lead</v-card-text>
-                <v-card-text v-else >Only Managers can delete leads, pleas contact your manager.</v-card-text>
+                <v-card-text v-else>Only Managers can delete leads, pleas contact your manager.</v-card-text>
 
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
@@ -149,10 +149,8 @@
                             </v-list>
                         </v-menu>
                         <div class="tl">Telemarketer infos</div>
-                        <b>Name:</b>
+
                         <p>{{lead.telemarketerFullName}}</p>
-                        <b>Mail:</b>
-                        <p>{{lead.telemarketerMail}}</p>
 
                     </div>
                 </div>
@@ -162,8 +160,8 @@
                             <v-tabs background-color="blue-grey lighten-5 icons-and-text" grow v-model="selectedTab">
                                 <v-tabs-slider color="primary" />
                                 <v-tab href="#leadInfo" key="leadInfo">Lead INfo</v-tab>
-                                <v-tab href="#leadSourceInfo" key="leadSourceInfo">Lead Source Info</v-tab>
                                 <v-tab href="#captureInfo" key="captureInfo">Capture Info</v-tab>
+                                <v-tab href="#projectInfo" key="projectInfo">Project Info</v-tab>
                             </v-tabs>
 
                             <v-tabs-items class="infoContent" v-model="selectedTab">
@@ -227,51 +225,18 @@
                                         </div>
                                     </div>
                                 </v-tab-item>
-                                <v-tab-item class="tabContent" eager id="leadSourceInfo" value="leadSourceInfo">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <b>Person Source:</b>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div>{{lead.personSource}}</div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <b>Landing page Info:</b>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div>{{lead.landingPageInfo}}</div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <b>Capture source Info:</b>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div>{{lead.captureSourceInfo}}</div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <b>Person IP:</b>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div>{{lead.personIP}}</div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <b>Original Referrer:</b>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div>{{lead.originalReferrer}}</div>
-                                        </div>
-                                    </div>
-                                </v-tab-item>
 
                                 <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
                                     <div class="profile">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Person Source:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.personSource}}</div>
+                                            </div>
+                                        </div>
+
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <b>Capture Method</b>
@@ -296,6 +261,14 @@
                                                 <div>{{lead.captureDetail}}</div>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <b>Original Referrer:</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div>{{lead.originalReferrer}}</div>
+                                            </div>
+                                        </div>
 
                                         <div class="row" v-if="lead.blogSubscription==true">
                                             <div class="col-md-3">
@@ -308,6 +281,18 @@
 
                                         <form-responses :lead="lead" :formResponses="formResponses" />
                                     </div>
+                                </v-tab-item>
+
+                                <v-tab-item class="tabContent" eager id="projectInfo" value="projectInfo">
+                                    <v-text-field v-model="lead.goal" label="Goal"></v-text-field>
+                                    <v-text-field v-model="lead.usersNumber" label="Users number"></v-text-field>
+                                    <v-text-field v-model="lead.currentSolution" label="Current solution"></v-text-field>
+                                    <v-textarea v-model="lead.interactionSummary" label="Interaction summary"></v-textarea>
+                                    <div class="uiAction">
+                                        <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">Save
+                                        </button>
+                                    </div>
+
                                 </v-tab-item>
                             </v-tabs-items>
                         </v-flex>
