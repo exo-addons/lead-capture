@@ -77,6 +77,14 @@
             </column>
             <column name="TASK_URL" type="NVARCHAR(250)">
             </column>
+            <column name="GOAL" type="NVARCHAR(250)">
+            </column>
+            <column name="USERS_NUMBER" type="NVARCHAR(250)">
+            </column>
+            <column name="CURRENT_SOLUTION" type="NVARCHAR(250)">
+            </column>
+            <column name="INTERACTION_SUMMARY" type="LONGTEXT">
+            </column>
         </createTable>
 
         <createTable tableName="ADDONS_LC_FORM">
@@ -160,6 +168,26 @@
             </column>
         </createTable>
 
+        <createTable tableName="ADDONS_LC_RESOURCE">
+
+            <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_RESOURCE"/>
+            </column>
+            <column name="NAME" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PATH" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URL" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
         <modifySql dbms="mysql">
             <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
         </modifySql>
@@ -173,6 +201,7 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_FORM_FIELD_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_TEMPLATE_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_RESOURCE_ID" startValue="1"/>
     </changeSet>
 
 </databaseChangeLog>

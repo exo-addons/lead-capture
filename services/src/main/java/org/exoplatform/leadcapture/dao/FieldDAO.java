@@ -19,7 +19,6 @@ public class FieldDAO extends GenericDAOJPAImpl<FieldEntity, Long> {
 
     TypedQuery<FieldEntity> query = getEntityManager().createNamedQuery("FieldEntity.getFieldsByResponse", FieldEntity.class)
                                                       .setParameter("responseId", responseId);
-
     try {
       return query.getResultList();
     } catch (NoResultException e) {

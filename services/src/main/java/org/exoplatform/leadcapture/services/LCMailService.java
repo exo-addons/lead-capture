@@ -6,7 +6,6 @@ import static org.exoplatform.leadcapture.Utils.EMPTY_STR;
 import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.commons.utils.StringCommonUtils;
-import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.services.log.ExoLogger;
@@ -45,36 +44,41 @@ public class LCMailService {
     return s;
   }
 
-  public void sendMail(String content, String subject, LeadEntity lead) throws Exception {
+  public void sendMail(String content, String subject, LeadEntity lead, String resource) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     if (settings.isMailingEnabled()) {
-      String allowedMailDomain = System.getProperty(ALLOWED_MAIL_DOMAIN);
-      if (StringUtils.isEmpty(allowedMailDomain) || lead.getMail().contains(allowedMailDomain)) {
-        if (settings.getSenderMail() != null) {
-          Message message = new Message();
-          message.setFrom(settings.getSenderMail());
-          message.setTo(lead.getMail());
-          message.setMimeType("text/html");
-          message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
-          message.setBody(getContentEmail(content, lead));
-          mailService.sendMessage(message);
+      if (lead.getMarketingSuspended() == null || !lead.getMarketingSuspended()) {
+        String allowedMailDomain = System.getProperty(ALLOWED_MAIL_DOMAIN);
+        if (StringUtils.isEmpty(allowedMailDomain) || lead.getMail().contains(allowedMailDomain)) {
+          if (settings.getSenderMail() != null) {
+            Message message = new Message();
+            message.setFrom(settings.getSenderMail());
+            message.setTo(lead.getMail());
+            message.setMimeType("text/html");
+            message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
+            message.setBody(getContentEmail(content, lead, resource));
+            mailService.sendMessage(message);
+          } else {
+            LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
+          }
         } else {
-          LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
+          LOG.warn("Cannot send mail to lead{}, mail domain not allowed", lead.getId());
         }
-      } else {
-        LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
-      }
 
+      } else {
+        LOG.warn("Cannot send mail to lead{}, lead marketing suspended", lead.getId());
+      }
     } else {
-      LOG.warn("Cannot send mail to lead{}, mail domain not allowed", lead.getId());
+      LOG.warn("Cannot send mail to lead{}, mailing disabled", lead.getId());
     }
   }
 
-  public String getContentEmail(String content, LeadEntity lead) {
+  public String getContentEmail(String content, LeadEntity lead, String resource) {
 
     String content_ = StringUtils.replace(content, "$FIRST_NAME", lead.getFirstName());
     content_ = StringUtils.replace(content_, "$LAST_NAME", lead.getLastName());
     content_ = StringUtils.replace(content_, "$MAIL", lead.getMail());
+    content_ = StringUtils.replace(content_, "$RESOURCE", resource);
     return convertCodeHTML(content_);
   }
 

@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.services;
 
 import static org.exoplatform.leadcapture.Utils.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,8 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.social.core.space.model.Space;
-import org.exoplatform.social.core.space.spi.SpaceService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +28,8 @@ import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
@@ -36,26 +37,29 @@ import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
 import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.util.TaskUtil;
 
 public class LeadsManagementService {
 
-  private final Log       LOG = ExoLogger.getLogger(LeadsManagementService.class);
+  private final Log                  LOG = ExoLogger.getLogger(LeadsManagementService.class);
 
-  private LeadDAO         leadDAO;
+  private LeadDAO                    leadDAO;
 
-  private FormDAO         formDAO;
+  private FormDAO                    formDAO;
 
-  private FieldDAO        fieldDAO;
+  private FieldDAO                   fieldDAO;
 
-  private ResponseDAO     responseDAO;
+  private ResponseDAO                responseDAO;
 
-  private ListenerService listenerService;
+  private ListenerService            listenerService;
 
-  private TaskService     taskService;
+  private TaskService                taskService;
 
-  private StatusService   statusService;
+  private StatusService              statusService;
 
-  private ProjectService  projectService;
+  private ProjectService             projectService;
+
+  private LeadCaptureSettingsService leadCaptureSettingsService;
 
   public LeadsManagementService(LeadDAO leadDAO,
                                 FormDAO formDAO,
@@ -64,6 +68,7 @@ public class LeadsManagementService {
                                 TaskService taskService,
                                 StatusService statusService,
                                 ProjectService projectService,
+                                LeadCaptureSettingsService leadCaptureSettingsService,
                                 ListenerService listenerService) {
     this.leadDAO = leadDAO;
     this.formDAO = formDAO;
@@ -73,10 +78,12 @@ public class LeadsManagementService {
     this.taskService = taskService;
     this.statusService = statusService;
     this.projectService = projectService;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   public LeadEntity addLeadInfo(FormInfo leadInfo, boolean broadcast) {
     LeadEntity leadEntity = null;
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     try {
       LeadDTO lead = leadInfo.getLead();
       leadEntity = leadDAO.getLeadByMail(lead.getMail());
@@ -84,11 +91,16 @@ public class LeadsManagementService {
         lead.setCreatedDate(new Date());
         lead.setUpdatedDate(new Date());
         if (lead.getStatus() == null) {
-          lead.setStatus(LEAD_DEFAULT_STATUS);
+          if (settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+            lead.setStatus(LEAD_OPEN_STATUS);
+          } else {
+            lead.setStatus(LEAD_DEFAULT_STATUS);
+          }
         }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
           lead.setBlogSubscriptionDate(new Date());
         }
+
         leadEntity = createLead(lead);
         if (broadcast) {
           listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
@@ -96,9 +108,23 @@ public class LeadsManagementService {
       } else {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date());
-        leadEntity = leadDAO.update(leadEntity);
+        if (leadEntity.getTaskId() == null) {
+          if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS)
+              && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+            Task task_ = createTask(leadEntity);
+            if (task_ != null) {
+              leadEntity.setTaskId(task_.getId());
+              leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
+            }
+          }
+        }
+        leadDAO.update(leadEntity);
+
+        if (leadEntity.getTaskId() != null) {
+          updateTaskStatus(leadEntity.getTaskId(), LEAD_DEFAULT_STATUS);
+        }
       }
-      if(leadInfo.getResponse()!=null){
+      if (leadInfo.getResponse() != null) {
         addResponse(leadInfo.getResponse(), leadEntity);
       }
     } catch (Exception e) {
@@ -147,27 +173,35 @@ public class LeadsManagementService {
     }
   }
 
+  public void suspendLead(Long leadId) {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setUpdatedDate(new Date());
+      leadEntity.setMarketingSuspended(true);
+      leadEntity.setMarketingSuspendedCause("Unsubscribed");
+      leadDAO.update(leadEntity);
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+  }
+
   public void updateStatus(Long leadId, String status) {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
-      leadDAO.update(leadEntity);
-      Task task = taskService.getTask(leadEntity.getTaskId());
-      LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
-      LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
-      Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
-      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject()).getId());
-      Status newStatus = null;
-      for (Status status_ : statuses) {
-        if (status_.getName().equals(status)) {
-          newStatus = status_;
+      if (leadEntity.getTaskId() == null) {
+        if (status != LEAD_DEFAULT_STATUS) {
+          Task task_ = createTask(leadEntity);
+          if (task_ != null) {
+            leadEntity.setTaskId(task_.getId());
+            leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
+          }
         }
       }
-      if (newStatus != null) {
-        task.setStatus(newStatus);
-        taskService.updateTask(task);
+      leadDAO.update(leadEntity);
+      if (leadEntity.getTaskId() != null) {
+        updateTaskStatus(leadEntity.getTaskId(), status);
       }
     } catch (Exception e) {
       LOG.error(e);
@@ -228,7 +262,7 @@ public class LeadsManagementService {
         formEntity = createForm(new FormEntity(responseDTO.getFormName(), fields));
       } else {
         String fields = formEntity.getFields();
-        List<String> fieldList = new ArrayList<String>(Arrays.asList(fields.split(",")));
+        List<String> fieldList = new ArrayList<String>(Arrays.asList(fields.split(FIELDS_DELIMITER)));
         if (!fieldList.contains(CREATION_DATE_FIELD_NAME)) {
           fieldList.add(CREATION_DATE_FIELD_NAME);
         }
@@ -304,6 +338,48 @@ public class LeadsManagementService {
     return null;
   }
 
+  public void updateTaskStatus(Long taskId, String status) {
+    try {
+      LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+      Task task = taskService.getTask(taskId);
+      SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+      Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
+      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
+                                                             .getId());
+      Status newStatus = null;
+      for (Status status_ : statuses) {
+        if (status_.getName().equals(status)) {
+          newStatus = status_;
+        }
+      }
+      if (newStatus != null) {
+        task.setStatus(newStatus);
+        taskService.updateTask(task);
+      }
+    } catch (Exception e) {
+      LOG.error("Cannot update Task status", e);
+    }
+  }
+
+  public Task createTask(LeadEntity lead) {
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
+    Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
+    if (uxSpace != null) {
+      Status status = statusService.getDefaultStatus(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
+                                                          .getId());
+      Task task = new Task();
+      task.setTitle(lead.getMail());
+      task.setDescription("");
+      task.setStatus(status);
+      task.setCreatedBy(settings.getUserExperienceBotUserName());
+      task.setCreatedTime(new Date());
+      task = taskService.createTask(task);
+      return task;
+    }
+    return null;
+  }
+
   public LeadEntity mergeLead(LeadEntity leadEntity, LeadDTO leadDTO) {
 
     if (!StringUtils.isEmpty(leadDTO.getFirstName()))
@@ -316,8 +392,6 @@ public class LeadsManagementService {
       leadEntity.setPosition(leadDTO.getPosition());
     if (!StringUtils.isEmpty(leadDTO.getCountry()))
       leadEntity.setCountry(leadDTO.getCountry());
-    if (!StringUtils.isEmpty(leadDTO.getStatus()))
-      leadEntity.setStatus(leadDTO.getStatus());
     if (!StringUtils.isEmpty(leadDTO.getPhone()))
       leadEntity.setPhone(leadDTO.getPhone());
     if (!StringUtils.isEmpty(leadDTO.getLanguage()))
@@ -330,7 +404,8 @@ public class LeadsManagementService {
       leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
     if (!StringUtils.isEmpty(leadDTO.getCaptureType()))
       leadEntity.setCaptureType(leadDTO.getCaptureType());
-    if ((leadEntity.getBlogSubscription()==null || !leadEntity.getBlogSubscription()) && leadDTO.getBlogSubscription() != null ) {
+    if ((leadEntity.getBlogSubscription() == null || !leadEntity.getBlogSubscription())
+        && leadDTO.getBlogSubscription() != null) {
       leadEntity.setBlogSubscription(true);
       leadEntity.setBlogSubscriptionDate(new Date());
     }
@@ -349,7 +424,7 @@ public class LeadsManagementService {
     JSONObject formJson = new JSONObject();
     formJson.put("id", formEntity.getId());
     formJson.put("name", formEntity.getName());
-    formJson.put("fields", formEntity.getFields().split(","));
+    formJson.put("fields", formEntity.getFields().split(FIELDS_DELIMITER));
     return formJson;
   }
 
@@ -364,10 +439,12 @@ public class LeadsManagementService {
     leadDTO.setCountry(leadEntity.getCountry());
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
-    if(leadEntity.getCreatedDate()!=null)leadDTO.setCreatedDate(leadEntity.getCreatedDate());
+    if (leadEntity.getCreatedDate() != null)
+      leadDTO.setCreatedDate(leadEntity.getCreatedDate());
     leadDTO.setFormattedCreatedDate(formatter.format(leadEntity.getCreatedDate()));
     leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
-    if(leadEntity.getUpdatedDate()!=null)leadDTO.setFormattedUpdatedDate(formatter.format(leadEntity.getUpdatedDate()));
+    if (leadEntity.getUpdatedDate() != null)
+      leadDTO.setFormattedUpdatedDate(formatter.format(leadEntity.getUpdatedDate()));
     leadDTO.setLanguage(leadEntity.getLanguage());
     leadDTO.setAssignee(leadEntity.getAssignee());
     leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());
@@ -377,12 +454,14 @@ public class LeadsManagementService {
     leadDTO.setCaptureType(leadEntity.getCaptureType());
     leadDTO.setBlogSubscription(leadEntity.getBlogSubscription());
     leadDTO.setBlogSubscriptionDate(leadEntity.getBlogSubscriptionDate());
-    if(leadEntity.getBlogSubscriptionDate()!=null)leadDTO.setFormattedBlogSubscriptionDate(formatter.format(leadEntity.getBlogSubscriptionDate()));
+    if (leadEntity.getBlogSubscriptionDate() != null)
+      leadDTO.setFormattedBlogSubscriptionDate(formatter.format(leadEntity.getBlogSubscriptionDate()));
     leadDTO.setCommunityUserName(leadEntity.getCommunityUserName());
     leadDTO.setCommunityRegistration(leadEntity.getCommunityRegistration());
     leadDTO.setCommunityRegistrationMethod(leadEntity.getCommunityRegistrationMethod());
     leadDTO.setCommunityRegistrationDate(leadEntity.getCommunityRegistrationDate());
-    if(leadEntity.getCommunityRegistrationDate()!=null)leadDTO.setFormattedCommunityRegistrationDate(formatter.format(leadEntity.getCommunityRegistrationDate()));
+    if (leadEntity.getCommunityRegistrationDate() != null)
+      leadDTO.setFormattedCommunityRegistrationDate(formatter.format(leadEntity.getCommunityRegistrationDate()));
     leadDTO.setPersonSource(leadEntity.getPersonSource());
     leadDTO.setLandingPageInfo(leadEntity.getLandingPageInfo());
     leadDTO.setCaptureSourceInfo(leadEntity.getCaptureSourceInfo());
@@ -391,6 +470,10 @@ public class LeadsManagementService {
     leadDTO.setTaskId(leadEntity.getTaskId());
     leadDTO.setTaskUrl(leadEntity.getTaskUrl());
     leadDTO.setActivityId(leadEntity.getActivityId());
+    leadDTO.setGoal(leadEntity.getGoal());
+    leadDTO.setUsersNumber(leadEntity.getUsersNumber());
+    leadDTO.setInteractionSummary(leadEntity.getInteractionSummary());
+    leadDTO.setCurrentSolution(leadEntity.getCurrentSolution());
     return leadDTO;
   }
 
@@ -428,6 +511,10 @@ public class LeadsManagementService {
     leadEntity.setTaskId(leadDTO.getTaskId());
     leadEntity.setTaskUrl(leadDTO.getTaskUrl());
     leadEntity.setActivityId(leadDTO.getActivityId());
+    leadEntity.setGoal(leadDTO.getGoal());
+    leadEntity.setUsersNumber(leadDTO.getUsersNumber());
+    leadEntity.setInteractionSummary(leadDTO.getInteractionSummary());
+    leadEntity.setCurrentSolution(leadDTO.getCurrentSolution());
     return leadEntity;
   }
 

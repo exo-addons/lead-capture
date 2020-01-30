@@ -48,6 +48,7 @@ const config = {
   plugins: [
     new ExtractTextWebpackPlugin('css/leadsManagement.css'),
     new ExtractTextWebpackPlugin('css/mailTemplatesManagement.css'),
+    new ExtractTextWebpackPlugin('css/resourcesManagement.css'),
     new ExtractTextWebpackPlugin('css/leadCaptureSettings.css')
   ]
 

@@ -2,31 +2,36 @@ package org.exoplatform.leadcapture.dto;
 
 import java.io.Serializable;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class LeadCaptureSettings implements Serializable, Cloneable {
 
-  private static final long       serialVersionUID = -5725443183560646198L;
+  private static final long serialVersionUID          = -5725443183560646198L;
 
-  private Integer                 dataVersion      = 0;
+  private Integer           dataVersion               = 0;
 
-  private String                  userExperienceSpace    = null;
+  private String            userExperienceSpace       = null;
 
-  private String                  userExperienceGroup    = null;
+  private String            userExperienceGroup       = null;
 
-  private String                  userExperienceBotUserName  = null;
+  private String            userExperienceBotUserName = null;
 
-  private String                  leadTaskProject  = null;
+  private String            leadTaskProject           = null;
 
-  private String                  senderMail  = null;
+  private String            senderMail                = null;
 
+  private boolean           mailingEnabled;
 
-  private boolean                 mailingEnabled;
+  private boolean           captureEnabled;
 
-  private boolean                 captureEnabled;
+  private String            allowedCaptureSourceDomain;
 
-  private String                 allowedCaptureSourceDomain;
+  private String            resourcesIdentifier;
+
+  private String            mailsBlackList;
+
+  private String            autoOpeningForms;
 
   public LeadCaptureSettings clone() { // NOSONAR
     try {
