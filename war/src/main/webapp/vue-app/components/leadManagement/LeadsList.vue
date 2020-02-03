@@ -21,7 +21,7 @@
                 <v-toolbar color="white" flat>
                     <div class="flex-grow-1"></div>
                     <v-col cols="8" md="2" sm="4">
-                        <v-select :items="statusList" label="Status"></v-select>
+                        <v-select :items="statusList" v-model="selectedStatus" label="Status"></v-select>
                     </v-col>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-switch class="mt-2" label="Only unassigned" v-model="notassigned"></v-switch>
@@ -112,34 +112,8 @@ export default {
         leadDetails,
     },
     data: () => ({
-        statusList: [{
-                title: 'All'
-            },
-            {
-                title: 'Raw'
-            },
-            {
-                title: 'Open'
-            },
-            {
-                title: 'Attempted'
-            },
-            {
-                title: 'Contacted'
-            },
-            {
-                title: 'Qualified'
-            },
-            {
-                title: 'Recycled'
-            },
-            {
-                title: 'Accepted'
-            },
-            {
-                title: 'Qualified'
-            },
-        ],
+        statusList: ['All','Raw','Open','Attempted','Contacted','Qualified','Recycled','Accepted','Qualified' ],
+        selectedStatus:null,
         valid: true,
         notassigned: false,
         myLeads: false,
@@ -158,8 +132,6 @@ export default {
         alert_edit: false,
         message_edit: '',
         alert_type_add: '',
-        zones: ['MEA', 'LATAM', 'APAC', 'Western Eu', 'Eastern EU', 'US-CA'],
-
         leadList: [],
         allLeads: [],
         editedIndex: -1,
@@ -211,6 +183,16 @@ export default {
             if (val) {
                 this.leadList = this.allLeads.filter(item => {
                     return item.assignee === this.context.currentUser
+                })
+            } else {
+                this.leadList = this.allLeads
+            }
+        },
+        selectedStatus: function (val) {
+            console.log(val)
+            if (val!==null&&val!=='All') {
+                this.leadList = this.allLeads.filter(item => {
+                    return val === item.status
                 })
             } else {
                 this.leadList = this.allLeads

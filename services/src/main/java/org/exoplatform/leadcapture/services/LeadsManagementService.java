@@ -115,15 +115,11 @@ public class LeadsManagementService {
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
               leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
-              lead.setStatus(LEAD_OPEN_STATUS);
+              leadEntity.setStatus(LEAD_OPEN_STATUS);
             }
           }
         }
         leadDAO.update(leadEntity);
-
-        if (leadEntity.getTaskId() != null) {
-          updateTaskStatus(leadEntity.getTaskId(), LEAD_DEFAULT_STATUS);
-        }
       }
       if (leadInfo.getResponse() != null) {
         addResponse(leadInfo.getResponse(), leadEntity);
