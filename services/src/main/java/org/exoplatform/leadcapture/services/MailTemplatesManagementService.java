@@ -3,6 +3,7 @@ package org.exoplatform.leadcapture.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.leadcapture.dao.MailContentDAO;
 import org.exoplatform.leadcapture.dao.MailTemplateDAO;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
@@ -45,10 +46,12 @@ public class MailTemplatesManagementService {
     templateDTO.setContents(new ArrayList<>());
     MailTemplateEntity newTemplate = mailTemplateDAO.create(toMailTemplateEntity(templateDTO));
     for (MailContentDTO contentDTO : contents) {
-      MailContentEntity mailContentEntity = toMailContentEntity(contentDTO);
-      mailContentEntity.setMailTemplateEntity(newTemplate);
-      MailContentEntity mailContentEntity_ = mailContentDAO.create(mailContentEntity);
-      contentsEntities.add(mailContentEntity_);
+      if(StringUtils.isNoneEmpty(contentDTO.getContent()) && StringUtils.isNoneEmpty(contentDTO.getSubject())){
+        MailContentEntity mailContentEntity = toMailContentEntity(contentDTO);
+        mailContentEntity.setMailTemplateEntity(newTemplate);
+        MailContentEntity mailContentEntity_ = mailContentDAO.create(mailContentEntity);
+        contentsEntities.add(mailContentEntity_);
+      }
     }
     return toMailTemplateDTO(newTemplate);
   }

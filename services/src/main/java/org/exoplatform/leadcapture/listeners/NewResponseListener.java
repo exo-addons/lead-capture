@@ -56,6 +56,19 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
     ResponseEntity responseEntity = event.getData();
     List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newResponse");
     for (MailTemplateEntity template : templates) {
+      if (StringUtils.isNotEmpty(template.getForm()) && !responseEntity.getFormEntity().getName().equals(template.getForm())){
+        continue;
+      }
+      if (StringUtils.isNotEmpty(template.getForm()) && responseEntity.getFormEntity().getName().equals(template.getForm()) && StringUtils.isNotEmpty(template.getField())){
+       boolean t=false;
+        for(FieldEntity fieldEntity : fieldDAO.getFieldsByResponse(responseEntity.getId())){
+          if(fieldEntity.getValue().contains(template.getField())){
+            t=true;
+          }
+      }
+        if(!t) continue;
+
+      }
       MailContentDTO content = null;
       MailTemplateDTO mailTemplateDTO = mailTemplatesManagementService.toMailTemplateDTO(template);
       if (mailTemplateDTO.getContents().size() > 0) {
@@ -81,10 +94,7 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
   }
 
   private String getField(MailTemplateEntity template, ResponseEntity responseEntity) {
-    if (StringUtils.isEmpty(template.getForm()))
-      return "";
-    if (StringUtils.isEmpty(template.getField()) && responseEntity.getFormEntity().getName().equals(template.getForm()))
-      return "";
+
     if (responseEntity.getFormEntity().getName().equals(template.getForm())) {
       List<FieldEntity> fields = fieldDAO.getFieldsByResponse(responseEntity.getId());
       for (FieldEntity fieldEntity : fields) {
