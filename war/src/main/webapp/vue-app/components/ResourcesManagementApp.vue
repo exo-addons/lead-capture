@@ -188,6 +188,7 @@ export default {
             const index = this.resources.indexOf(item)
             //confirm('Are you sure you want to delete this item?') &&
             this.resources.splice(index, 1)
+            this.delete_(item)
         },
 
         close() {
