@@ -158,8 +158,10 @@ public class Utils {
     }
     ExoSocialActivity activity = new ExoSocialActivityImpl();
     activity.setType("DEFAULT_ACTIVITY");
-    activity.setTitle("<span id='npsActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Lead mail : </b>"
-        + lead.getMail() + "<br/>\n");
+    activity.setTitle("<span id='npsActivity'>\n"
+            + "A new lead has been created: <br/>\n"
+            + " <b>Lead Name : </b>" + lead.getFirstName()+" "+lead.getLastName() + "<br/>\n"
+            + " <b>Lead mail : </b>" + lead.getMail() + "<br/>\n");
     activity.setUserId(posterIdentity.getId());
     return activityManager.saveActivity(spaceIdentity, activity);
 
