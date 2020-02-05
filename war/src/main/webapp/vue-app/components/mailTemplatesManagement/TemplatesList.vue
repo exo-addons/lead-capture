@@ -17,7 +17,7 @@
         </div>
 
     </v-overlay>
-    <v-data-table :headers="headers" :items="templatesList" :search="search" class="elevation-1" sort-by="id" v-show="showTable">
+    <v-data-table :headers="headers" :items="templatesList" :search="search" class="elevation-1" sort-by="id" sort-desc v-show="showTable">
         <template v-slot:top>
             <v-toolbar flat color="white">
                 <v-toolbar-title>Mail templates list</v-toolbar-title>

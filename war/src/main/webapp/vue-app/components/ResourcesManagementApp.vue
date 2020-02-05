@@ -6,7 +6,7 @@
             {{message}}
         </div>
         <v-flex>
-            <v-data-table :headers="headers" :items="resources" class="elevation-1">
+            <v-data-table :headers="headers" :items="resources" sort-by="id" sort-desc class="elevation-1">
                 <template v-slot:top>
                     <v-toolbar flat color="white">
                         <v-toolbar-title>Resources list</v-toolbar-title>

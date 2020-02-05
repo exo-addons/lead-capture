@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.rest;
 
-import static org.exoplatform.leadcapture.Utils.*;
+import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -27,8 +28,6 @@ import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
 
 import io.swagger.jaxrs.PATCH;
-
-import static org.exoplatform.leadcapture.Utils.ALLOWED_MAIL_DOMAIN;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)
@@ -82,15 +81,17 @@ public class LeadsManagementRest implements ResourceContainer {
   @Path("leads")
   public Response add(@Context UriInfo uriInfo, @HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-/*    String captureToken  = System.getProperty(LEAD_CAPTURE_TOKEN);
-    if (headerToken == null) {
-      LOG.warn("Security Token for Lead capture not defined");
-      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, Security Token not defined").build();
-    }
-    if (captureToken == null || !captureToken.equals(headerToken)) {
-      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
-      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, wrong token").build();
-    }*/
+    /*
+     * String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN); if (headerToken
+     * == null) { LOG.warn("Security Token for Lead capture not defined"); return
+     * Response.status(Response.Status.FORBIDDEN).
+     * entity("Access forbidden to the add lead rest service, Security Token not defined"
+     * ).build(); } if (captureToken == null || !captureToken.equals(headerToken)) {
+     * LOG.warn("Access forbidden to the add lead rest service, wrong token: {}",
+     * headerToken); return Response.status(Response.Status.FORBIDDEN).
+     * entity("Access forbidden to the add lead rest service, wrong token").build();
+     * }
+     */
     if (lead == null) {
       LOG.warn("Lead not captured, lead is null");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead is null").build();
@@ -100,28 +101,34 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
     }
     if (isBlacklisted(lead.getLead().getMail())) {
-      LOG.warn("Cannot capture lead {}, lead mail blacklisted", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName());
+      LOG.warn("Cannot capture lead {}, lead mail blacklisted",
+               lead.getLead().getFirstName() + " " + lead.getLead().getLastName());
       return Response.status(Response.Status.UNAUTHORIZED).entity("lead mail blacklisted").build();
     }
 
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
-      LOG.warn("Lead capture not enabled, New lead {} not captured ", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName());
+      LOG.warn("Lead capture not enabled, New lead {} not captured ",
+               lead.getLead().getFirstName() + " " + lead.getLead().getLastName());
       return Response.status(Response.Status.NOT_FOUND).build();
     }
     LOG.info("start adding lead {}", lead.toString());
     try {
 
       leadsManagementService.addLeadInfo(lead, true);
-      LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_id:{},form_name:{}\"",
+      LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_id:{},lead_name:{},form_name:{}\"",
                lead.getLead().getId(),
-              lead.getResponse()!=null?lead.getResponse().getFormName():"");
+               lead.getLead().getFirstName() + " " + lead.getLead().getLastName(),
+               lead.getResponse() != null ? lead.getResponse().getFormName() : "");
 
-      return Response.status(Response.Status.OK).entity("lead synchronized")
+      return Response.status(Response.Status.OK)
+                     .entity("lead synchronized")
                      .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
                      .build();
 
     } catch (Exception e) {
-      LOG.error("An error occured when trying to synchronise lead {}", lead.getLead().getFirstName()+" "+ lead.getLead().getLastName(), e);
+      LOG.error("An error occured when trying to synchronise lead {}",
+                lead.getLead().getFirstName() + " " + lead.getLead().getLastName(),
+                e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                      .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
                      .entity(e.getMessage())
@@ -174,26 +181,33 @@ public class LeadsManagementRest implements ResourceContainer {
   @GET
   @Path("suspend/{id}")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response suspend(@Context UriInfo uriInfo, @HeaderParam("token") String headerToken, @PathParam("id") Long id) throws Exception {
+  public Response suspend(@Context UriInfo uriInfo,
+                          @HeaderParam("token") String headerToken,
+                          @PathParam("id") Long id) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-/*    String captureToken  = System.getProperty(LEAD_CAPTURE_TOKEN);
-    if (headerToken == null) {
-      LOG.warn("Security Token for Lead capture not defined");
-      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, Security Token not defined").build();
-    }
-    if (captureToken == null || !captureToken.equals(headerToken)) {
-      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
-      return Response.status(Response.Status.FORBIDDEN).entity("Access forbidden to the add lead rest service, wrong token").build();
-    }*/
+    /*
+     * String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN); if (headerToken
+     * == null) { LOG.warn("Security Token for Lead capture not defined"); return
+     * Response.status(Response.Status.FORBIDDEN).
+     * entity("Access forbidden to the add lead rest service, Security Token not defined"
+     * ).build(); } if (captureToken == null || !captureToken.equals(headerToken)) {
+     * LOG.warn("Access forbidden to the add lead rest service, wrong token: {}",
+     * headerToken); return Response.status(Response.Status.FORBIDDEN).
+     * entity("Access forbidden to the add lead rest service, wrong token").build();
+     * }
+     */
     try {
       leadsManagementService.suspendLead(id);
       LOG.info("Lead {} suspended", id);
-      return Response.status(Response.Status.OK).entity("lead suspended")
-              .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
-              .build();
+      return Response.status(Response.Status.OK)
+                     .entity("lead suspended")
+                     .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
+                     .build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to suspend lead {}", id, e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain()).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                     .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
+                     .build();
     }
   }
 

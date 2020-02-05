@@ -56,17 +56,19 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
     ResponseEntity responseEntity = event.getData();
     List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newResponse");
     for (MailTemplateEntity template : templates) {
-      if (StringUtils.isNotEmpty(template.getForm()) && !responseEntity.getFormEntity().getName().equals(template.getForm())){
+      if (StringUtils.isNotEmpty(template.getForm()) && !responseEntity.getFormEntity().getName().equals(template.getForm())) {
         continue;
       }
-      if (StringUtils.isNotEmpty(template.getForm()) && responseEntity.getFormEntity().getName().equals(template.getForm()) && StringUtils.isNotEmpty(template.getField())){
-       boolean t=false;
-        for(FieldEntity fieldEntity : fieldDAO.getFieldsByResponse(responseEntity.getId())){
-          if(fieldEntity.getValue().contains(template.getField())){
-            t=true;
+      if (StringUtils.isNotEmpty(template.getForm()) && responseEntity.getFormEntity().getName().equals(template.getForm())
+          && StringUtils.isNotEmpty(template.getField())) {
+        boolean t = false;
+        for (FieldEntity fieldEntity : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
+          if (fieldEntity.getValue().contains(template.getField())) {
+            t = true;
           }
-      }
-        if(!t) continue;
+        }
+        if (!t)
+          continue;
 
       }
       MailContentDTO content = null;
@@ -82,8 +84,9 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
               }
             }
             lcMailService.sendMail(content.getContent(), content.getSubject(), lead, field);
-            LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"",
+            LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},lead_name:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"",
                      lead.getId(),
+                     lead.getFirstName() + " " + lead.getLastName(),
                      mailTemplateDTO.getId(),
                      mailTemplateDTO.getName());
           }

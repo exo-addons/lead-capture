@@ -16,7 +16,7 @@
             </div>
 
         </v-overlay>
-        <v-data-table :headers="headers" :items="leadList" :search="search" class="elevation-1" sort-by="id" v-show="showTable">
+        <v-data-table :headers="headers" :items="leadList" :search="search" class="elevation-1" sort-by="id" sort-desc v-show="showTable">
             <template v-slot:top>
                 <v-toolbar color="white" flat>
                     <div class="flex-grow-1"></div>

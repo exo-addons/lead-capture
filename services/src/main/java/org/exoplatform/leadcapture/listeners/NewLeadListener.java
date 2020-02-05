@@ -97,8 +97,9 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
         content = Utils.getContentForMail(mailTemplateDTO, lead);
         if (content != null) {
           lcMailService.sendMail(content.getContent(), content.getSubject(), lead, null);
-          LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"",
+          LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},lead_name:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"",
                    lead.getId(),
+                   lead.getFirstName() + " " + lead.getLastName(),
                    mailTemplateDTO.getId(),
                    mailTemplateDTO.getName());
         }

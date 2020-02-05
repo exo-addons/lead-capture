@@ -97,6 +97,7 @@ public class Utils {
       for (FieldEntity field : responseEntity.getFilelds()) {
         responseJson.put(field.getName(), field.getValue());
       }
+      responseJson.put("id", responseEntity.getId());
       responseJson.put(CREATION_DATE_FIELD_NAME, formatter.format(responseEntity.getCreatedDate()));
     } catch (JSONException e) {
       LOG.error("Cannot convert response {} to json", responseEntity.getId(), e);
