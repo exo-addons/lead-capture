@@ -39,7 +39,7 @@ public abstract class BaseLeadManagementTest {
 
   protected String  position = "Manager";
 
-  protected String  country ="Tunisia";
+  protected String  inferredCountry ="Tunisia";
 
   protected String  status ="opened";
 
@@ -126,7 +126,7 @@ public abstract class BaseLeadManagementTest {
     leadEntity.setLastName(lastName);
     leadEntity.setCompany(company);
     leadEntity.setPosition(position);
-    leadEntity.setCountry(country);
+    leadEntity.setCountry(inferredCountry);
     leadEntity.setStatus(status);
     leadEntity.setLanguage(language);
     leadEntity.setAssignee(assignee);
@@ -160,7 +160,7 @@ public abstract class BaseLeadManagementTest {
     leadDTO.setLastName(lastName);
     leadDTO.setCompany(company);
     leadDTO.setPosition(position);
-    leadDTO.setCountry(country);
+    leadDTO.setInferredCountry(inferredCountry);
     leadDTO.setStatus(status);
     leadDTO.setLanguage(language);
     leadDTO.setAssignee(assignee);
@@ -244,7 +244,7 @@ public abstract class BaseLeadManagementTest {
     assertEquals(leadEntity.getLastName() , leadDTO.getLastName() );
     assertEquals(leadEntity.getCompany() , leadDTO.getCompany() );
     assertEquals(leadEntity.getPosition(), leadDTO.getPosition());
-    assertEquals(leadEntity.getCountry(), leadDTO.getCountry());
+    assertEquals(leadEntity.getCountry(), leadDTO.getInferredCountry());
     assertEquals(leadEntity.getStatus(), leadDTO.getStatus());
     assertEquals(leadEntity.getPhone(), leadDTO.getPhone());
     assertEquals(leadEntity.getCreatedDate(), leadDTO.getCreatedDate());

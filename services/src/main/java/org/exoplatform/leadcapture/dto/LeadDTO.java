@@ -20,7 +20,7 @@ public class LeadDTO implements Serializable {
 
   private String  position;
 
-  private String  country;
+  private String  inferredCountry;
 
   private String  status;
 
@@ -87,5 +87,19 @@ public class LeadDTO implements Serializable {
   private String  currentSolution;
 
   private String  interactionSummary;
+
+  private String  howHear;
+
+  private String  solutionType;
+
+  private String  solutionRequirements;
+
+  private String  shortlistVendors;
+
+  private String  companyWebsite;
+
+  private String  employeesNumber;
+
+  private String  industry;
 
 }

@@ -90,7 +90,7 @@
                                     <v-text-field v-model="lead.position" label="Position"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.country" label="Country"></v-text-field>
+                                    <v-text-field v-model="lead.inferredCountry" label="Country"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
                                     <v-text-field v-model="lead.language" label="Language"></v-text-field>
@@ -131,7 +131,7 @@
                             <h4>{{lead.mail}}</h4>
                             <h6>{{lead.company}}</h6>
                             <h6>{{lead.position}}</h6>
-                            <h5>{{lead.country}}</h5>
+                            <h5>{{lead.inferredCountry}}</h5>
                             <h5>{{lead.phone}}</h5>
                         </div>
                     </div>
@@ -172,7 +172,7 @@
                                                 <b>Lead ID:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.leadID}}</div>
+                                                <div>{{lead.id}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -286,7 +286,14 @@
                                 <v-tab-item class="tabContent" eager id="projectInfo" value="projectInfo">
                                     <v-text-field v-model="lead.goal" label="Goal"></v-text-field>
                                     <v-text-field v-model="lead.usersNumber" label="Users number"></v-text-field>
+                                    <v-text-field v-model="lead.howHear" label="How did you hear about us"></v-text-field>
                                     <v-text-field v-model="lead.currentSolution" label="Current solution"></v-text-field>
+                                    <v-text-field v-model="lead.solutionType" label="Solution type"></v-text-field>
+                                    <v-text-field v-model="lead.solutionRequirements" label="Solution requirements"></v-text-field>
+                                    <v-text-field v-model="lead.shortlistVendors" label="Shortlist vendors"></v-text-field>
+                                    <v-text-field v-model="lead.companyWebsite" label="Company website"></v-text-field>
+                                    <v-text-field v-model="lead.employeesNumber" label="Number of employees"></v-text-field>
+                                    <v-text-field v-model="lead.industry" label="Industry"></v-text-field>
                                     <v-textarea v-model="lead.interactionSummary" label="Interaction summary"></v-textarea>
                                     <div class="uiAction">
                                         <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">Save

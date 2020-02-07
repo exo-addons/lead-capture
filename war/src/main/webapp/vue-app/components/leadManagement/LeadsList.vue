@@ -61,7 +61,7 @@
                                                 <v-text-field v-model="editedItem.position" label="Position"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.country" label="Country"></v-text-field>
+                                                <v-text-field v-model="editedItem.inferredCountry" label="Country"></v-text-field>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -112,8 +112,8 @@ export default {
         leadDetails,
     },
     data: () => ({
-        statusList: ['All','Raw','Open','Attempted','Contacted','Qualified','Recycled','Accepted','Qualified' ],
-        selectedStatus:null,
+        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified'],
+        selectedStatus: null,
         valid: true,
         notassigned: false,
         myLeads: false,
@@ -140,7 +140,7 @@ export default {
             mail: '',
             company: '',
             position: '',
-            country: '',
+            inferredCountry: '',
             status: '',
         },
         defaultItem: {
@@ -148,7 +148,7 @@ export default {
             mail: '',
             company: '',
             position: '',
-            country: '',
+            inferredCountry: '',
             status: '',
         },
         context: {
@@ -190,7 +190,7 @@ export default {
         },
         selectedStatus: function (val) {
             console.log(val)
-            if (val!==null&&val!=='All') {
+            if (val !== null && val !== 'All') {
                 this.leadList = this.allLeads.filter(item => {
                     return val === item.status
                 })
@@ -243,7 +243,7 @@ export default {
                     text: 'Country',
                     align: 'center',
                     sortable: true,
-                    value: 'country',
+                    value: 'inferredCountry',
                 },
                 {
                     text: 'Status',
@@ -291,15 +291,18 @@ export default {
                 .then((resp) => {
                     this.formResponses = resp;
                 });
+            if (item.taskId != null) {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
+                        credentials: 'include',
+                    })
+                    .then((resp) => resp.json())
+                    .then((resp) => {
+                        this.comments = resp;
+                    });
 
-            fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
-                    credentials: 'include',
-                })
-                .then((resp) => resp.json())
-                .then((resp) => {
-                    this.comments = resp;
-                });
+            }
         },
+
         backToList() {
             this.showDetails = false;
             this.showTable = true;

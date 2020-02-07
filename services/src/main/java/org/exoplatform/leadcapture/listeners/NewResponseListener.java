@@ -1,6 +1,7 @@
 package org.exoplatform.leadcapture.listeners;
 
 import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
+import static org.exoplatform.leadcapture.Utils.isResourceRequest;
 
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
   }
 
   private String getField(MailTemplateEntity template, ResponseEntity responseEntity) {
-
+    if(template.getField()==null) return "";
     if (responseEntity.getFormEntity().getName().equals(template.getForm())) {
       List<FieldEntity> fields = fieldDAO.getFieldsByResponse(responseEntity.getId());
       for (FieldEntity fieldEntity : fields) {
@@ -108,16 +109,5 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
     return null;
   }
 
-  private boolean isResourceRequest(String field) {
-    String identifiers = leadCaptureSettingsService.getSettings().getResourcesIdentifier();
-    if (StringUtils.isNotEmpty(identifiers)) {
-      for (String identifier : identifiers.split(FIELDS_DELIMITER)) {
-        if (field.contains(identifier)) {
-          return true;
-        }
-      }
-    }
 
-    return false;
-  }
 }

@@ -130,4 +130,25 @@ public class LeadEntity implements Serializable {
   @Column(name = "INTERACTION_SUMMARY")
   protected String  interactionSummary;
 
+  @Column(name = "HOW_HEAR")
+  protected String  howHear;
+
+  @Column(name = "SOLUTION_TYPE")
+  protected String  solutionType;
+
+  @Column(name = "SOLUTION_REQUIEREMENTS")
+  protected String  solutionRequirements;
+
+  @Column(name = "SHORTLIST_VENDORS")
+  protected String  shortlistVendors;
+
+  @Column(name = "COMPANY_WEBSITE")
+  protected String  companyWebsite;
+
+  @Column(name = "EMPLOYEES_NUMBER")
+  protected String  employeesNumber;
+
+  @Column(name = "INDUSTRY")
+  protected String  industry;
+
 }

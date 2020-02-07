@@ -85,6 +85,20 @@
             </column>
             <column name="INTERACTION_SUMMARY" type="LONGTEXT">
             </column>
+            <column name="HOW_HEAR" type="NVARCHAR(250)">
+            </column>
+            <column name="SOLUTION_TYPE" type="NVARCHAR(250)">
+            </column>
+            <column name="SOLUTION_REQUIEREMENTS" type="NVARCHAR(250)">
+            </column>
+            <column name="SHORTLIST_VENDORS" type="NVARCHAR(250)">
+            </column>
+            <column name="COMPANY_WEBSITE" type="NVARCHAR(250)">
+            </column>
+            <column name="EMPLOYEES_NUMBER" type="NVARCHAR(250)">
+            </column>
+            <column name="INDUSTRY" type="NVARCHAR(250)">
+            </column>
         </createTable>
 
         <createTable tableName="ADDONS_LC_FORM">

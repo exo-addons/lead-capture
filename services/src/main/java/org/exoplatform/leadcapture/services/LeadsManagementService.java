@@ -100,7 +100,14 @@ public class LeadsManagementService {
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
           lead.setBlogSubscriptionDate(new Date());
         }
-
+        lead.setCaptureMethod(leadInfo.getResponse().getFormName());
+        if(settings.getResourcesIdentifier()!=null){
+          for(FieldDTO fieldDTO : leadInfo.getResponse().getFields()){
+            if(isResourceRequest(fieldDTO.getValue()))
+              lead.setCaptureType(fieldDTO.getValue());
+            break;
+          }
+        }
         leadEntity = createLead(lead);
         if (broadcast) {
           listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
@@ -141,6 +148,9 @@ public class LeadsManagementService {
         fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
       }
       responseDAO.deleteAll(responseEntities);
+      if (lead.getTaskId() != null) {
+        taskService.removeTask(lead.getTaskId());
+      }
       leadDAO.delete(lead);
     } catch (Exception e) {
       LOG.error(e);
@@ -367,8 +377,8 @@ public class LeadsManagementService {
                                                           .getId());
       Task task = new Task();
       task.setTitle(lead.getMail());
-      if(StringUtils.isNoneEmpty(lead.getFirstName())&&StringUtils.isNoneEmpty(lead.getLastName())){
-        task.setTitle(lead.getFirstName()+" "+lead.getLastName());
+      if (StringUtils.isNoneEmpty(lead.getFirstName()) && StringUtils.isNoneEmpty(lead.getLastName())) {
+        task.setTitle(lead.getFirstName() + " " + lead.getLastName());
       }
       task.setDescription("");
       task.setStatus(status);
@@ -390,16 +400,20 @@ public class LeadsManagementService {
       leadEntity.setCompany(leadDTO.getCompany());
     if (!StringUtils.isEmpty(leadDTO.getPosition()))
       leadEntity.setPosition(leadDTO.getPosition());
-    if (!StringUtils.isEmpty(leadDTO.getCountry()))
-      leadEntity.setCountry(leadDTO.getCountry());
+
+    if (!StringUtils.isEmpty(leadDTO.getInferredCountry())){
+      if(StringUtils.isEmpty(leadEntity.getGeographiqueZone()) || !leadDTO.getInferredCountry().equals(leadEntity.getCountry())){
+        leadDTO.setGeographiqueZone(getGeoZone(toLeadEntity(leadDTO)));
+        leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
+        leadEntity.setCountry(leadDTO.getInferredCountry());
+      }
+    }
     if (!StringUtils.isEmpty(leadDTO.getPhone()))
       leadEntity.setPhone(leadDTO.getPhone());
     if (!StringUtils.isEmpty(leadDTO.getLanguage()))
       leadEntity.setLanguage(leadDTO.getLanguage());
     if (!StringUtils.isEmpty(leadDTO.getAssignee()))
       leadEntity.setAssignee(leadDTO.getAssignee());
-    if (!StringUtils.isEmpty(leadDTO.getGeographiqueZone()))
-      leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
     if (!StringUtils.isEmpty(leadDTO.getCaptureMethod()))
       leadEntity.setCaptureMethod(leadDTO.getCaptureMethod());
     if (!StringUtils.isEmpty(leadDTO.getCaptureType()))
@@ -436,7 +450,7 @@ public class LeadsManagementService {
     leadDTO.setLastName(leadEntity.getLastName());
     leadDTO.setCompany(leadEntity.getCompany());
     leadDTO.setPosition(leadEntity.getPosition());
-    leadDTO.setCountry(leadEntity.getCountry());
+    leadDTO.setInferredCountry(leadEntity.getCountry());
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
     if (leadEntity.getCreatedDate() != null)
@@ -474,6 +488,13 @@ public class LeadsManagementService {
     leadDTO.setUsersNumber(leadEntity.getUsersNumber());
     leadDTO.setInteractionSummary(leadEntity.getInteractionSummary());
     leadDTO.setCurrentSolution(leadEntity.getCurrentSolution());
+    leadDTO.setHowHear(leadEntity.getHowHear());
+    leadDTO.setSolutionType(leadEntity.getSolutionType());
+    leadDTO.setSolutionRequirements(leadEntity.getSolutionRequirements());
+    leadDTO.setShortlistVendors(leadEntity.getShortlistVendors());
+    leadDTO.setCompanyWebsite(leadEntity.getCompanyWebsite());
+    leadDTO.setEmployeesNumber(leadEntity.getEmployeesNumber());
+    leadDTO.setIndustry(leadEntity.getIndustry());
     return leadDTO;
   }
 
@@ -485,7 +506,7 @@ public class LeadsManagementService {
     leadEntity.setLastName(leadDTO.getLastName());
     leadEntity.setCompany(leadDTO.getCompany());
     leadEntity.setPosition(leadDTO.getPosition());
-    leadEntity.setCountry(leadDTO.getCountry());
+    leadEntity.setCountry(leadDTO.getInferredCountry());
     leadEntity.setStatus(leadDTO.getStatus());
     leadEntity.setPhone(leadDTO.getPhone());
     leadEntity.setCreatedDate(leadDTO.getCreatedDate());
@@ -515,6 +536,13 @@ public class LeadsManagementService {
     leadEntity.setUsersNumber(leadDTO.getUsersNumber());
     leadEntity.setInteractionSummary(leadDTO.getInteractionSummary());
     leadEntity.setCurrentSolution(leadDTO.getCurrentSolution());
+    leadEntity.setHowHear(leadDTO.getHowHear());
+    leadEntity.setSolutionType(leadDTO.getSolutionType());
+    leadEntity.setSolutionRequirements(leadDTO.getSolutionRequirements());
+    leadEntity.setShortlistVendors(leadDTO.getShortlistVendors());
+    leadEntity.setCompanyWebsite(leadDTO.getCompanyWebsite());
+    leadEntity.setEmployeesNumber(leadDTO.getEmployeesNumber());
+    leadEntity.setIndustry(leadDTO.getIndustry());
     return leadEntity;
   }
 
@@ -573,5 +601,4 @@ public class LeadsManagementService {
     responseEntity.setFilelds(fields);
     return responseEntity;
   }
-
 }
