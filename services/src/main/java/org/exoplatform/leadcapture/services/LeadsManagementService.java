@@ -91,7 +91,7 @@ public class LeadsManagementService {
         lead.setCreatedDate(new Date());
         lead.setUpdatedDate(new Date());
         if (lead.getStatus() == null) {
-          if (settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+          if (StringUtils.isNoneEmpty(settings.getAutoOpeningForms())&&settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             lead.setStatus(LEAD_OPEN_STATUS);
           } else {
             lead.setStatus(LEAD_DEFAULT_STATUS);
@@ -117,7 +117,7 @@ public class LeadsManagementService {
         leadEntity.setUpdatedDate(new Date());
         if (leadEntity.getTaskId() == null) {
           if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS)
-              && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+              && settings.getAutoOpeningForms()!=null && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             Task task_ = createTask(leadEntity);
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
@@ -380,7 +380,7 @@ public class LeadsManagementService {
       if (StringUtils.isNoneEmpty(lead.getFirstName()) && StringUtils.isNoneEmpty(lead.getLastName())) {
         task.setTitle(lead.getFirstName() + " " + lead.getLastName());
       }
-      task.setDescription("");
+      task.setDescription("<a  href=\""+leadCaptureSettingsService.getSettings().getLeadManagementAppUrl()+"?leadid="+lead.getId()+"\">"+lead.getFirstName() + " " + lead.getLastName() +" </a>");
       task.setStatus(status);
       task.setCreatedBy(settings.getUserExperienceBotUserName());
       task.setCreatedTime(new Date());

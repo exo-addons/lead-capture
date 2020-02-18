@@ -44,7 +44,7 @@ public class LCMailService {
     return s;
   }
 
-  public void sendMail(String content, String subject, LeadEntity lead, String resource) throws Exception {
+  public void sendMail(String content, String subject, LeadEntity lead, String resource, String resourceName) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     if (settings.isMailingEnabled()) {
       if (lead.getMarketingSuspended() == null || !lead.getMarketingSuspended()) {
@@ -55,8 +55,9 @@ public class LCMailService {
             message.setFrom(settings.getSenderMail());
             message.setTo(lead.getMail());
             message.setMimeType("text/html");
+            subject = StringUtils.replace(subject, "$RESOURCE_NAME", resourceName);
             message.setSubject(StringCommonUtils.decodeSpecialCharToHTMLnumber(subject));
-            message.setBody(getContentEmail(content, lead, resource));
+            message.setBody(getContentEmail(content, lead, resource, resourceName));
             mailService.sendMessage(message);
           } else {
             LOG.warn("Mail sender adress is not defined, cannot send mail to lead {}", lead.getId());
@@ -73,12 +74,13 @@ public class LCMailService {
     }
   }
 
-  public String getContentEmail(String content, LeadEntity lead, String resource) {
-
+  public String getContentEmail(String content, LeadEntity lead, String resource, String resourceName) {
     String content_ = StringUtils.replace(content, "$FIRST_NAME", lead.getFirstName());
     content_ = StringUtils.replace(content_, "$LAST_NAME", lead.getLastName());
     content_ = StringUtils.replace(content_, "$MAIL", lead.getMail());
+    content_ = StringUtils.replace(content_, "$RESOURCE_NAME", resourceName);
     content_ = StringUtils.replace(content_, "$RESOURCE", resource);
+    content_ = StringUtils.replace(content_, "$UNSUBSCRIBE_URL", leadCaptureSettingsService.getSettings().getUnsubscribeUrl()+lead.getId());
     return convertCodeHTML(content_);
   }
 

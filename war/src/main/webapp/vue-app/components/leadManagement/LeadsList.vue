@@ -174,6 +174,13 @@ export default {
                     this.initialize()
                 }
             });
+        fetch(`/portal/rest/leadcapture/leadsmanagement/marketers`, {
+                credentials: 'include',
+            })
+            .then((resp) => resp.json())
+            .then((resp) => {
+                this.assignees = resp;
+            });
     },
     watch: {
         dialog(val) {
@@ -256,6 +263,16 @@ export default {
     },
     methods: {
         initialize() {
+            const leadId = this.getUrlParameterByName("leadid");
+            if (leadId != null) {
+                this.getLeadById(leadId)
+            } else {
+                this.getLeads()
+
+            }
+        },
+
+        getLeads() {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
                     credentials: 'include',
                 })
@@ -265,12 +282,18 @@ export default {
                     this.allLeads = resp;
                 });
 
-            fetch(`/portal/rest/leadcapture/leadsmanagement/marketers`, {
+        },
+
+        getLeadById(id) {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + id, {
                     credentials: 'include',
                 })
                 .then((resp) => resp.json())
                 .then((resp) => {
-                    this.assignees = resp;
+                    const item = resp
+                    if (item !== null) {
+                        this.edit(item)
+                    }
                 });
         },
 
@@ -304,6 +327,9 @@ export default {
         },
 
         backToList() {
+            if (this.leadList.length === 0) {
+                this.getLeads()
+            }
             this.showDetails = false;
             this.showTable = true;
         },
@@ -494,6 +520,15 @@ export default {
             this.alert = true;
             setTimeout(() => (this.alert = false), 5000);
         },
+        getUrlParameterByName(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&")
+            const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
+            const results = regex.exec(url)
+            if (!results) {return null}
+            if (!results[2]) {return null}
+            return decodeURIComponent(results[2].replace(/\+/g, " "))
+        }       
     },
 };
 </script>

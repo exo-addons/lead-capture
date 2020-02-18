@@ -18,6 +18,8 @@
                         <v-text-field v-model="setting.autoOpeningForms" label="Auto opening forms"></v-text-field>
                         <v-text-field v-model="setting.mailsBlackList" label="Mails Black List"></v-text-field>
                         <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" label="Allowed lead Source Domain" required></v-text-field>
+                        <v-text-field v-model="setting.unsubscribeUrl" label="Unsubscribe Url"></v-text-field>
+                        <v-text-field v-model="setting.leadManagementAppUrl" :rules="[rules.required]" label="Lead Management Application Url"></v-text-field>
                         <v-row>
                             <v-col cols="12" sm="6" md="5">
                                 <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>

@@ -51,11 +51,11 @@ public class ResourcesManagementService {
 
   }
 
-  public String getResourceUrlByPath(String path) {
+  public ResourceEntity getResourceUrlByPath(String path) {
     List<ResourceEntity> resourceEntities = resourceDAO.findAll();
     for (ResourceEntity resourceEntity : resourceEntities) {
       if (resourceEntity.getPath().contains(path) || path.contains(resourceEntity.getPath())) {
-        return resourceEntity.getUrl();
+        return resourceEntity;
       }
     }
     return null;

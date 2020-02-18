@@ -82,7 +82,7 @@ public class LeadCaptureSettingsService {
     // Purge cached settings
     this.configuredLeadCaptureSettings = null;
 
-    if (!oldSettings.getUserExperienceSpace().equals(leadCaptureSettings.getUserExperienceSpace())) {
+    if (StringUtils.isEmpty(oldSettings.getUserExperienceSpace())||!oldSettings.getUserExperienceSpace().equals(leadCaptureSettings.getUserExperienceSpace())) {
       updateStatuses(leadCaptureSettings.getUserExperienceSpace(), leadCaptureSettings.getLeadTaskProject());
     } else if (StringUtils.isNotEmpty(leadCaptureSettings.getLeadTaskProject())
         && !oldSettings.getLeadTaskProject().equals(leadCaptureSettings.getLeadTaskProject())) {

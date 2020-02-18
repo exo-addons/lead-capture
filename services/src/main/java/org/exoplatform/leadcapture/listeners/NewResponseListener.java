@@ -1,8 +1,5 @@
 package org.exoplatform.leadcapture.listeners;
 
-import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
-import static org.exoplatform.leadcapture.Utils.isResourceRequest;
-
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,10 +8,7 @@ import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
-import org.exoplatform.leadcapture.entity.FieldEntity;
-import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.entity.MailTemplateEntity;
-import org.exoplatform.leadcapture.entity.ResponseEntity;
+import org.exoplatform.leadcapture.entity.*;
 import org.exoplatform.leadcapture.services.LCMailService;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
@@ -23,6 +17,8 @@ import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
+import static org.exoplatform.leadcapture.Utils.*;
 
 public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
 
@@ -54,7 +50,11 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
   public void onEvent(Event<LeadEntity, ResponseEntity> event) throws Exception {
     LeadEntity lead = event.getSource();
     String field = null;
+    String resourceUrl = null;
+    String resourceName = null;
+    ResourceEntity resource = null;
     ResponseEntity responseEntity = event.getData();
+    if(StringUtils.isNotEmpty(lead.getActivityId()))saveComment(lead.getActivityId(), responseEntity);
     List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newResponse");
     for (MailTemplateEntity template : templates) {
       if (StringUtils.isNotEmpty(template.getForm()) && !responseEntity.getFormEntity().getName().equals(template.getForm())) {
@@ -81,10 +81,14 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
           if (field != null) {
             if (!field.equals("")) {
               if (isResourceRequest(field)) {
-                field = resourcesManagementService.getResourceUrlByPath(field);
+                resource = resourcesManagementService.getResourceUrlByPath(field);
+                if(resource!=null){
+                  resourceName=resource.getName();
+                  resourceUrl=resource.getUrl();
+                }
               }
             }
-            lcMailService.sendMail(content.getContent(), content.getSubject(), lead, field);
+            lcMailService.sendMail(content.getContent(), content.getSubject(), lead, resourceUrl, resourceName);
             LOG.info("service=lead-capture operation=send_mail_to_lead parameters=\"lead_id:{},lead_name:{},mail_template_id:{},mail_template_name:{},reason: NewLead\"",
                      lead.getId(),
                      lead.getFirstName() + " " + lead.getLastName(),

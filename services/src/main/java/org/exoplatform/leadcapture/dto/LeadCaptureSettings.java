@@ -21,9 +21,9 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
 
   private String            senderMail                 = null;
 
-  private boolean           mailingEnabled             =false;
+  private boolean           mailingEnabled             = false;
 
-  private boolean           captureEnabled             =false;
+  private boolean           captureEnabled             = false;
 
   private String            allowedCaptureSourceDomain = null;
 
@@ -32,6 +32,10 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
   private String            mailsBlackList             = null;
 
   private String            autoOpeningForms           = null;
+
+  private String            unsubscribeUrl             = null;
+
+  private String            leadManagementAppUrl       = null;
 
   public LeadCaptureSettings clone() { // NOSONAR
     try {

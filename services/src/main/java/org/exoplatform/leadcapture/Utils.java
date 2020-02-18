@@ -15,6 +15,8 @@ import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.leadcapture.dao.FieldDAO;
+import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
@@ -34,6 +36,7 @@ import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.social.core.storage.api.ActivityStorage;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.service.ProjectService;
@@ -233,11 +236,47 @@ public class Utils {
       return null;
     }
     ExoSocialActivity activity = new ExoSocialActivityImpl();
+    String userName = "<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+        + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>";
+
     activity.setType("DEFAULT_ACTIVITY");
-    activity.setTitle("<span id='npsActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Lead Name : </b>"
-        + lead.getFirstName() + " " + lead.getLastName() + "<br/>\n" + " <b>Lead mail : </b>" + lead.getMail() + "<br/>\n");
+    activity.setTitle("<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName
+        + "<br/>\n" + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
+        + " <b>Capture methode : </b>" + lead.getCaptureMethod() + "<br/>\n");
     activity.setUserId(posterIdentity.getId());
     return activityManager.saveActivity(spaceIdentity, activity);
+
+  }
+
+  public static void saveComment(String activityId, ResponseEntity responseEntity) {
+    LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+    ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    String botName = settings.getUserExperienceBotUserName();
+    IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
+    ActivityStorage activityStorage = CommonsUtils.getService(ActivityStorage.class);
+    FieldDAO fieldDAO = CommonsUtils.getService(FieldDAO.class);
+    ExoSocialActivity activity = activityManager.getActivity(activityId);
+    if (activity == null) {
+      throw new IllegalStateException("Activity with id '" + activityId + "' wasn't found");
+    }
+    Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
+    if (posterIdentity == null) {
+      LOG.warn("Not able to create the comment, the Poster Identity is missing");
+      throw new IllegalStateException("Not able to create the comment, the Poster Identity is missing");
+    }
+    String commentText = "<span>\n" + "A new response has been added: <br/>" + "Form Name :"
+        + responseEntity.getFormEntity().getName() + "<br/>\n";
+    for (FieldEntity fieldEntity : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
+      if (!fieldEntity.getName().equals(CREATION_DATE_FIELD_NAME)) {
+        commentText = commentText.concat(fieldEntity.getName() + " : " + fieldEntity.getValue() + "<br/>");
+      }
+    }
+    ExoSocialActivity comment = new ExoSocialActivityImpl();
+    comment.setTitle(commentText);
+    comment.setUserId(posterIdentity.getId());
+    comment.setPosterId(posterIdentity.getId());
+    activityStorage.saveComment(activity, comment);
 
   }
 
@@ -322,30 +361,32 @@ public class Utils {
   }
 
   public static String getLeadSource(LeadEntity lead) {
-
-    if (isInList(lead.getOriginalReferrer(), LC_SOURCE_DIRECT))
-      return LC_SOURCE_DIRECT_NAME;
-    if (isInList(lead.getOriginalReferrer(), LC_SOURCE_SOCIAL))
-      return LC_SOURCE_SOCIAL_NAME;
-    if (isInList(lead.getOriginalReferrer(), LC_SOURCE_ORGANIC))
-      return LC_SOURCE_ORGANIC_NAME;
+    if (StringUtils.isNoneEmpty(lead.getOriginalReferrer())) {
+      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_DIRECT))
+        return LC_SOURCE_DIRECT_NAME;
+      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_SOCIAL))
+        return LC_SOURCE_SOCIAL_NAME;
+      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_ORGANIC))
+        return LC_SOURCE_ORGANIC_NAME;
+    }
     return LC_SOURCE_REFERRAL_NAME;
   }
 
   public static String getGeoZone(LeadEntity lead) {
-
-    if (isInList(lead.getCountry(), LC_G_ZONE_US_CANADA))
-      return LC_G_ZONE_US_CANADA_NAME;
-    if (isInList(lead.getCountry(), LC_G_ZONE_WESTERN_EUROPE))
-      return LC_G_ZONE_WESTERN_EUROPE_NAME;
-    if (isInList(lead.getCountry(), LC_G_ZONE_ESTERN_EUROPE))
-      return LC_G_ZONE_ESTERN_EUROPE_NAME;
-    if (isInList(lead.getCountry(), LC_G_ZONE_LAT_AM))
-      return LC_G_ZONE_LAT_AM_NAME;
-    if (isInList(lead.getCountry(), LC_G_ZONE_APAC))
-      return LC_G_ZONE_APAC_NAME;
-    if (isInList(lead.getCountry(), LC_G_ZONE_MEA))
-      return LC_G_ZONE_MEA_NAME;
+    if (StringUtils.isNoneEmpty(lead.getCountry())) {
+      if (isInList(lead.getCountry(), LC_G_ZONE_US_CANADA))
+        return LC_G_ZONE_US_CANADA_NAME;
+      if (isInList(lead.getCountry(), LC_G_ZONE_WESTERN_EUROPE))
+        return LC_G_ZONE_WESTERN_EUROPE_NAME;
+      if (isInList(lead.getCountry(), LC_G_ZONE_ESTERN_EUROPE))
+        return LC_G_ZONE_ESTERN_EUROPE_NAME;
+      if (isInList(lead.getCountry(), LC_G_ZONE_LAT_AM))
+        return LC_G_ZONE_LAT_AM_NAME;
+      if (isInList(lead.getCountry(), LC_G_ZONE_APAC))
+        return LC_G_ZONE_APAC_NAME;
+      if (isInList(lead.getCountry(), LC_G_ZONE_MEA))
+        return LC_G_ZONE_MEA_NAME;
+    }
     return "Zone not defined";
   }
 
