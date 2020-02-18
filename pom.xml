@@ -45,7 +45,8 @@
         <url>https://github.com/exo-addons/lead-capture</url>
     </scm>
     <properties>
-        <platform.version>6.0.0-M15</platform.version>
+        <org.exoplatform.commons.version>6.0.0-M19</org.exoplatform.commons.version>
+        <org.exoplatform.social.version>6.0.0-M19</org.exoplatform.social.version>
         <org.lombok.version>1.18.2</org.lombok.version>
         <org.jackson.version>2.4.2</org.jackson.version>
         <addon.exo.tasks.version>3.0.0-M15</addon.exo.tasks.version>
@@ -54,9 +55,16 @@
         <dependencies>
             <!-- Import versions from platform project -->
             <dependency>
-                <groupId>org.exoplatform.platform</groupId>
-                <artifactId>platform</artifactId>
-                <version>${platform.version}</version>
+                <groupId>org.exoplatform.commons</groupId>
+                <artifactId>commons-component-common</artifactId>
+                <version>${org.exoplatform.commons.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.exoplatform.social</groupId>
+                <artifactId>social-component-core</artifactId>
+                <version>${org.exoplatform.social.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
