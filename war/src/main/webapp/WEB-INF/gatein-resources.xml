@@ -11,7 +11,7 @@
 
 
     <portal-skin>
-        <skin-name>Enterprise</skin-name>
+        <skin-name>${exo.skin.name}</skin-name>
         <skin-module>customModuleVuetify</skin-module>
         <css-path>/../EnterpriseSkin/skin/css/vuetify/vuetify-all.css</css-path>
         <css-priority>10</css-priority>
