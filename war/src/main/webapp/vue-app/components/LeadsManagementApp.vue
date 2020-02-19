@@ -41,4 +41,7 @@ select {
 #leadsManagementApp .v-toolbar .v-input {
     margin-left: 18px;
 }
+#leadsManagementApp .v-data-table {
+ width: 100%;
+}
 </style>

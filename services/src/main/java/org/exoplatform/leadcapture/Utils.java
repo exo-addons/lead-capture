@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -219,7 +220,7 @@ public class Utils {
     String botName = leadCaptureSettingsService.getSettings().getUserExperienceBotUserName();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
+    ActivityStorage activityStorage = CommonsUtils.getService(ActivityStorage.class);
     Space space = spaceService.getSpaceByPrettyName(spaceName);
     if (space == null) {
       LOG.warn("Space not found");
@@ -238,13 +239,13 @@ public class Utils {
     ExoSocialActivity activity = new ExoSocialActivityImpl();
     String userName = "<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
         + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>";
-
+    userName = StringEscapeUtils.unescapeHtml(userName);
     activity.setType("DEFAULT_ACTIVITY");
     activity.setTitle("<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName
         + "<br/>\n" + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
         + " <b>Capture methode : </b>" + lead.getCaptureMethod() + "<br/>\n");
     activity.setUserId(posterIdentity.getId());
-    return activityManager.saveActivity(spaceIdentity, activity);
+    return activityStorage.saveActivity(spaceIdentity, activity);
 
   }
 

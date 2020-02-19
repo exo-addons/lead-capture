@@ -33,4 +33,8 @@ select {
 #mailTemplatesManagementApp .v-toolbar .v-input {
     margin-left: 18px;
 }
+
+#mailTemplatesManagementApp .v-data-table {
+ width: 100%;
+}
 </style>

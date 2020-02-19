@@ -72,6 +72,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
       ListAccess<User> users = organizationService.getUserHandler().findUsersByQuery(query);
       if (users.getSize() > 0) {
         User communityUser = users.load(0, 1)[0];
+        lead.setCommunityRegistration(true);
         lead.setCommunityUserName(communityUser.getUserName());
         lead.setCommunityRegistrationDate(communityUser.getCreatedDate());
         LOG.info("Lead {} has been associated to the community user {}", lead.getId(), communityUser.getUserName());

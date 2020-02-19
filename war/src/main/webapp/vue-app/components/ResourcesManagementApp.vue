@@ -333,4 +333,8 @@ select {
 #resourcesManagementApp .v-toolbar .v-input {
     margin-left: 18px;
 }
+
+#resourcesManagementApp .v-data-table {
+ width: 100%;
+}
 </style>
