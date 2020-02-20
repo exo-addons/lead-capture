@@ -91,7 +91,8 @@ public class LeadsManagementService {
         lead.setCreatedDate(new Date());
         lead.setUpdatedDate(new Date());
         if (lead.getStatus() == null) {
-          if (StringUtils.isNoneEmpty(settings.getAutoOpeningForms())&&settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+          if (leadInfo.getResponse() != null && StringUtils.isNoneEmpty(settings.getAutoOpeningForms())
+              && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             lead.setStatus(LEAD_OPEN_STATUS);
           } else {
             lead.setStatus(LEAD_DEFAULT_STATUS);
@@ -99,15 +100,20 @@ public class LeadsManagementService {
         }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {
           lead.setBlogSubscriptionDate(new Date());
+          lead.setCaptureMethod("Blog");
+          lead.setCaptureType("Blog subscription");
         }
-        lead.setCaptureMethod(leadInfo.getResponse().getFormName());
-        if(settings.getResourcesIdentifier()!=null){
-          for(FieldDTO fieldDTO : leadInfo.getResponse().getFields()){
-            if(isResourceRequest(fieldDTO.getValue()))
-              lead.setCaptureType(fieldDTO.getValue());
-            break;
+        if (leadInfo.getResponse() != null) {
+          lead.setCaptureMethod(leadInfo.getResponse().getFormName());
+          if (settings.getResourcesIdentifier() != null) {
+            for (FieldDTO fieldDTO : leadInfo.getResponse().getFields()) {
+              if (isResourceRequest(fieldDTO.getValue()))
+                lead.setCaptureType(fieldDTO.getValue());
+              break;
+            }
           }
         }
+
         leadEntity = createLead(lead);
         if (broadcast) {
           listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
@@ -116,8 +122,8 @@ public class LeadsManagementService {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date());
         if (leadEntity.getTaskId() == null) {
-          if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS)
-              && settings.getAutoOpeningForms()!=null && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
+          if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null && leadInfo.getResponse() != null
+              && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             Task task_ = createTask(leadEntity);
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
@@ -380,7 +386,8 @@ public class LeadsManagementService {
       if (StringUtils.isNoneEmpty(lead.getFirstName()) && StringUtils.isNoneEmpty(lead.getLastName())) {
         task.setTitle(lead.getFirstName() + " " + lead.getLastName());
       }
-      task.setDescription("<a  href=\""+leadCaptureSettingsService.getSettings().getLeadManagementAppUrl()+"?leadid="+lead.getId()+"\">"+lead.getFirstName() + " " + lead.getLastName() +" </a>");
+      task.setDescription("<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+          + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>");
       task.setStatus(status);
       task.setCreatedBy(settings.getUserExperienceBotUserName());
       task.setCreatedTime(new Date());
@@ -401,8 +408,9 @@ public class LeadsManagementService {
     if (!StringUtils.isEmpty(leadDTO.getPosition()))
       leadEntity.setPosition(leadDTO.getPosition());
 
-    if (!StringUtils.isEmpty(leadDTO.getInferredCountry())){
-      if(StringUtils.isEmpty(leadEntity.getGeographiqueZone()) || !leadDTO.getInferredCountry().equals(leadEntity.getCountry())){
+    if (!StringUtils.isEmpty(leadDTO.getInferredCountry())) {
+      if (StringUtils.isEmpty(leadEntity.getGeographiqueZone())
+          || !leadDTO.getInferredCountry().equals(leadEntity.getCountry())) {
         leadDTO.setGeographiqueZone(getGeoZone(toLeadEntity(leadDTO)));
         leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
         leadEntity.setCountry(leadDTO.getInferredCountry());
