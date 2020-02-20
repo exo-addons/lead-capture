@@ -240,10 +240,11 @@ public class Utils {
     String userName = "<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
         + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>";
     userName = StringEscapeUtils.unescapeHtml(userName);
-    activity.setType("DEFAULT_ACTIVITY");
-    activity.setTitle("<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName
-        + "<br/>\n" + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
-        + " <b>Capture methode : </b>" + lead.getCaptureMethod() + "<br/>\n");
+    //activity.setType("DEFAULT_ACTIVITY");
+    String title= "<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName
+            + "<br/>\n" + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
+            + " <b>Capture methode : </b>" + lead.getCaptureMethod() + "<br/>\n";
+    activity.setTitle(StringEscapeUtils.unescapeHtml(title));
     activity.setUserId(posterIdentity.getId());
     return activityStorage.saveActivity(spaceIdentity, activity);
 

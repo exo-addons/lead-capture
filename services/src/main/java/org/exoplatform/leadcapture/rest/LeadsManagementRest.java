@@ -98,17 +98,22 @@ public class LeadsManagementRest implements ResourceContainer {
   @Path("leads")
   public Response add(@Context UriInfo uriInfo, @HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-    /*
-     * String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN); if (headerToken
-     * == null) { LOG.warn("Security Token for Lead capture not defined"); return
-     * Response.status(Response.Status.FORBIDDEN).
-     * entity("Access forbidden to the add lead rest service, Security Token not defined"
-     * ).build(); } if (captureToken == null || !captureToken.equals(headerToken)) {
-     * LOG.warn("Access forbidden to the add lead rest service, wrong token: {}",
-     * headerToken); return Response.status(Response.Status.FORBIDDEN).
-     * entity("Access forbidden to the add lead rest service, wrong token").build();
-     * }
-     */
+
+    // String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
+    String captureToken = settings.getCaptureToken();
+    if (headerToken == null) {
+      LOG.warn("Security Token for Lead capture not defined");
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Access forbidden to the add lead rest service, Security Token not defined")
+                     .build();
+    }
+    if (StringUtils.isEmpty(captureToken) || !captureToken.equals(headerToken)) {
+      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Access forbidden to the add lead rest service, wrong token")
+                     .build();
+    }
+
     if (lead == null) {
       LOG.warn("Lead not captured, lead is null");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead is null").build();
@@ -201,17 +206,22 @@ public class LeadsManagementRest implements ResourceContainer {
                           @HeaderParam("token") String headerToken,
                           @PathParam("id") Long id) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-    /*
-     * String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN); if (headerToken
-     * == null) { LOG.warn("Security Token for Lead capture not defined"); return
-     * Response.status(Response.Status.FORBIDDEN).
-     * entity("Access forbidden to the add lead rest service, Security Token not defined"
-     * ).build(); } if (captureToken == null || !captureToken.equals(headerToken)) {
-     * LOG.warn("Access forbidden to the add lead rest service, wrong token: {}",
-     * headerToken); return Response.status(Response.Status.FORBIDDEN).
-     * entity("Access forbidden to the add lead rest service, wrong token").build();
-     * }
-     */
+
+    //String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
+    String captureToken = settings.getCaptureToken();
+    if (headerToken == null) {
+      LOG.warn("Security Token for Lead capture not defined");
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Access forbidden to the add lead rest service, Security Token not defined")
+                     .build();
+    }
+    if (captureToken == null || !captureToken.equals(headerToken)) {
+      LOG.warn("Access forbidden to the add lead rest service, wrong token: {}", headerToken);
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Access forbidden to the add lead rest service, wrong token")
+                     .build();
+    }
+
     try {
       leadsManagementService.suspendLead(id);
       LOG.info("Lead {} suspended", id);

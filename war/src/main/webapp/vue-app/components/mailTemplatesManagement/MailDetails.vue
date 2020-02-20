@@ -24,7 +24,7 @@
                     <v-text-field v-model="selectedContent.subject" :rules="[rules.required]" label="Subject" required></v-text-field>
 
                     <ck-editor ref="ck" :content="selectedContent.content" />
-                    <div>*You can use $FIRST_NAME, $LAST_NAME, $MAIL, $RESOURCE for lead's fields</div>
+                    <div>*You can use $FIRST_NAME, $LAST_NAME, $MAIL, $RESOURCE and $RESOURCE_NAME for lead's fields</div>
 
                 </v-card>
 
