@@ -237,7 +237,7 @@ public class Utils {
       return null;
     }
     ExoSocialActivity activity = new ExoSocialActivityImpl();
-    String userName = "<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+    String userName = "<a class=\"textBold linkTitle\"  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
         + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>";
     userName = StringEscapeUtils.unescapeHtml(userName);
     //activity.setType("DEFAULT_ACTIVITY");

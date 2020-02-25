@@ -266,6 +266,9 @@ export default {
             const leadId = this.getUrlParameterByName("leadid");
             if (leadId != null) {
                 this.getLeadById(leadId)
+                if(this.selectedLead.id===undefined){
+                      this.getLeads()
+                }
             } else {
                 this.getLeads()
 

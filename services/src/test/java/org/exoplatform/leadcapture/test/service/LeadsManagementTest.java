@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.json.JSONException;
 import org.junit.Test;
 
@@ -13,6 +12,7 @@ import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.FormEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
+import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.leadcapture.test.BaseLeadManagementTest;
 
 public class LeadsManagementTest extends BaseLeadManagementTest {
@@ -35,8 +35,13 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     List<LeadDTO> leads = leadsManagementService.getLeads();
     assertNotNull(leads);
     assertEquals(0, leads.size());
-    leadsManagementService.addLeadInfo(formInfo, false);
+    try {
+      leadsManagementService.addLeadInfo(formInfo, false);
+    } catch (Exception e) {
+      fail();
+    }
     leads = leadsManagementService.getLeads();
+
     assertNotNull(leads);
     assertEquals(1, leads.size());
     assertEquals(1, leadsManagementService.getResponses(leads.get(0).getId()).length());
@@ -47,7 +52,11 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagementService leadsManagementService = getService(LeadsManagementService.class);
     LeadEntity leadEntity = newLead();
     assertNotNull(leadsManagementService.getLeadbyId(leadEntity.getId()));
-    leadsManagementService.deleteLead(leadEntity);
+    try {
+      leadsManagementService.deleteLead(leadEntity);
+    } catch (Exception e) {
+      fail();
+    }
     assertEquals(null, leadsManagementService.getLeadbyId(leadEntity.getId()));
   }
 
@@ -57,7 +66,11 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadEntity leadEntity = newLead();
     assertEquals(language, leadEntity.getLanguage());
     leadEntity.setLanguage("fr");
-    leadsManagementService.updateLead(leadsManagementService.toLeadDto(leadEntity));
+    try {
+      leadsManagementService.updateLead(leadsManagementService.toLeadDto(leadEntity));
+    } catch (Exception e) {
+      fail();
+    }
     leadEntity = leadsManagementService.getLeadbyId(leadEntity.getId());
     assertEquals("fr", leadEntity.getLanguage());
   }
@@ -77,7 +90,11 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagementService leadsManagementService = getService(LeadsManagementService.class);
     LeadEntity leadEntity = newLead();
     assertEquals(assignee, leadEntity.getAssignee());
-    leadsManagementService.assigneLead(leadEntity.getId(), "testUser");
+    try {
+      leadsManagementService.assigneLead(leadEntity.getId(), "testUser");
+    } catch (Exception e) {
+      fail();
+    }
     leadEntity = leadsManagementService.getLeadbyId(leadEntity.getId());
     assertEquals("testUser", leadEntity.getAssignee());
   }
@@ -87,9 +104,13 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagementService leadsManagementService = getService(LeadsManagementService.class);
     LeadEntity leadEntity = newLead();
     assertEquals(status, leadEntity.getStatus());
-    leadsManagementService.updateStatus(leadEntity.getId(), "Accepted");
+    try {
+      leadsManagementService.updateStatus(leadEntity.getId(), "Raw");
+    } catch (Exception e) {
+      fail();
+    }
     leadEntity = leadsManagementService.getLeadbyId(leadEntity.getId());
-    assertEquals("Accepted", leadEntity.getStatus());
+    assertEquals("Raw", leadEntity.getStatus());
   }
 
   @Test
@@ -114,7 +135,11 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadsManagementService leadsManagementService = getService(LeadsManagementService.class);
     LeadEntity leadEntity = newLead();
     assertEquals(0, leadsManagementService.getResponses(leadEntity.getId()).length());
-    leadsManagementService.addResponse(newResponseDTO(), leadEntity);
+    try {
+      leadsManagementService.addResponse(newResponseDTO(), leadEntity);
+    } catch (Exception e) {
+      fail();
+    }
     assertEquals(1, leadsManagementService.getResponses(leadEntity.getId()).length());
   }
 

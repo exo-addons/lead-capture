@@ -6,16 +6,19 @@ import java.util.Map;
 
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
+import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.services.LCMailService;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 
 public class NewCommunityRegistrationListener extends Listener<Map<String, String>, String> {
 
@@ -27,12 +30,16 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
 
   protected LeadDAO                      leadDAO;
 
+  private LeadCaptureSettingsService     leadCaptureSettingsService;
+
   public NewCommunityRegistrationListener(LCMailService lcMailService,
                                           LeadDAO leadDAO,
-                                          MailTemplatesManagementService mailTemplatesManagementService) {
+                                          MailTemplatesManagementService mailTemplatesManagementService,
+                                          LeadCaptureSettingsService leadCaptureSettingsService) {
     this.lcMailService = lcMailService;
     this.mailTemplatesManagementService = mailTemplatesManagementService;
     this.leadDAO = leadDAO;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
 
   }
 
@@ -68,7 +75,7 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setMail(email);
         lead.setFirstName(firstName);
         lead.setLastName(lastName);
-        lead.setCaptureMethod(captureMethod);
+        lead.setCaptureMethod(regMethod);
         lead.setCaptureSourceInfo(captureSourceInfo);
         lead.setOriginalReferrer(referer);
         lead.setPersonSource(leadSource);
@@ -78,9 +85,18 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationDate(new Date(createdDate));
         lead.setCommunityUserName(userName);
         lead.setCommunityRegistrationMethod(regMethod);
-        lead.setPhone(regMethod);
         lead.setCountry(phone);
         leadDAO.create(lead);
+        LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
+                 lead.getFirstName() + " " + lead.getLastName());
+        LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+        if (settings.getUserExperienceSpace() != null && settings.getUserExperienceBotUserName() != null) {
+          ExoSocialActivity activity = Utils.createActivity(lead);
+          if (activity != null) {
+            lead.setActivityId(activity.getId());
+          }
+        }
+        leadDAO.update(lead);
 
       }
       List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newCommunityRegistration");

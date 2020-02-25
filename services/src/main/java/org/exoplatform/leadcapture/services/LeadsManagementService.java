@@ -81,7 +81,7 @@ public class LeadsManagementService {
     this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
-  public LeadEntity addLeadInfo(FormInfo leadInfo, boolean broadcast) {
+  public LeadEntity addLeadInfo(FormInfo leadInfo, boolean broadcast) throws Exception {
     LeadEntity leadEntity = null;
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     try {
@@ -122,7 +122,8 @@ public class LeadsManagementService {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date());
         if (leadEntity.getTaskId() == null) {
-          if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null && leadInfo.getResponse() != null
+          if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null
+              && leadInfo.getResponse() != null
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             Task task_ = createTask(leadEntity);
             if (task_ != null) {
@@ -139,6 +140,7 @@ public class LeadsManagementService {
       }
     } catch (Exception e) {
       LOG.error("An error occured when trying to synchronize lead", e);
+      throw e;
     }
     return leadEntity;
   }
@@ -147,7 +149,7 @@ public class LeadsManagementService {
     return leadDAO.create(toLeadEntity(lead));
   }
 
-  public void deleteLead(LeadEntity lead) {
+  public void deleteLead(LeadEntity lead) throws Exception {
     try {
       List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
       for (ResponseEntity responseEntity : responseEntities) {
@@ -160,33 +162,38 @@ public class LeadsManagementService {
       leadDAO.delete(lead);
     } catch (Exception e) {
       LOG.error(e);
+      throw e;
     }
   }
 
-  public void updateLead(LeadDTO lead) {
+  public void updateLead(LeadDTO lead) throws Exception {
     try {
       lead.setUpdatedDate(new Date());
       leadDAO.update(toLeadEntity(lead));
     } catch (Exception e) {
       LOG.error(e);
+      throw e;
     }
   }
 
-  public void assigneLead(Long leadId, String assignee) {
+  public void assigneLead(Long leadId, String assignee) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
-      Task task = taskService.getTask(leadEntity.getTaskId());
-      task.setAssignee(assignee);
-      taskService.updateTask(task);
+      if (leadEntity.getTaskId() != null) {
+        Task task = taskService.getTask(leadEntity.getTaskId());
+        task.setAssignee(assignee);
+        taskService.updateTask(task);
+      }
     } catch (Exception e) {
       LOG.error(e);
+      throw e;
     }
   }
 
-  public void suspendLead(Long leadId) {
+  public void suspendLead(Long leadId) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
@@ -195,10 +202,11 @@ public class LeadsManagementService {
       leadDAO.update(leadEntity);
     } catch (Exception e) {
       LOG.error(e);
+      throw e;
     }
   }
 
-  public void updateStatus(Long leadId, String status) {
+  public void updateStatus(Long leadId, String status) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
@@ -218,6 +226,7 @@ public class LeadsManagementService {
       }
     } catch (Exception e) {
       LOG.error(e);
+      throw e;
     }
   }
 
@@ -263,7 +272,7 @@ public class LeadsManagementService {
     return formResponsesList;
   }
 
-  public void addResponse(ResponseDTO responseDTO, LeadEntity leadEntity) {
+  public void addResponse(ResponseDTO responseDTO, LeadEntity leadEntity) throws Exception {
 
     try {
       FormEntity formEntity = formDAO.getFormByName(responseDTO.getFormName());
@@ -302,6 +311,7 @@ public class LeadsManagementService {
       listenerService.broadcast(NEW_RESPONSE_EVENT, leadEntity, responseEntity);
     } catch (Exception e) {
       LOG.error("An error occured when trying to add response", e);
+      throw e;
     }
   }
 
@@ -336,7 +346,7 @@ public class LeadsManagementService {
     return Utils.getCommentsJson(taskService.getComments(taskId));
   }
 
-  public JSONObject addTaskComment(long taskId, String username, String comment) {
+  public JSONObject addTaskComment(long taskId, String username, String comment) throws Exception {
     try {
       Comment comment_ = taskService.addComment(taskId, username, comment);
       OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
@@ -345,13 +355,14 @@ public class LeadsManagementService {
                                  organizationService.getUserHandler().findUserByName(comment_.getAuthor()).getDisplayName());
     } catch (EntityNotFoundException enf) {
       LOG.error("Cannot Add Comment", enf);
+      throw enf;
     } catch (Exception e) {
       LOG.error("Cannot conevert comment to json", e);
+      throw e;
     }
-    return null;
   }
 
-  public void updateTaskStatus(Long taskId, String status) {
+  public void updateTaskStatus(Long taskId, String status) throws Exception {
     try {
       LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
       Task task = taskService.getTask(taskId);
@@ -371,10 +382,11 @@ public class LeadsManagementService {
       }
     } catch (Exception e) {
       LOG.error("Cannot update Task status", e);
+      throw e;
     }
   }
 
-  public Task createTask(LeadEntity lead) {
+  public Task createTask(LeadEntity lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());

@@ -18,7 +18,7 @@
                     <b>Registration Method</b>
                 </div>
                 <div class="col-md-8">
-                    <div>{{lead.registrationMethod}}</div>
+                    <div>{{lead.communityRegistrationMethod}}</div>
                 </div>
             </div>
             <div class="row">

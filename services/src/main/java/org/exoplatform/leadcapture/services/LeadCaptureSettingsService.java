@@ -66,7 +66,7 @@ public class LeadCaptureSettingsService {
     return this.configuredLeadCaptureSettings;
   }
 
-  public void saveSettings(LeadCaptureSettings leadCaptureSettings) {
+  public void saveSettings(LeadCaptureSettings leadCaptureSettings) throws Exception {
     if (leadCaptureSettings == null) {
       throw new IllegalArgumentException("Empty settings to save");
     }
@@ -82,15 +82,21 @@ public class LeadCaptureSettingsService {
     // Purge cached settings
     this.configuredLeadCaptureSettings = null;
 
-    if (StringUtils.isEmpty(oldSettings.getUserExperienceSpace())||!oldSettings.getUserExperienceSpace().equals(leadCaptureSettings.getUserExperienceSpace())) {
-      updateStatuses(leadCaptureSettings.getUserExperienceSpace(), leadCaptureSettings.getLeadTaskProject());
-    } else if (StringUtils.isNotEmpty(leadCaptureSettings.getLeadTaskProject())
-        && !oldSettings.getLeadTaskProject().equals(leadCaptureSettings.getLeadTaskProject())) {
-      updateStatuses(leadCaptureSettings.getUserExperienceSpace(), leadCaptureSettings.getLeadTaskProject());
+    try {
+      if (StringUtils.isEmpty(oldSettings.getUserExperienceSpace())
+          || !oldSettings.getUserExperienceSpace().equals(leadCaptureSettings.getUserExperienceSpace())) {
+        updateStatuses(leadCaptureSettings.getUserExperienceSpace(), leadCaptureSettings.getLeadTaskProject());
+      } else if (StringUtils.isNotEmpty(leadCaptureSettings.getLeadTaskProject())
+          && !oldSettings.getLeadTaskProject().equals(leadCaptureSettings.getLeadTaskProject())) {
+        updateStatuses(leadCaptureSettings.getUserExperienceSpace(), leadCaptureSettings.getLeadTaskProject());
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+      throw e;
     }
   }
 
-  void updateStatuses(String userExperienceSpace, String leadTaskProject) {
+  void updateStatuses(String userExperienceSpace, String leadTaskProject) throws Exception {
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     StatusService statusService = CommonsUtils.getService(StatusService.class);
     Space uxSpace = spaceService.getSpaceByPrettyName(userExperienceSpace);
@@ -110,6 +116,7 @@ public class LeadCaptureSettingsService {
           statusService.removeStatus(intStatus.getId());
         } catch (Exception e) {
           LOG.error("Cannot update project statuses");
+          throw e;
         }
 
       }
