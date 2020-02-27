@@ -94,7 +94,7 @@ public class Utils {
   public static final String           LC_SOURCE_REFERRAL_NAME        = "Referral";
 
   public static final String[]         LC_STATUSES                    =
-                                                   { "Open", "Attempted", "Contacted", "Qualified", "Recycled", "Accepted" };
+                                                   { "Open", "Attempted", "Contacted", "Qualified", "Recycled", "Accepted", "Bad Data" };
 
   public static final String[]         LC_SOURCE_SOCIAL               =
                                                         { "facebook", "twitter", "linkedin", "reddit", "quora", "youtube" };

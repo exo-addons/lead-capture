@@ -2,9 +2,9 @@
 <v-container class="">
     <v-list-item>
         <v-list-item-title>
-
             Comments
         </v-list-item-title>
+
         <v-btn class="ma-2" outlined @click="addNote()">
             <v-icon>mdi-plus</v-icon>
             Add Comment
@@ -13,6 +13,9 @@
             <v-icon>mdi-open-in-new</v-icon>
         </a>
 
+        <v-list-item-action>
+                            <i class="uiCloseIcon" @click="toggleDrawer()"></i>
+                        </v-list-item-action>
     </v-list-item>
     <v-card v-show="dialog">
         <v-card-text>
@@ -63,6 +66,9 @@ export default {
         content: ""
     }),
     methods: {
+        toggleDrawer() {
+            this.$emit('toggleDrawer');
+        },
         addNote() {
             this.dialog = true
         },

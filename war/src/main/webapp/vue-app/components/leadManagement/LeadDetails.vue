@@ -310,7 +310,7 @@
         </div>
     </v-container>
     <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
-        <notes-drawer :lead="lead" :comments="comments" />
+        <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer"/>
     </v-navigation-drawer>
 </v-flex>
 </template>
@@ -348,6 +348,9 @@ export default {
             {
                 title: 'Qualified'
             },
+            {
+                title: 'Bad Data'
+            },
         ],
         valid: true,
         confirmDialog: false,
@@ -373,6 +376,9 @@ export default {
         }
     },
     methods: {
+        toggleDrawer() {
+                this.drawer = !this.drawer;
+            },
         backToList() {
             this.$emit('backToList');
         },

@@ -112,7 +112,7 @@ export default {
         leadDetails,
     },
     data: () => ({
-        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified'],
+        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified', 'Bad Data' ],
         selectedStatus: null,
         valid: true,
         notassigned: false,
@@ -404,17 +404,13 @@ export default {
 
             this.leadList.push(this.editedItem);
             this.allLeads.push(this.editedItem);
-            const newLead = {
-                "lead": this.editedItem
-            }
-
-            fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/create`, {
                     method: 'post',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(newLead),
+                    body: JSON.stringify(this.editedItem),
                 })
                 .then((result) => {
                     if (!result.ok) {

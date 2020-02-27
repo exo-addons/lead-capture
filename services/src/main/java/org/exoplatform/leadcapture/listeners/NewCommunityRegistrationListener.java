@@ -68,7 +68,7 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityUserName(userName);
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setPhone(regMethod);
-        lead.setCountry(phone);
+        lead.setCountry(country);
         leadDAO.update(lead);
       } else {
         lead = new LeadEntity();

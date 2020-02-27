@@ -1,8 +1,10 @@
 package org.exoplatform.leadcapture.rest;
 
 import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
+import static org.exoplatform.leadcapture.Utils.LEAD_DEFAULT_STATUS;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -13,7 +15,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,6 +23,7 @@ import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.log.ExoLogger;
@@ -104,6 +106,7 @@ public class LeadsManagementRest implements ResourceContainer {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
 
     // String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     String captureToken = settings.getCaptureToken();
     if (headerToken == null) {
       LOG.warn("Security Token for Lead capture not defined");
@@ -422,8 +425,7 @@ public class LeadsManagementRest implements ResourceContainer {
     try {
       List<FormInfo> leadsList = new ArrayList<>();
       List<ResponseEntity> responseEntities = leadsManagementService.getAllResponses();
-      for(ResponseEntity response : responseEntities)
-      {
+      for (ResponseEntity response : responseEntities) {
         FormInfo formInfo = new FormInfo();
         LeadEntity leadEntity = response.getLeadEntity();
         leadEntity.setId(null);
@@ -434,8 +436,8 @@ public class LeadsManagementRest implements ResourceContainer {
         leadsList.add(formInfo);
       }
       List<LeadDTO> leadDTOS = leadsManagementService.getLeads();
-      for (LeadDTO leadDTO : leadDTOS){
-        if(leadsManagementService.getResponses(leadDTO.getId()).length()==0){
+      for (LeadDTO leadDTO : leadDTOS) {
+        if (leadsManagementService.getResponses(leadDTO.getId()).length() == 0) {
           FormInfo formInfo = new FormInfo();
           leadDTO.setId(null);
           leadDTO.setTaskUrl(null);
@@ -447,6 +449,40 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.ok(leadsList).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  @Path("create")
+  public Response createLead(@Context UriInfo uriInfo, LeadDTO lead) throws Exception {
+
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    if (lead == null || StringUtils.isEmpty(lead.getMail())) {
+      LOG.warn("Lead not captured, mail needed");
+      return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
+    }
+
+    LOG.info("start adding lead {}", lead.toString());
+    try {
+      lead.setCreatedDate(new Date());
+      lead.setUpdatedDate(new Date());
+      lead.setStatus(LEAD_DEFAULT_STATUS);
+
+      leadsManagementService.createLead(lead);
+      LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{}\"",
+               lead.getFirstName() + " " + lead.getLastName());
+
+      return Response.status(Response.Status.OK).entity("lead added").build();
+
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to synchronise lead {}", lead.getFirstName() + " " + lead.getLastName(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
