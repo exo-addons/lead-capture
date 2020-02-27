@@ -1,5 +1,7 @@
 package org.exoplatform.leadcapture.rest;
 
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -7,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
 import org.exoplatform.leadcapture.services.MailTemplatesManagementService;
@@ -94,6 +97,27 @@ public class MailTemplatesManagementRest implements ResourceContainer {
       return Response.status(Response.Status.OK).entity("Mail template updated").build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to update template {}", templateDTO.getId(), e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @POST
+  @Path("templates/import")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("administrators")
+  public Response importTemplates(@Context UriInfo uriInfo, List<MailTemplateDTO> templateDTOs) throws Exception {
+    try {
+      for (MailTemplateDTO templateDTO : templateDTOs) {
+        templateDTO.setId(null);
+        for(MailContentDTO mailContentDTO :templateDTO.getContents()){
+          mailContentDTO.setId(null);
+          mailContentDTO.setMailTemplateDTO(null);
+        }
+        mailTemplatesManagementService.addTemplate(templateDTO);
+      }
+      return Response.status(Response.Status.OK).entity("Mail templates iported").build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to import templates", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }

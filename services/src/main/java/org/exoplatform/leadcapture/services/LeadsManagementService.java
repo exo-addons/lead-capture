@@ -88,8 +88,12 @@ public class LeadsManagementService {
       LeadDTO lead = leadInfo.getLead();
       leadEntity = leadDAO.getLeadByMail(lead.getMail());
       if (leadEntity == null) {
-        lead.setCreatedDate(new Date());
-        lead.setUpdatedDate(new Date());
+        if (lead.getCreatedDate() == null) {
+          lead.setCreatedDate(new Date());
+        }
+        if (lead.getUpdatedDate() == null) {
+          lead.setUpdatedDate(new Date());
+        }
         if (lead.getStatus() == null) {
           if (leadInfo.getResponse() != null && StringUtils.isNoneEmpty(settings.getAutoOpeningForms())
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
@@ -121,7 +125,7 @@ public class LeadsManagementService {
       } else {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date());
-        if (leadEntity.getTaskId() == null) {
+        if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0 ) {
           if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null
               && leadInfo.getResponse() != null
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
@@ -156,7 +160,7 @@ public class LeadsManagementService {
         fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
       }
       responseDAO.deleteAll(responseEntities);
-      if (lead.getTaskId() != null) {
+      if (lead.getTaskId() != null && lead.getTaskId() != 0) {
         taskService.removeTask(lead.getTaskId());
       }
       leadDAO.delete(lead);
@@ -182,7 +186,7 @@ public class LeadsManagementService {
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
-      if (leadEntity.getTaskId() != null) {
+      if (leadEntity.getTaskId() != null  && leadEntity.getTaskId() != 0) {
         Task task = taskService.getTask(leadEntity.getTaskId());
         task.setAssignee(assignee);
         taskService.updateTask(task);
@@ -211,7 +215,7 @@ public class LeadsManagementService {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
-      if (leadEntity.getTaskId() == null) {
+      if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
         if (!status.equals(LEAD_DEFAULT_STATUS)) {
           Task task_ = createTask(leadEntity);
           if (task_ != null) {
@@ -221,7 +225,7 @@ public class LeadsManagementService {
         }
       }
       leadDAO.update(leadEntity);
-      if (leadEntity.getTaskId() != null) {
+      if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
         updateTaskStatus(leadEntity.getTaskId(), status);
       }
     } catch (Exception e) {
@@ -302,6 +306,9 @@ public class LeadsManagementService {
         }
       }
       ResponseEntity responseEntity = new ResponseEntity(formEntity, leadEntity);
+      if (responseDTO.getCreatedDate() != null) {
+        responseEntity.setCreatedDate(responseDTO.getCreatedDate());
+      }
       responseEntity = createResponse(responseEntity);
 
       for (FieldDTO field : responseDTO.getFields()) {
@@ -315,6 +322,10 @@ public class LeadsManagementService {
     }
   }
 
+  public List<ResponseEntity> getAllResponses() {
+    return responseDAO.findAll();
+  }
+
   public FormEntity createForm(FormEntity formEntity) {
 
     return formDAO.create(formEntity);
@@ -326,7 +337,9 @@ public class LeadsManagementService {
   }
 
   public ResponseEntity createResponse(ResponseEntity responseEntity) {
-    responseEntity.setCreatedDate(new Date());
+    if (responseEntity.getCreatedDate() == null) {
+      responseEntity.setCreatedDate(new Date());
+    }
     return responseDAO.create(responseEntity);
   }
 
@@ -473,12 +486,14 @@ public class LeadsManagementService {
     leadDTO.setInferredCountry(leadEntity.getCountry());
     leadDTO.setStatus(leadEntity.getStatus());
     leadDTO.setPhone(leadEntity.getPhone());
-    if (leadEntity.getCreatedDate() != null)
+    if (leadEntity.getCreatedDate() != null) {
       leadDTO.setCreatedDate(leadEntity.getCreatedDate());
-    leadDTO.setFormattedCreatedDate(formatter.format(leadEntity.getCreatedDate()));
-    leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
-    if (leadEntity.getUpdatedDate() != null)
+      leadDTO.setFormattedCreatedDate(formatter.format(leadEntity.getCreatedDate()));
+    }
+    if (leadEntity.getUpdatedDate() != null) {
+      leadDTO.setUpdatedDate(leadEntity.getUpdatedDate());
       leadDTO.setFormattedUpdatedDate(formatter.format(leadEntity.getUpdatedDate()));
+    }
     leadDTO.setLanguage(leadEntity.getLanguage());
     leadDTO.setAssignee(leadEntity.getAssignee());
     leadDTO.setGeographiqueZone(leadEntity.getGeographiqueZone());
@@ -601,7 +616,9 @@ public class LeadsManagementService {
   public ResponseDTO toResponseDto(ResponseEntity responseEntity) {
     ResponseDTO responseDTO = new ResponseDTO();
     responseDTO.setId(responseEntity.getId());
+    responseDTO.setCreatedDate(responseEntity.getCreatedDate());
     responseDTO.setForm(toFormDto(responseEntity.getFormEntity()));
+    responseDTO.setFormName(responseEntity.getFormEntity().getName());
     List<FieldDTO> fields = new ArrayList<>();
     for (FieldEntity fieald : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
       fields.add(toFieldDto(fieald));

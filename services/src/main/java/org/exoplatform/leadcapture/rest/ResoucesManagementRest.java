@@ -16,6 +16,8 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
 
+import java.util.List;
+
 @Path("/leadcapture/lcresources")
 @Produces(MediaType.APPLICATION_JSON)
 
@@ -97,5 +99,24 @@ public class ResoucesManagementRest implements ResourceContainer {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+
+  @POST
+  @Path("resources/import")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("administrators")
+  public Response importResources(@Context UriInfo uriInfo, List<ResourceDTO> resourceDTOs) throws Exception {
+    try {
+      for(ResourceDTO resourceDTO : resourceDTOs){
+        resourceDTO.setId(null);
+      resourcesManagementService.addResource(resourceDTO);
+      }
+      return Response.ok("Resources imported").build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to import resources", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
 
 }

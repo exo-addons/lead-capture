@@ -2,6 +2,9 @@ package org.exoplatform.leadcapture.rest;
 
 import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -10,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -207,7 +211,7 @@ public class LeadsManagementRest implements ResourceContainer {
                           @PathParam("id") Long id) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
 
-    //String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
+    // String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
     String captureToken = settings.getCaptureToken();
     if (headerToken == null) {
       LOG.warn("Security Token for Lead capture not defined");
@@ -361,6 +365,90 @@ public class LeadsManagementRest implements ResourceContainer {
       }
     }
     return false;
+  }
+
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("administrators")
+  @Path("leads/import")
+  public Response importLeads(@Context UriInfo uriInfo, List<FormInfo> leads) throws Exception {
+    LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
+    if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
+      LOG.warn("Leads capture not enabled ");
+      return Response.status(Response.Status.NOT_MODIFIED).build();
+    }
+
+    if (leads == null) {
+      LOG.warn("Leads not imported, leads is null");
+      return Response.status(Response.Status.BAD_REQUEST).entity("Lead is null").build();
+    }
+    try {
+      for (FormInfo lead : leads) {
+        if (lead.getLead() == null || StringUtils.isEmpty(lead.getLead().getMail())) {
+          LOG.warn("Lead not captured, mail needed");
+          continue;
+        }
+        if (isBlacklisted(lead.getLead().getMail())) {
+          LOG.warn("Cannot capture lead {}, lead mail blacklisted",
+                   lead.getLead().getFirstName() + " " + lead.getLead().getLastName());
+          continue;
+        }
+        LOG.info("start adding lead {}", lead.getLead().getFirstName() + " " + lead.getLead().getFirstName());
+        lead.getLead().setId(null);
+        leadsManagementService.addLeadInfo(lead, false);
+        LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:{}\"",
+                 lead.getLead().getFirstName() + " " + lead.getLead().getLastName(),
+                 lead.getResponse() != null ? lead.getResponse().getFormName() : "");
+      }
+      return Response.status(Response.Status.OK).entity("leads imported").build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to import leads", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                     .header("Access-Control-Allow-Origin", settings.getAllowedCaptureSourceDomain())
+                     .entity(e.getMessage())
+                     .build();
+    }
+  }
+
+  @GET
+  @Path("leads/export")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("administrators")
+  public Response exportLeads(@Context UriInfo uriInfo) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      List<FormInfo> leadsList = new ArrayList<>();
+      List<ResponseEntity> responseEntities = leadsManagementService.getAllResponses();
+      for(ResponseEntity response : responseEntities)
+      {
+        FormInfo formInfo = new FormInfo();
+        LeadEntity leadEntity = response.getLeadEntity();
+        leadEntity.setId(null);
+        leadEntity.setTaskUrl(null);
+        leadEntity.setTaskId(null);
+        formInfo.setLead(leadsManagementService.toLeadDto(leadEntity));
+        formInfo.setResponse(leadsManagementService.toResponseDto(response));
+        leadsList.add(formInfo);
+      }
+      List<LeadDTO> leadDTOS = leadsManagementService.getLeads();
+      for (LeadDTO leadDTO : leadDTOS){
+        if(leadsManagementService.getResponses(leadDTO.getId()).length()==0){
+          FormInfo formInfo = new FormInfo();
+          leadDTO.setId(null);
+          leadDTO.setTaskUrl(null);
+          leadDTO.setTaskId(null);
+          formInfo.setLead(leadDTO);
+          leadsList.add(formInfo);
+        }
+      }
+      return Response.ok(leadsList).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to get leads list", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
   }
 
 }
