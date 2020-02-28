@@ -273,9 +273,9 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
+      LeadEntity leadEntity = leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
       LOG.info("Lead {} status updated to {} by {}", lead.getId(), lead.getStatus(), sourceIdentity.getRemoteId());
-      return Response.status(Response.Status.OK).entity("lead status updated").build();
+      return Response.status(Response.Status.OK).entity(leadsManagementService.toLeadDto(leadEntity)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to update lead {} status to {}", lead.getId(), lead.getStatus(), e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -427,11 +427,11 @@ public class LeadsManagementRest implements ResourceContainer {
       List<ResponseEntity> responseEntities = leadsManagementService.getAllResponses();
       for (ResponseEntity response : responseEntities) {
         FormInfo formInfo = new FormInfo();
-        LeadEntity leadEntity = response.getLeadEntity();
-        leadEntity.setId(null);
-        leadEntity.setTaskUrl(null);
-        leadEntity.setTaskId(null);
-        formInfo.setLead(leadsManagementService.toLeadDto(leadEntity));
+        LeadDTO leadDTO = leadsManagementService.toLeadDto(response.getLeadEntity());
+        leadDTO.setId(null);
+        leadDTO.setTaskUrl(null);
+        leadDTO.setTaskId(null);
+        formInfo.setLead(leadDTO);
         formInfo.setResponse(leadsManagementService.toResponseDto(response));
         leadsList.add(formInfo);
       }

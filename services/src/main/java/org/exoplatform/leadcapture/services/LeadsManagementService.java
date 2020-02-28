@@ -210,7 +210,7 @@ public class LeadsManagementService {
     }
   }
 
-  public void updateStatus(Long leadId, String status) throws Exception {
+  public LeadEntity updateStatus(Long leadId, String status) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
@@ -224,10 +224,11 @@ public class LeadsManagementService {
           }
         }
       }
-      leadDAO.update(leadEntity);
+      leadEntity = leadDAO.update(leadEntity);
       if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
         updateTaskStatus(leadEntity.getTaskId(), status);
       }
+      return leadEntity;
     } catch (Exception e) {
       LOG.error(e);
       throw e;

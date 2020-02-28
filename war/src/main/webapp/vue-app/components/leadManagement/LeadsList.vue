@@ -458,6 +458,7 @@ export default {
                 })
                 .then((response) => {
                     this.displaySusccessMessage('Lead status updated');
+                    this.selectedLead  = resp
                 })
                 .catch((result) => {
                     this.initialize();
