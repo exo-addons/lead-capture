@@ -14,7 +14,7 @@
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_LEAD"/>
             </column>
-            <column name="MAIL" type="NVARCHAR(256)">
+            <column name="MAIL" type="NVARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="COMPANY" type="NVARCHAR(256)">
@@ -69,7 +69,7 @@
             </column>
             <column name="PERSON_IP" type="NVARCHAR(50)">
             </column>
-            <column name="ORIGINAL_REFERRER" type="NVARCHAR(250)">
+            <column name="ORIGINAL_REFERRER" type="TEXT">
             </column>
             <column name="ACTIVITY_ID" type="NVARCHAR(250)">
             </column>
@@ -203,7 +203,8 @@
         </createTable>
 
         <modifySql dbms="mysql">
-            <append value=" ENGINE=INNODB CHARSET=UTF8 COLLATE utf8_general_ci"/>
+            <append value=" ENGINE=INNODB CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci"/>
+
         </modifySql>
 
     </changeSet>
@@ -216,12 +217,6 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_TEMPLATE_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_RESOURCE_ID" startValue="1"/>
-    </changeSet>
-
-    <changeSet author="exo-lead-capture" id="1.0.0-3">
-        <modifyDataType columnName="ORIGINAL_REFERRER"
-                        newDataType="LONGTEXT"
-                        tableName="ADDONS_LC_LEAD"/>
     </changeSet>
 
 </databaseChangeLog>
