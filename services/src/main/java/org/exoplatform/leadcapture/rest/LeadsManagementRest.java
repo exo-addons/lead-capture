@@ -398,7 +398,7 @@ public class LeadsManagementRest implements ResourceContainer {
         }
         LOG.info("start adding lead {}", lead.getLead().getFirstName() + " " + lead.getLead().getFirstName());
         lead.getLead().setId(null);
-        leadsManagementService.addLeadInfo(lead, false);
+        leadsManagementService.addLeadInfo(lead, true);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:{}\"",
                  lead.getLead().getFirstName() + " " + lead.getLead().getLastName(),
                  lead.getResponse() != null ? lead.getResponse().getFormName() : "");
