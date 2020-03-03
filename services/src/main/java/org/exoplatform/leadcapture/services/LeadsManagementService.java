@@ -95,11 +95,10 @@ public class LeadsManagementService {
           lead.setUpdatedDate(new Date());
         }
         if (lead.getStatus() == null) {
+          lead.setStatus(LEAD_DEFAULT_STATUS);
           if (leadInfo.getResponse() != null && StringUtils.isNoneEmpty(settings.getAutoOpeningForms())
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
             lead.setStatus(LEAD_OPEN_STATUS);
-          } else {
-            lead.setStatus(LEAD_DEFAULT_STATUS);
           }
         }
         if (lead.getBlogSubscription() != null && lead.getBlogSubscription()) {

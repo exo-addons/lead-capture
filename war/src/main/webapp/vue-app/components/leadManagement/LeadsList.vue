@@ -58,6 +58,9 @@
                                                 <v-text-field v-model="editedItem.company" label="Company"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.phone" label="Phone"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
                                                 <v-text-field v-model="editedItem.position" label="Position"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">

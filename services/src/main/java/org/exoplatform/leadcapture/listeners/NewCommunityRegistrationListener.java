@@ -67,7 +67,7 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationDate(new Date(createdDate));
         lead.setCommunityUserName(userName);
         lead.setCommunityRegistrationMethod(regMethod);
-        lead.setPhone(regMethod);
+        lead.setPhone(phone);
         lead.setCountry(country);
         leadDAO.update(lead);
       } else {
@@ -85,7 +85,7 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationDate(new Date(createdDate));
         lead.setCommunityUserName(userName);
         lead.setCommunityRegistrationMethod(regMethod);
-        lead.setCountry(phone);
+        lead.setCountry(country);
         leadDAO.create(lead);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
                  lead.getFirstName() + " " + lead.getLastName());

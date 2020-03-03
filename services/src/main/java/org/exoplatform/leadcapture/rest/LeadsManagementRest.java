@@ -92,7 +92,7 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      return Response.ok(leadsManagementService.getLeadbyId(id)).build();
+      return Response.ok(leadsManagementService.toLeadDto(leadsManagementService.getLeadbyId(id))).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
