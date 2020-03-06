@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.exoplatform.commons.utils.CommonsUtils;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
@@ -31,6 +32,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Comment;
+import org.exoplatform.task.domain.Label;
 import org.exoplatform.task.domain.Status;
 import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
@@ -124,7 +126,7 @@ public class LeadsManagementService {
       } else {
         leadEntity = mergeLead(leadEntity, lead);
         leadEntity.setUpdatedDate(new Date());
-        if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0 ) {
+        if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
           if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null
               && leadInfo.getResponse() != null
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
@@ -185,7 +187,7 @@ public class LeadsManagementService {
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
-      if (leadEntity.getTaskId() != null  && leadEntity.getTaskId() != 0) {
+      if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
         Task task = taskService.getTask(leadEntity.getTaskId());
         task.setAssignee(assignee);
         taskService.updateTask(task);
@@ -422,6 +424,71 @@ public class LeadsManagementService {
     return null;
   }
 
+  public List<PersonalTask> getPersonalTasks(long id, String userId) throws Exception {
+    try {
+      LeadEntity leadEntity = getLeadbyId(id);
+      List<PersonalTask> pTasks = new ArrayList<>();
+      if (leadEntity.getTasksLabelId() != null && leadEntity.getTasksLabelId() > 0) {
+        ListAccess<Task> tasks = taskService.findTasksByLabel(leadEntity.getTasksLabelId(), null, userId, null);
+        for (Task task : tasks.load(0, tasks.getSize())) {
+          PersonalTask pTask =
+                             new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
+          pTasks.add(pTask);
+        }
+      }
+      return pTasks;
+    } catch (Exception e) {
+      LOG.error("Cannot get personal Tasks", e);
+      throw e;
+    }
+  }
+
+  public Task createPersonalTask(PersonalTask personalTask) throws Exception {
+    Task task = new Task();
+    LeadDTO lead = personalTask.getLead();
+    String title = personalTask.getTitle();
+    String userId = personalTask.getUserId();
+    Date dueDate = personalTask.getDueDate();
+    task.setTitle(lead.getMail());
+    task.setTitle(title);
+    task.setDescription("<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+        + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>");
+    task.setCreatedBy(userId);
+    task.setCreatedTime(new Date());
+    task.setAssignee(userId);
+    task.setDueDate(dueDate);
+    task = taskService.createTask(task);
+    Label label = null;
+    if (lead.getTasksLabelId() != null) {
+      label = taskService.getLabel(lead.getTasksLabelId());
+    }
+    if (label == null) {
+      ListAccess<Label> labels = taskService.findLabelsByUser(userId);
+      for (Label label_ : labels.load(0, labels.getSize())) {
+        if (label_.getName().equals(lead.getFirstName() + " " + lead.getLastName())) {
+          label = label_;
+          break;
+        }
+      }
+    }
+    if (label == null) {
+      label = taskService.createLabel(new Label(lead.getFirstName() + " " + lead.getLastName(), userId));
+      lead.setTasksLabelId(label.getId());
+      updateLead(lead);
+    }
+    taskService.addTaskToLabel(task.getId(), label.getId());
+    return task;
+  }
+
+  public Task updatePersonalTask(PersonalTask pTask) throws Exception {
+    Task task = taskService.getTask(pTask.getId());
+    if (task != null) {
+      task.setCompleted(pTask.isCompleted());
+      taskService.updateTask(task);
+    }
+    return task;
+  }
+
   public LeadEntity mergeLead(LeadEntity leadEntity, LeadDTO leadDTO) {
 
     if (!StringUtils.isEmpty(leadDTO.getFirstName()))
@@ -530,6 +597,7 @@ public class LeadsManagementService {
     leadDTO.setCompanyWebsite(leadEntity.getCompanyWebsite());
     leadDTO.setEmployeesNumber(leadEntity.getEmployeesNumber());
     leadDTO.setIndustry(leadEntity.getIndustry());
+    leadDTO.setTasksLabelId(leadEntity.getTasksLabelId());
     return leadDTO;
   }
 
@@ -578,6 +646,7 @@ public class LeadsManagementService {
     leadEntity.setCompanyWebsite(leadDTO.getCompanyWebsite());
     leadEntity.setEmployeesNumber(leadDTO.getEmployeesNumber());
     leadEntity.setIndustry(leadDTO.getIndustry());
+    leadEntity.setTasksLabelId(leadDTO.getTasksLabelId());
     return leadEntity;
   }
 

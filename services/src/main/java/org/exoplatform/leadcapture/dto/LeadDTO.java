@@ -102,4 +102,6 @@ public class LeadDTO implements Serializable {
 
   private String  industry;
 
+  private Long  tasksLabelId;
+
 }

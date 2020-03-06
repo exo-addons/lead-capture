@@ -104,7 +104,7 @@
             <template v-slot:no-data>No Leads</template>
         </v-data-table>
     </v-layout>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
 </v-flex>
 </template>
 
@@ -115,18 +115,17 @@ export default {
         leadDetails,
     },
     data: () => ({
-        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified', 'Bad Data' ],
+        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified', 'Bad Data'],
         selectedStatus: null,
         valid: true,
         notassigned: false,
         myLeads: false,
         currentUser: 'test1',
         assignees: [],
-        showTable: true,
+        showTable: false,
         showDetails: false,
         search: '',
         dialog: false,
-
         itemToDelete: 0,
         alert: false,
         message: '',
@@ -159,6 +158,7 @@ export default {
         },
         formResponses: [],
         comments: [],
+        tasks: [],
         selectedLead: {},
         rules: {
             required: value => !!value || 'Required.',
@@ -268,9 +268,9 @@ export default {
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
             if (leadId != null) {
-                this.getLeadById(leadId)
-                if(this.selectedLead.id===undefined){
-                      this.getLeads()
+                const lead = this.getLeadById(leadId)
+                if (this.lead===null) {
+                    this.getLeads()
                 }
             } else {
                 this.getLeads()
@@ -284,8 +284,10 @@ export default {
                 })
                 .then((resp) => resp.json())
                 .then((resp) => {
-                    this.leadList = resp;
-                    this.allLeads = resp;
+                    this.leadList = resp
+                    this.allLeads = resp
+                    this.showTable = true
+                    this.showDetails = false
                 });
 
         },
@@ -299,7 +301,9 @@ export default {
                     const item = resp
                     if (item !== null) {
                         this.edit(item)
+                        return item
                     }
+                    return null
                 });
         },
 
@@ -312,7 +316,16 @@ export default {
             }
             this.showTable = false;
             this.showDetails = true;
-
+            let url = window.location.href;
+            if (url.includes('?leadid=')) {
+                url = url.split('?leadid=')[0];
+            }
+            url = url + "?leadid=" + item.id;
+            history.pushState({
+                id: 'leadDetail'
+            }, 'Lead detail', url);
+            this.showTable = false
+            this.showDetails = true
             fetch(`/portal/rest/leadcapture/leadsmanagement/responses/` + item.id, {
                     credentials: 'include',
                 })
@@ -320,6 +333,15 @@ export default {
                 .then((resp) => {
                     this.formResponses = resp;
                 });
+
+            fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.id, {
+                    credentials: 'include',
+                })
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    this.tasks = resp;
+                });
+
             if (item.taskId != null) {
                 fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
                         credentials: 'include',
@@ -330,15 +352,9 @@ export default {
                     });
 
             }
+
         },
 
-        backToList() {
-            if (this.leadList.length === 0) {
-                this.getLeads()
-            }
-            this.showDetails = false;
-            this.showTable = true;
-        },
         editItem(item) {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + item.id, {
                     method: 'PUT',
@@ -454,24 +470,11 @@ export default {
                     },
                     body: JSON.stringify(lead),
                 })
-                .then((result) => {
-                    if (!result.ok) {
-                        throw result;
-                    }
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    this.selectedLead = resp
                 })
-                .then((response) => {
-                    this.displaySusccessMessage('Lead status updated');
-                    this.selectedLead  = resp
-                })
-                .catch((result) => {
-                    this.initialize();
-                    result.text().then((body) => {
-                        this.displayErrorMessage(body);
-                    });
-                });
-
             this.close();
-
         },
 
         assigne(item) {
@@ -523,6 +526,20 @@ export default {
             this.alert = true;
             setTimeout(() => (this.alert = false), 5000);
         },
+        backToList() {
+            if (this.leadList.length === 0) {
+                this.getLeads()
+            }
+            this.showDetails = false;
+            this.showTable = true;
+            let url = window.location.href;
+            if (url.includes('?leadid=')) {
+                url = url.split('?leadid=')[0];
+                history.pushState({
+                    id: 'leadsList'
+                }, 'Leads List', url);
+            }
+        },
         getUrlParameterByName(name) {
             const url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&")
@@ -531,7 +548,7 @@ export default {
             if (!results) {return null}
             if (!results[2]) {return null}
             return decodeURIComponent(results[2].replace(/\+/g, " "))
-        }       
+        }
     },
 };
 </script>

@@ -65,9 +65,13 @@ public class Utils {
 
   public static final String           DATE_FORMAT                    = "d MMM yyyy HH:mm:ss";
 
+  public static final String           TASK_DATE_FORMAT               = "yyyy-MM-dd";
+
   public static final String           EMPTY_STR                      = "";
 
   public static final SimpleDateFormat formatter                      = new SimpleDateFormat(DATE_FORMAT);
+
+  public static final SimpleDateFormat taskFormatter                  = new SimpleDateFormat(TASK_DATE_FORMAT);
 
   public static final String           LEAD_CAPTURE_SCOPE_NAME        = "ADDONS_LEAD_CAPTURE_SCOPE";
 
@@ -93,8 +97,8 @@ public class Utils {
 
   public static final String           LC_SOURCE_REFERRAL_NAME        = "Referral";
 
-  public static final String[]         LC_STATUSES                    =
-                                                   { "Open", "Attempted", "Contacted", "Qualified", "Recycled", "Accepted", "Bad Data" };
+  public static final String[]         LC_STATUSES                    = { "Open", "Attempted", "Contacted", "Qualified",
+      "Recycled", "Accepted", "Bad Data" };
 
   public static final String[]         LC_SOURCE_SOCIAL               =
                                                         { "facebook", "twitter", "linkedin", "reddit", "quora", "youtube" };
@@ -237,13 +241,15 @@ public class Utils {
       return null;
     }
     ExoSocialActivity activity = new ExoSocialActivityImpl();
-    String userName = "<a class=\"textBold linkTitle\"  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
-        + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>";
+    String userName = "<a class=\"textBold linkTitle\"  href=\""
+        + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid=" + lead.getId() + "\">"
+        + lead.getFirstName() + " " + lead.getLastName() + " </a>";
     userName = StringEscapeUtils.unescapeHtml(userName);
-    //activity.setType("DEFAULT_ACTIVITY");
-    String title= "<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName
-            + "<br/>\n" + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
-            + " <b>Capture methode : </b>" + lead.getCaptureMethod() + "<br/>\n";
+    // activity.setType("DEFAULT_ACTIVITY");
+    String title = "<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName + "<br/>\n"
+        + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
+        + " <b>Company : </b>" + lead.getCompany() + "<br/>\n" + " <b>Capture methode : </b>" + lead.getCaptureMethod()
+        + "<br/>\n";
     activity.setTitle(StringEscapeUtils.unescapeHtml(title));
     activity.setUserId(posterIdentity.getId());
     return activityStorage.saveActivity(spaceIdentity, activity);

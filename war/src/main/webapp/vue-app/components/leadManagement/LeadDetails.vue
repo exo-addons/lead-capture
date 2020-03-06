@@ -12,7 +12,7 @@
 
         <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-                <v-btn class="notesBoutton" fab dark color="secondary" @click.stop="drawer = !drawer" v-on="on">
+                <v-btn class="notesBoutton" fab dark color="secondary" @click.stop="toDodrawer = !toDodrawer" v-on="on">
                     <v-icon dark>mdi-clipboard-text</v-icon>
                 </v-btn>
             </template>
@@ -86,7 +86,7 @@
                                 <v-col cols="12" sm="6" md="6">
                                     <v-text-field v-model="lead.company" label="Company"></v-text-field>
                                 </v-col>
-                               <v-col cols="12" sm="6" md="6">
+                                <v-col cols="12" sm="6" md="6">
                                     <v-text-field v-model="lead.phone" label="Phone"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
@@ -139,18 +139,8 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <v-menu offset-y>
-                            <template v-slot:activator="{ on }">
-                                <v-btn class="statusBtn" color="primary" dark v-on="on">
-                                    {{lead.status}}
-                                </v-btn>
-                            </template>
-                            <v-list>
-                                <v-list-item v-for="(item, index) in statusList" :key="index" @click="changeStatus(item)">
-                                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
+
+                        <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{lead.status}}</v-btn>
                         <div class="tl">Telemarketer infos</div>
 
                         <p>{{lead.telemarketerFullName}}</p>
@@ -313,7 +303,10 @@
         </div>
     </v-container>
     <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
-        <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer"/>
+        <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
+    </v-navigation-drawer>
+        <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
+        <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer"/>
     </v-navigation-drawer>
 </v-flex>
 </template>
@@ -321,44 +314,22 @@
 <script>
 import Vue from 'vue';
 import notesDrawer from './NotesDrawer.vue';
+import toDoDrawer from './ToDoDrawer.vue';
 import FormResponses from './FormResponses.vue';
 
 export default {
     components: {
         notesDrawer,
+        toDoDrawer,
         FormResponses
     },
-    props: ['lead', 'formResponses', 'comments', 'context'],
+    props: ['lead', 'formResponses', 'comments', 'context', 'tasks'],
     data: () => ({
-        statusList: [{
-                title: 'Open'
-            },
-            {
-                title: 'Attempted'
-            },
-            {
-                title: 'Contacted'
-            },
-            {
-                title: 'Qualified'
-            },
-            {
-                title: 'Recycled'
-            },
-            {
-                title: 'Accepted'
-            },
-            {
-                title: 'Qualified'
-            },
-            {
-                title: 'Bad Data'
-            },
-        ],
         valid: true,
         confirmDialog: false,
         selectedTab: 'leadInfo',
         drawer: null,
+        toDodrawer: null,
         fab: false,
         editLead: false,
         rules: {
@@ -380,8 +351,11 @@ export default {
     },
     methods: {
         toggleDrawer() {
-                this.drawer = !this.drawer;
-            },
+            this.drawer = !this.drawer;
+        },
+        toggleToDoDrawer() {
+            this.toDodrawer = !this.toDodrawer;
+        },
         backToList() {
             this.$emit('backToList');
         },
@@ -593,12 +567,6 @@ b {
     top: 16px;
 }
 
-.statusBtn {
-    margin-top: 27px;
-    padding: 5px;
-    min-width: 80% !important;
-}
-
 .manageBoutton {
     top: 79px !important;
 }
@@ -609,5 +577,8 @@ b {
 
 .v-toolbar__content {
     padding: 5px 16px !important;
+}
+.tasksBtn{
+    border: 1px solid #578dc9 !important;
 }
 </style>

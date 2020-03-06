@@ -1,5 +1,7 @@
 package org.exoplatform.leadcapture.listeners;
 
+import static org.exoplatform.leadcapture.Utils.LEAD_DEFAULT_STATUS;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +88,7 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityUserName(userName);
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setCountry(country);
+        lead.setStatus(LEAD_DEFAULT_STATUS);
         leadDAO.create(lead);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
                  lead.getFirstName() + " " + lead.getLastName());

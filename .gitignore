@@ -134,4 +134,6 @@ dist/
 nbdist/
 nbactions.xml
 .nb-gradle/
-
+node_modules
+.vscode
+transaction.log

@@ -151,4 +151,7 @@ public class LeadEntity implements Serializable {
   @Column(name = "INDUSTRY")
   protected String  industry;
 
+  @Column(name = "TASKS_LABEL_ID")
+  protected Long  tasksLabelId;
+
 }

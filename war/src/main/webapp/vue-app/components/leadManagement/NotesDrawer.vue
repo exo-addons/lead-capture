@@ -1,9 +1,18 @@
 <template>
 <v-container class="">
     <v-list-item>
-        <v-list-item-title>
-            Comments
-        </v-list-item-title>
+        <v-menu offset-y>
+            <template v-slot:activator="{ on }">
+                <v-btn class="text-uppercase caption primary--text tasksBtn" outlined v-on="on">
+                    {{lead.status}}
+                </v-btn>
+            </template>
+            <v-list>
+                <v-list-item v-for="(item, index) in statusList" :key="index" @click="changeStatus(item)">
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-menu>
 
         <v-btn class="ma-2" outlined @click="addNote()">
             <v-icon>mdi-plus</v-icon>
@@ -14,8 +23,8 @@
         </a>
 
         <v-list-item-action>
-                            <i class="uiCloseIcon" @click="toggleDrawer()"></i>
-                        </v-list-item-action>
+            <i class="uiCloseIcon" @click="toggleDrawer()"></i>
+        </v-list-item-action>
     </v-list-item>
     <v-card v-show="dialog">
         <v-card-text>
@@ -62,6 +71,31 @@ export default {
     },
     props: ['lead', 'comments'],
     data: () => ({
+        statusList: [{
+                title: 'Open'
+            },
+            {
+                title: 'Attempted'
+            },
+            {
+                title: 'Contacted'
+            },
+            {
+                title: 'Qualified'
+            },
+            {
+                title: 'Recycled'
+            },
+            {
+                title: 'Accepted'
+            },
+            {
+                title: 'Qualified'
+            },
+            {
+                title: 'Bad Data'
+            },
+        ],
         dialog: false,
         content: ""
     }),
@@ -75,6 +109,9 @@ export default {
         close() {
             this.newNote = {}
             this.dialog = false
+        },
+        changeStatus(item) {
+            this.$emit('changeStatus', item);
         },
         saveNote() {
             if (this.$refs.ck !== undefined) {
@@ -124,4 +161,9 @@ export default {
 .comment {
     width: 100%;
 }
+
+.statusBtn {
+    min-width: 30% !important;
+}
+
 </style>

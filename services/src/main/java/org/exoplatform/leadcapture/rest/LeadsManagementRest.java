@@ -1,7 +1,6 @@
 package org.exoplatform.leadcapture.rest;
 
-import static org.exoplatform.leadcapture.Utils.FIELDS_DELIMITER;
-import static org.exoplatform.leadcapture.Utils.LEAD_DEFAULT_STATUS;
+import static org.exoplatform.leadcapture.Utils.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +21,7 @@ import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.dto.LeadDTO;
+import org.exoplatform.leadcapture.dto.PersonalTask;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
@@ -295,6 +295,57 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.ok(leadsManagementService.getResponses(id).toString()).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get responses for lead {}", id, e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
+  @POST
+  @Path("task")
+  @RolesAllowed("ux-team")
+  public Response addPersonalTask(@Context UriInfo uriInfo, PersonalTask task) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      task.setUserId(sourceIdentity.getRemoteId());
+      task.setDueDate(taskFormatter.parse(task.getFormattedDueDate()));
+      return Response.ok(leadsManagementService.createPersonalTask(task)).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to add personal task", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
+  @PUT
+  @Path("task/{id}")
+  @RolesAllowed("ux-team")
+  public Response updateTask(@Context UriInfo uriInfo, @PathParam("id") Long id, PersonalTask task) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      return Response.ok(leadsManagementService.updatePersonalTask(task)).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to update personal task", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
+  @GET
+  @Path("task/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  public Response getPersonalTasks(@Context UriInfo uriInfo, @PathParam("id") long id) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      return Response.ok(leadsManagementService.getPersonalTasks(id, sourceIdentity.getRemoteId())).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to get user  tasks", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
