@@ -1,7 +1,5 @@
 package org.exoplatform.leadcapture.listeners;
 
-import static org.exoplatform.leadcapture.Utils.LEAD_DEFAULT_STATUS;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +19,8 @@ import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
+
+import static org.exoplatform.leadcapture.Utils.*;
 
 public class NewCommunityRegistrationListener extends Listener<Map<String, String>, String> {
 
@@ -71,6 +71,8 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setPhone(phone);
         lead.setCountry(country);
+        lead.setPersonSource(getLeadSource(lead));
+        lead.setGeographiqueZone(getGeoZone(lead));
         leadDAO.update(lead);
       } else {
         lead = new LeadEntity();
@@ -89,6 +91,8 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setCountry(country);
         lead.setStatus(LEAD_DEFAULT_STATUS);
+        lead.setPersonSource(getLeadSource(lead));
+        lead.setGeographiqueZone(getGeoZone(lead));
         leadDAO.create(lead);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
                  lead.getFirstName() + " " + lead.getLastName());

@@ -277,22 +277,69 @@
                                 </v-tab-item>
 
                                 <v-tab-item class="tabContent" eager id="projectInfo" value="projectInfo">
-                                    <v-text-field v-model="lead.goal" label="Goal"></v-text-field>
-                                    <v-text-field v-model="lead.usersNumber" label="Users number"></v-text-field>
-                                    <v-text-field v-model="lead.howHear" label="How did you hear about us"></v-text-field>
-                                    <v-text-field v-model="lead.currentSolution" label="Current solution"></v-text-field>
-                                    <v-text-field v-model="lead.solutionType" label="Solution type"></v-text-field>
-                                    <v-text-field v-model="lead.solutionRequirements" label="Solution requirements"></v-text-field>
-                                    <v-text-field v-model="lead.shortlistVendors" label="Shortlist vendors"></v-text-field>
-                                    <v-text-field v-model="lead.companyWebsite" label="Company website"></v-text-field>
-                                    <v-text-field v-model="lead.employeesNumber" label="Number of employees"></v-text-field>
-                                    <v-text-field v-model="lead.industry" label="Industry"></v-text-field>
-                                    <v-textarea v-model="lead.interactionSummary" label="Interaction summary"></v-textarea>
-                                    <div class="uiAction">
-                                        <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">Save
-                                        </button>
-                                    </div>
+                                    <v-form>
+                                        <v-card elevation="0">
+                                            <v-card-text>
 
+                                                <v-container>
+
+                                                    <v-row>
+                                                        <v-col cols="12" sm="12" md="12">
+                                                            <v-text-field v-model="lead.goal" label="Goal"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.usersNumber" label="Users number"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.howHear" label="How did you hear about us"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.currentSolution" label="Current solution"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.solutionType" label="Solution type"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.shortlistVendors" label="Shortlist vendors"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.companyWebsite" label="Company website"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.employeesNumber" label="Number of employees"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="6">
+                                                            <v-text-field v-model="lead.industry" label="Industry"></v-text-field>
+                                                        </v-col>
+                                                        <v-col cols="12" sm="12" md="12" class="editor">
+                                                            <div v-on:dblclick="showFck1()" class="itemTitle v-label theme--light">Solution requirements</div>
+                                                            <div v-show="!showEditor1" class="textContent" v-on:dblclick="showFck1()" v-html="lead.solutionRequirements"></div>
+                                                            <div v-show="showEditor1">
+                                                                <ck-editor ref="ck1" :content="content" />
+                                                            </div>
+                                                        </v-col>
+
+                                                        <v-col cols="12" sm="12" md="12" class="editor">
+                                                            <div v-on:dblclick="showFck()" class="itemTitle v-label theme--light">Interaction summary</div>
+                                                            <div v-show="!showEditor" class="textContent" v-on:dblclick="showFck()" v-html="lead.interactionSummary"></div>
+                                                            <div v-show="showEditor">
+                                                                <ck-editor ref="ck" :content="content" />
+                                                            </div>
+                                                        </v-col>
+                                                    </v-row>
+                                                    <div class="uiAction">
+                                                        <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">Save
+                                                        </button>
+                                                    </div>
+
+                                                </v-container>
+
+                                            </v-card-text>
+
+                                            <div style="flex: 1 1 auto;"></div>
+
+                                        </v-card>
+                                    </v-form>
                                 </v-tab-item>
                             </v-tabs-items>
                         </v-flex>
@@ -305,8 +352,8 @@
     <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
         <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
     </v-navigation-drawer>
-        <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
-        <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer"/>
+    <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
+        <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
     </v-navigation-drawer>
 </v-flex>
 </template>
@@ -316,12 +363,14 @@ import Vue from 'vue';
 import notesDrawer from './NotesDrawer.vue';
 import toDoDrawer from './ToDoDrawer.vue';
 import FormResponses from './FormResponses.vue';
+import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
         notesDrawer,
         toDoDrawer,
-        FormResponses
+        FormResponses,
+        ckEditor
     },
     props: ['lead', 'formResponses', 'comments', 'context', 'tasks'],
     data: () => ({
@@ -329,9 +378,14 @@ export default {
         confirmDialog: false,
         selectedTab: 'leadInfo',
         drawer: null,
+        showEditor: false,
+        showEditor1: false,
+        edited: false,
+        edited1: false,
         toDodrawer: null,
         fab: false,
         editLead: false,
+        content: "",
         rules: {
             required: value => !!value || 'Required.',
             counter: value => value.length >= 3 || 'Min 3 characters',
@@ -342,13 +396,13 @@ export default {
 
     computed: {
         leadAvatar: function () {
-            console.log(this.lead.communityUserName)
             if (this.lead.communityUserName === null || typeof (this.lead.communityUserName) === 'undefined') {
                 return "/eXoSkin/skin/images/system/UserAvtDefault.png"
             }
             return "/rest/v1/social/users/" + this.lead.communityUserName + "/avatar"
         }
     },
+
     methods: {
         toggleDrawer() {
             this.drawer = !this.drawer;
@@ -372,7 +426,26 @@ export default {
         },
         saveLead() {
             this.editLead = false
+            if (this.edited) {
+                this.lead.interactionSummary = this.$refs.ck.getContent()
+            }
+            if (this.edited1) {
+                this.lead.solutionRequirements = this.$refs.ck1.getContent()
+            }
+            this.showEditor = false;
+            this.showEditor1 = false;
             this.$emit('saveLead', this.lead)
+        },
+        showFck() {
+            this.edited = true;
+            this.$refs.ck.setContent(this.lead.interactionSummary)
+            this.showEditor = true;
+        },
+
+        showFck1() {
+            this.edited1 = true;
+            this.$refs.ck1.setContent(this.lead.solutionRequirements)
+            this.showEditor1 = true;
         }
 
     },
@@ -400,7 +473,7 @@ b {
 .panel-header {
     min-height: 20px !important;
     font-size: 16px !important;
-    color: #818182 !important;
+    /* color: #818182 !important; */
     font-weight: 600 !important;
 }
 
@@ -578,7 +651,25 @@ b {
 .v-toolbar__content {
     padding: 5px 16px !important;
 }
-.tasksBtn{
+
+.tasksBtn {
     border: 1px solid #578dc9 !important;
+}
+
+.itemTitle {
+    text-align: left;
+    padding-top: 30px;
+    padding-bottom: 20px;
+
+}
+
+.textContent {
+    border-bottom: solid 1px #555555;
+    text-align: left;
+
+}
+
+.editor{
+   padding-bottom: 22px !important;
 }
 </style>
