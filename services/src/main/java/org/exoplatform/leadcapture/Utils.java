@@ -18,6 +18,7 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
+import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
@@ -47,93 +48,95 @@ import org.exoplatform.ws.frameworks.json.JsonParser;
 import org.exoplatform.ws.frameworks.json.impl.*;
 
 public class Utils {
-  private static final Log             LOG                            = ExoLogger.getLogger(Utils.class);
+  private static final Log             LOG                                  = ExoLogger.getLogger(Utils.class);
 
-  public static final String           LEAD_DEFAULT_STATUS            = "Raw";
+  public static final String           LEAD_DEFAULT_STATUS                  = "Raw";
 
-  public static final String           LEAD_OPEN_STATUS               = "Open";
+  public static final String           LEAD_OPEN_STATUS                     = "Open";
 
-  public static final String           CREATION_DATE_FIELD_NAME       = "createdDate";
+  public static final String[]         LEAD_BAD_STATUSES                    = { LEAD_DEFAULT_STATUS, "Bad Data", "Duplicate" };
 
-  public static final String           FIELDS_DELIMITER               = ",";
+  public static final String           CREATION_DATE_FIELD_NAME             = "createdDate";
 
-  public static final String           MAIL_DEFAULT_LANGUAGE          = "en";
+  public static final String           FIELDS_DELIMITER                     = ",";
 
-  public static final String           NEW_LEAD_EVENT                 = "leadCapture.newLead.event";
+  public static final String           MAIL_DEFAULT_LANGUAGE                = "en";
 
-  public static final String           NEW_RESPONSE_EVENT             = "leadCapture.newResponse.event";
+  public static final String           NEW_LEAD_EVENT                       = "leadCapture.newLead.event";
 
-  public static final String           DATE_FORMAT                    = "d MMM yyyy HH:mm:ss";
+  public static final String           NEW_RESPONSE_EVENT                   = "leadCapture.newResponse.event";
 
-  public static final String           TASK_DATE_FORMAT               = "yyyy-MM-dd";
+  public static final String           DATE_FORMAT                          = "d MMM yyyy HH:mm:ss";
 
-  public static final String           EMPTY_STR                      = "";
+  public static final String           TASK_DATE_FORMAT                     = "yyyy-MM-dd";
 
-  public static final SimpleDateFormat formatter                      = new SimpleDateFormat(DATE_FORMAT);
+  public static final String           EMPTY_STR                            = "";
 
-  public static final SimpleDateFormat taskFormatter                  = new SimpleDateFormat(TASK_DATE_FORMAT);
+  public static final SimpleDateFormat formatter                            = new SimpleDateFormat(DATE_FORMAT);
 
-  public static final String           LEAD_CAPTURE_SCOPE_NAME        = "ADDONS_LEAD_CAPTURE_SCOPE";
+  public static final SimpleDateFormat taskFormatter                        = new SimpleDateFormat(TASK_DATE_FORMAT);
 
-  public static final String           LEAD_CAPTURE_CONTEXT_NAME      = "ADDONS_LEAD_CAPTURE_CONTEXT";
+  public static final String           LEAD_CAPTURE_SCOPE_NAME              = "ADDONS_LEAD_CAPTURE_SCOPE";
 
-  public static final Context          LEAD_CAPTURE_CONTEXT           = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
+  public static final String           LEAD_CAPTURE_CONTEXT_NAME            = "ADDONS_LEAD_CAPTURE_CONTEXT";
 
-  public static final Scope            LEAD_CAPTURE_SCOPE             = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
+  public static final Context          LEAD_CAPTURE_CONTEXT                 = Context.GLOBAL.id(LEAD_CAPTURE_CONTEXT_NAME);
 
-  public static final String           LEAD_CAPTURE_SETTINGS_KEY_NAME = "LEAD_CAPTURE_SETTINGS";
+  public static final Scope            LEAD_CAPTURE_SCOPE                   = Scope.APPLICATION.id(LEAD_CAPTURE_SCOPE_NAME);
 
-  public static final String           USERS_EXPERENCE_GROUP_NAME     = "/platform/ux-team";
+  public static final String           LEAD_CAPTURE_SETTINGS_KEY_NAME       = "LEAD_CAPTURE_SETTINGS";
 
-  public static final String           ALLOWED_MAIL_DOMAIN            = "leadCapture.allowed.mail.domain";
+  public static final String           USERS_EXPERENCE_GROUP_NAME           = "/platform/ux-team";
 
-  public static final String           LEAD_CAPTURE_TOKEN             = "leadCapture.security.token";
+  public static final String           ALLOWED_MAIL_DOMAIN                  = "leadCapture.allowed.mail.domain";
 
-  public static final String           LC_SOURCE_SOCIAL_NAME          = "Direct";
+  public static final String           LEAD_CAPTURE_TOKEN                   = "leadCapture.security.token";
 
-  public static final String           LC_SOURCE_DIRECT_NAME          = "Social";
+  public static final String           LC_SOURCE_SOCIAL_NAME                = "Direct";
 
-  public static final String           LC_SOURCE_ORGANIC_NAME         = "Search Organic";
+  public static final String           LC_SOURCE_DIRECT_NAME                = "Social";
 
-  public static final String           LC_SOURCE_REFERRAL_NAME        = "Referral";
+  public static final String           LC_SOURCE_ORGANIC_NAME               = "Search Organic";
 
-  public static final String[]         LC_STATUSES                    = { "Open", "Attempted", "Contacted", "Qualified",
-      "Recycled", "Accepted", "Bad Data" };
+  public static final String           LC_SOURCE_REFERRAL_NAME              = "Referral";
 
-  public static final String[]         LC_SOURCE_SOCIAL               =
+  public static final String[]         LC_STATUSES                          =
+                                                   { "Open", "Attempted", "Contacted", "Qualified", "Recycled", "Accepted" };
+
+  public static final String[]         LC_SOURCE_SOCIAL                     =
                                                         { "facebook", "twitter", "linkedin", "reddit", "quora", "youtube" };
 
-  public static final String[]         LC_SOURCE_DIRECT               = { "exoplatform" };
+  public static final String[]         LC_SOURCE_DIRECT                     = { "exoplatform" };
 
-  public static final String[]         LC_SOURCE_ORGANIC              =
+  public static final String[]         LC_SOURCE_ORGANIC                    =
                                                          { "google", "yahoo", "bing", "duckduckgo", "baidu", "qwant" };
 
-  public static final String           LC_G_ZONE_US_CANADA_NAME       = "US-Canada";
+  public static final String           LC_G_ZONE_US_CANADA_NAME             = "US-Canada";
 
-  public static final String           LC_G_ZONE_WESTERN_EUROPE_NAME  = "Western Europe";
+  public static final String           LC_G_ZONE_WESTERN_EUROPE_NAME        = "Western Europe";
 
-  public static final String           LC_G_ZONE_ESTERN_EUROPE_NAME   = "Eastern Europe";
+  public static final String           LC_G_ZONE_ESTERN_EUROPE_NAME         = "Eastern Europe";
 
-  public static final String           LC_G_ZONE_LAT_AM_NAME          = "LatAm";
+  public static final String           LC_G_ZONE_LAT_AM_NAME                = "LatAm";
 
-  public static final String           LC_G_ZONE_APAC_NAME            = "APAC";
+  public static final String           LC_G_ZONE_APAC_NAME                  = "APAC";
 
-  public static final String           LC_G_ZONE_MEA_NAME             = "MEA";
+  public static final String           LC_G_ZONE_MEA_NAME                   = "MEA";
 
-  public static final String[]         LC_G_ZONE_WESTERN_EUROPE       = { "Belgium", "Belgique", "BE", "Netherlands", "NL",
+  public static final String[]         LC_G_ZONE_WESTERN_EUROPE             = { "Belgium", "Belgique", "BE", "Netherlands", "NL",
       "Luxembourg", "LU", "Denmark", "DK", "Finland", "FI", "Åland Islands", "Aland Islands", "Iceland", "IS", "Norway", "NO",
       "Sweden", "SE", "France", "French", "FR", "Germany", "DEIreland", "IE", "Italy", "IT", "Liechtenstein", "LI", "Monaco",
       "MC", "Portugal", "PT", "Spain", "SP", "Switzerland", "Suisse", "CH", "United Kingdom", "UK", "GB", "Guernsey",
       "Holy See (Vatican City State)", "Isle of Man", "Jersey", "Spain", "ES", "Greece", "GR", "Austria", "AT" };
 
-  public static final String[]         LC_G_ZONE_ESTERN_EUROPE        = { "Albania", "AL", "Armenia", "Belarus", "BY", "Bosnia",
-      "Bosnia and Herzegovina", "Bosnia & Herzegovina", "BA", "Bulgaria", "BG", "Croatia", "HR", "Cyprus", "Czech Republic", "CZ",
-      "Estonia", "EE", "Hungary", "HU", "Lithuania", "LT", "Macedonia", "Malta", "MT", "Moldova", "MD", "Poland", "PL", "Romania",
-      "RO", "Russia", "RU", "Slovakia", "SK", "Slovenia", "Ukraine", "UA", "Yugoslavia", "Andorra", "AD", "Gibraltar",
-      "Greenland", "Bosnia and Herzegovina", "Georgia", "Azerbaijan", "Latvia", "Moldova, Republic of", "Serbia", "Azerbaijan",
-      "Faroe Islands", "Montenegro", "San Marino", "Montenegro", "ME", "Georgia", "GE" };
+  public static final String[]         LC_G_ZONE_ESTERN_EUROPE              = { "Albania", "AL", "Armenia", "Belarus", "BY",
+      "Bosnia", "Bosnia and Herzegovina", "Bosnia & Herzegovina", "BA", "Bulgaria", "BG", "Croatia", "HR", "Cyprus",
+      "Czech Republic", "CZ", "Estonia", "EE", "Hungary", "HU", "Lithuania", "LT", "Macedonia", "Malta", "MT", "Moldova", "MD",
+      "Poland", "PL", "Romania", "RO", "Russia", "RU", "Slovakia", "SK", "Slovenia", "Ukraine", "UA", "Yugoslavia", "Andorra",
+      "AD", "Gibraltar", "Greenland", "Bosnia and Herzegovina", "Georgia", "Azerbaijan", "Latvia", "Moldova, Republic of",
+      "Serbia", "Azerbaijan", "Faroe Islands", "Montenegro", "San Marino", "Montenegro", "ME", "Georgia", "GE" };
 
-  public static final String[]         LC_G_ZONE_APAC                 = { "Australia", "AU", "Bangladesh", "BD", "Brunei",
+  public static final String[]         LC_G_ZONE_APAC                       = { "Australia", "AU", "Bangladesh", "BD", "Brunei",
       "Cambodia", "KH", "China", "CN", "Comoros", "KM", "Guam", "GU", "Hong Kong", "HK", "India", "IN", "Indonesia", "ID",
       "Japan", "JP", "Korea", "Korea, Republic of", "KR", "Laos", "LA", "Macau", "MO", "Malaysia", "MY", "Maldives", "MV",
       "Myanmar", "MM", "Nepal", "NP", "New Zealand", "NZ", "Philippines", "PH", "Singapore", "SG", "Sri Lanka", "LK", "Taiwan",
@@ -142,15 +145,15 @@ public class Utils {
       "Fiji", "Kyrgyzstan", "Bhutan", "Lao People's Democratic Republic", "New Caledonia", "Palau", "Papua New Guinea",
       "Tajikistan", "Timor-Leste", "Vanuatu", "VU", "American Samoa", "AS" };
 
-  public static final String[]         LC_G_ZONE_LAT_AM               = { "Anguilla", "AI", "Argentina", "AR", "Bahamas", "BS",
-      "Belize", "BZ", "Bolivia", "BO", "Brazil", "BR", "Cayman Islands", "KY", "Chile", "CL", "Colombia", "CO", "Costa Rica",
-      "CR", "Cuba", "CU", "Dominica", "DM", "Dominican Republic", "DO", "Ecuador", "EC", "El Salvador", "SV", "Guatemala", "GT",
-      "Guyana", "French Guiana", "GY", "Haiti", "HT", "Honduras", "HN", "Jamaica", "JM", "Mexico", "MX", "Nicaragua", "NI",
-      "Panama", "PA", "Paraguay", "PY", "Peru", "PE", "Puerto Rico", "PR", "Suriname", "SR", "Uruguay", "UY", "Venezuela", "VE",
-      "Barbados", "Martinique", "Trinidad and Tobago", "Virgin Islands, U.S.", "Grenada", "Guadeloupe", "ermuda",
-      "Netherlands Antilles", "Saint Lucia" };
+  public static final String[]         LC_G_ZONE_LAT_AM                     = { "Anguilla", "AI", "Argentina", "AR", "Bahamas",
+      "BS", "Belize", "BZ", "Bolivia", "BO", "Brazil", "BR", "Cayman Islands", "KY", "Chile", "CL", "Colombia", "CO",
+      "Costa Rica", "CR", "Cuba", "CU", "Dominica", "DM", "Dominican Republic", "DO", "Ecuador", "EC", "El Salvador", "SV",
+      "Guatemala", "GT", "Guyana", "French Guiana", "GY", "Haiti", "HT", "Honduras", "HN", "Jamaica", "JM", "Mexico", "MX",
+      "Nicaragua", "NI", "Panama", "PA", "Paraguay", "PY", "Peru", "PE", "Puerto Rico", "PR", "Suriname", "SR", "Uruguay", "UY",
+      "Venezuela", "VE", "Barbados", "Martinique", "Trinidad and Tobago", "Virgin Islands, U.S.", "Grenada", "Guadeloupe",
+      "ermuda", "Netherlands Antilles", "Saint Lucia" };
 
-  public static final String[]         LC_G_ZONE_MEA                  = { "Afghanistan", "AF", "Algeria", "Algerie", "DZ",
+  public static final String[]         LC_G_ZONE_MEA                        = { "Afghanistan", "AF", "Algeria", "Algerie", "DZ",
       "Angola", "AO", "Bahrain", "BH", "Benin", "BJ", "Botswana", "BW", "Burkina Faso", "BF", "Burundi", "BI", "Cameroon", "CM",
       "Cape Verde", "CV", "Central African Republic", "CF", "Chad", "TD", "Congo", "CG", "Cote D'ivoire", "Ivory Coast", "CI",
       "Djibouti", "DJ", "Egypt", "EG", "Ethiopia", "ET", "Gabon", "GA", "Gambia", "GM", "Ghana", "GH", "Guinea", "French Guinea",
@@ -164,16 +167,33 @@ public class Utils {
       "Libyan Arab Jamahiriya", "Madagascar", "Palestinian Territory", "Reunion", "Tanzania, United Republic of", "Guinea-Bissau",
       "Lesotho", "Mayotte", "Seychelles", "Sierra Leone" };
 
-  public static final String[]         LC_G_ZONE_US_CANADA            = { "Canada", "CA", "United States", "US", "USA",
+  public static final String[]         LC_G_ZONE_US_CANADA                  = { "Canada", "CA", "United States", "US", "USA",
       "Virgin Islands", "VI", "Aruba", "AW", "Curacao" };
 
-  public static final String           CASE_STUDY                     = "case-study";
+  public static final String[]         LC_CAPTURE_METHODE_CONTACT_US        = { "contactFormEn", "contactFormFr" };
 
-  public static final String           WHITE_PAPER                    = "white-paper";
+  public static final String[]         LC_CAPTURE_METHODE_DEMO_REQUEST      = { "demoFormEn", "demoFormFr" };
 
-  public static final JsonParser       JSON_PARSER                    = new JsonParserImpl();
+  public static final String[]         LC_CAPTURE_METHODE_RESOURCE_DOWNLOAD = { "whitePaperFormEn", "whitePaperFormFr",
+      "caseFormEn", "caseFormFr" };
 
-  public static final JsonGenerator    JSON_GENERATOR                 = new JsonGeneratorImpl();
+  public static final String[]         LC_CAPTURE_METHODE_REWARD            = { "RewardFormEn", "RewardFormFr" };
+
+  public static final String           LC_CONTACT_US                        = "contact-us";
+
+  public static final String           LC_DEMO_REQUEST                      = "demo-request";
+
+  public static final String           LC_RESOURCE_DOWNLOAD                 = "resource-download";
+
+  public static final String           LC_REWARD                            = "reward-form";
+
+  public static final String           CASE_STUDY                           = "case-study";
+
+  public static final String           WHITE_PAPER                          = "white-paper";
+
+  public static final JsonParser       JSON_PARSER                          = new JsonParserImpl();
+
+  public static final JsonGenerator    JSON_GENERATOR                       = new JsonGeneratorImpl();
 
   public static JSONObject toResponseJson(ResponseEntity responseEntity) {
     JSONObject responseJson = new JSONObject();
@@ -368,34 +388,48 @@ public class Utils {
     return false;
   }
 
-  public static String getLeadSource(LeadEntity lead) {
-    if (StringUtils.isNoneEmpty(lead.getOriginalReferrer())) {
-      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_DIRECT))
+  public static String getLeadSource(String originalReferrer) {
+    if (StringUtils.isNoneEmpty(originalReferrer)) {
+      if (isInList(originalReferrer, LC_SOURCE_DIRECT))
         return LC_SOURCE_DIRECT_NAME;
-      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_SOCIAL))
+      if (isInList(originalReferrer, LC_SOURCE_SOCIAL))
         return LC_SOURCE_SOCIAL_NAME;
-      if (isInList(lead.getOriginalReferrer(), LC_SOURCE_ORGANIC))
+      if (isInList(originalReferrer, LC_SOURCE_ORGANIC))
         return LC_SOURCE_ORGANIC_NAME;
     }
     return LC_SOURCE_REFERRAL_NAME;
   }
 
-  public static String getGeoZone(LeadEntity lead) {
-    if (StringUtils.isNoneEmpty(lead.getCountry())) {
-      if (isInList(lead.getCountry(), LC_G_ZONE_US_CANADA))
+  public static String getGeoZone(String country) {
+    if (StringUtils.isNoneEmpty(country)) {
+      if (isInList(country, LC_G_ZONE_US_CANADA))
         return LC_G_ZONE_US_CANADA_NAME;
-      if (isInList(lead.getCountry(), LC_G_ZONE_WESTERN_EUROPE))
+      if (isInList(country, LC_G_ZONE_WESTERN_EUROPE))
         return LC_G_ZONE_WESTERN_EUROPE_NAME;
-      if (isInList(lead.getCountry(), LC_G_ZONE_ESTERN_EUROPE))
+      if (isInList(country, LC_G_ZONE_ESTERN_EUROPE))
         return LC_G_ZONE_ESTERN_EUROPE_NAME;
-      if (isInList(lead.getCountry(), LC_G_ZONE_LAT_AM))
+      if (isInList(country, LC_G_ZONE_LAT_AM))
         return LC_G_ZONE_LAT_AM_NAME;
-      if (isInList(lead.getCountry(), LC_G_ZONE_APAC))
+      if (isInList(country, LC_G_ZONE_APAC))
         return LC_G_ZONE_APAC_NAME;
-      if (isInList(lead.getCountry(), LC_G_ZONE_MEA))
+      if (isInList(country, LC_G_ZONE_MEA))
         return LC_G_ZONE_MEA_NAME;
     }
     return "Zone not defined";
+  }
+
+  public static String getCaptureMethode(String form) {
+    if (StringUtils.isNoneEmpty(form)) {
+      if (isInList(form, LC_CAPTURE_METHODE_CONTACT_US))
+        return LC_CONTACT_US;
+      if (isInList(form, LC_CAPTURE_METHODE_DEMO_REQUEST))
+        return LC_DEMO_REQUEST;
+      if (isInList(form, LC_CAPTURE_METHODE_RESOURCE_DOWNLOAD))
+        return LC_RESOURCE_DOWNLOAD;
+      if (isInList(form, LC_CAPTURE_METHODE_REWARD))
+        return LC_REWARD;
+    }
+    return null;
   }
 
   public static boolean isInList(String referrer, String[] sources) {

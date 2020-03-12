@@ -109,15 +109,18 @@ public class LeadsManagementService {
           lead.setCaptureType("Blog subscription");
         }
         if (leadInfo.getResponse() != null) {
-          lead.setCaptureMethod(leadInfo.getResponse().getFormName());
+          lead.setCaptureType(leadInfo.getResponse().getFormName());
+          lead.setCaptureMethod(getCaptureMethode(leadInfo.getResponse().getFormName()));
           if (settings.getResourcesIdentifier() != null) {
             for (FieldDTO fieldDTO : leadInfo.getResponse().getFields()) {
               if (isResourceRequest(fieldDTO.getValue()))
-                lead.setCaptureType(fieldDTO.getValue());
+                lead.setCaptureSourceInfo(fieldDTO.getValue());
               break;
             }
           }
         }
+        lead.setPersonSource(getLeadSource(lead.getOriginalReferrer()));
+        lead.setGeographiqueZone(getGeoZone(lead.getInferredCountry()));
 
         leadEntity = createLead(lead);
         if (broadcast) {
@@ -217,7 +220,8 @@ public class LeadsManagementService {
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
       if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
-        if (!status.equals(LEAD_DEFAULT_STATUS)) {
+        boolean isBadStatus = Arrays.stream(LEAD_BAD_STATUSES).anyMatch(status::equals);
+        if (!isBadStatus) {
           Task task_ = createTask(leadEntity);
           if (task_ != null) {
             leadEntity.setTaskId(task_.getId());
@@ -443,7 +447,7 @@ public class LeadsManagementService {
     }
   }
 
-  public Task createPersonalTask(PersonalTask personalTask) throws Exception {
+  public PersonalTask createPersonalTask(PersonalTask personalTask) throws Exception {
     Task task = new Task();
     LeadDTO lead = personalTask.getLead();
     String title = personalTask.getTitle();
@@ -477,7 +481,7 @@ public class LeadsManagementService {
       updateLead(lead);
     }
     taskService.addTaskToLabel(task.getId(), label.getId());
-    return task;
+    return  new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
   }
 
   public Task updatePersonalTask(PersonalTask pTask) throws Exception {
@@ -503,7 +507,7 @@ public class LeadsManagementService {
     if (!StringUtils.isEmpty(leadDTO.getInferredCountry())) {
       if (StringUtils.isEmpty(leadEntity.getGeographiqueZone())
           || !leadDTO.getInferredCountry().equals(leadEntity.getCountry())) {
-        leadDTO.setGeographiqueZone(getGeoZone(toLeadEntity(leadDTO)));
+        leadDTO.setGeographiqueZone(getGeoZone(leadDTO.getInferredCountry()));
         leadEntity.setGeographiqueZone(leadDTO.getGeographiqueZone());
         leadEntity.setCountry(leadDTO.getInferredCountry());
       }

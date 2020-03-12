@@ -2,12 +2,12 @@
 <v-container class="">
     <v-list-item>
         <v-list-item-title>
-            Todo list
+            {{$t('exoplatform.LeadCapture.leadManagement.toDoList','Todo list')}}
         </v-list-item-title>
-        <v-switch v-model="showAll" label="All"></v-switch>
+        <v-switch v-model="showAll" :label="$t('exoplatform.LeadCapture.status.All','All')"></v-switch>
         <v-btn class="ma-2" outlined @click="addNote()">
             <v-icon>mdi-plus</v-icon>
-            Add Item
+            {{$t('exoplatform.LeadCapture.leadManagement.addItem','Add Item')}}
         </v-btn>
         <a fab dark small style="float: right;" href="/portal/intranet/tasks" target="_blank">
             <v-icon>mdi-open-in-new</v-icon>
@@ -20,21 +20,21 @@
     <v-card v-show="dialog">
         <v-menu ref="datePicker" v-model="datePicker" :close-on-content-click="false" :return-value.sync="date" transition="scale-transition" offset-y min-width="290px">
             <template v-slot:activator="{ on }">
-                <v-text-field v-model="date" label="Due Date" prepend-icon="event" readonly v-on="on"></v-text-field>
+                <v-text-field v-model="date" :label="$t('exoplatform.LeadCapture.dueDate','Due Date')" prepend-icon="event" readonly v-on="on"></v-text-field>
             </template>
             <v-date-picker v-model="date" no-title scrollable>
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="datePicker = false">Cancel</v-btn>
-                <v-btn text color="primary" @click="$refs.datePicker.save(date)">OK</v-btn>
+                <v-btn text color="primary" @click="datePicker = false">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}</v-btn>
+                <v-btn text color="primary" @click="$refs.datePicker.save(date)">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
             </v-date-picker>
         </v-menu>
         <v-card-text>
-            <v-text-field v-model="title" label="Title"></v-text-field>
+            <v-text-field v-model="title" label="$t('exoplatform.LeadCapture.title','Title')"></v-text-field>
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="close()" color="blue darken-1" text>Close</v-btn>
-            <v-btn @click="saveTask()" color="blue darken-1" text>Save</v-btn>
+            <v-btn @click="close()" color="blue darken-1" text>{{$t('exoplatform.LeadCapture.leadManagement.close','Close')}}</v-btn>
+            <v-btn @click="saveTask()" color="blue darken-1" text>{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
         </v-card-actions>
     </v-card>
     <v-list>

@@ -4,36 +4,36 @@
         <v-card outlined style="padding: 16px;">
             <v-form ref="form" v-model="valid">
 
-                <v-text-field v-model="template.name" :rules="[rules.required]" label="Name" required></v-text-field>
+                <v-text-field v-model="template.name" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.templatesManagement.name','Name')" required></v-text-field>
 
-                <v-text-field v-model="template.description" label="Description"></v-text-field>
+                <v-text-field v-model="template.description" :label="$t('exoplatform.LeadCapture.templatesManagement.description','Description')"></v-text-field>
 
-                <v-select v-model="template.event" :items="eventList" item-text="title" item-value="value" :rules="[rules.required]" label="Event" required></v-select>
+                <v-select v-model="template.event" :items="eventList" item-text="title" item-value="value" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.templatesManagement.event','Event')" required></v-select>
                 <v-row>
                     <v-col cols="12" sm="5">
-                        <v-text-field v-if="template.event==='newResponse'" v-model="template.form" label="Form"></v-text-field>
+                        <v-text-field v-if="template.event==='newResponse'" v-model="template.form" :label="$t('exoplatform.LeadCapture.templatesManagement.form','Form')"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="5">
-                        <v-text-field v-if="template.event==='newResponse'" v-model="template.field" label="Field value"></v-text-field>
+                        <v-text-field v-if="template.event==='newResponse'" v-model="template.field" :label="$t('exoplatform.LeadCapture.templatesManagement.fieldValue','Field value')"></v-text-field>
                     </v-col>
                 </v-row>
-                <v-card elevation="1" style="    padding: 16px;">
-                    <v-card-title class="" primary-title> Contents: </v-card-title>
+                <v-card elevation="1" style="padding: 16px;">
+                    <v-card-title class="" primary-title> {{ $t('exoplatform.LeadCapture.templatesManagement.contents','Contents')}}: </v-card-title>
 
-                    <v-select v-model="selectedLanguage" :items="languageList" item-text="title" item-value="value" :rules="[rules.required]" label="Language" @change="setContentByLang(selectedLanguage)" required></v-select>
-                    <v-text-field v-model="selectedContent.subject" :rules="[rules.required]" label="Subject" required></v-text-field>
+                    <v-select v-model="selectedLanguage" :items="languageList" item-text="title" item-value="value" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.templatesManagement.language','Language')" @change="setContentByLang(selectedLanguage)" required></v-select>
+                    <v-text-field v-model="selectedContent.subject" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.templatesManagement.subject','Subject')" required></v-text-field>
 
                     <ck-editor ref="ck" :content="selectedContent.content" />
-                    <div>*You can use $FIRST_NAME, $LAST_NAME, $MAIL, $RESOURCE and $RESOURCE_NAME for lead's fields</div>
+                    <div>*{{$t('exoplatform.LeadCapture.templatesManagement.mailTemplateNotice1','You can use')}} $FIRST_NAME, $LAST_NAME, $MAIL, $RESOURCE and $RESOURCE_NAME {{$t('exoplatform.LeadCapture.templatesManagement.mailTemplateNotice2',"for lead's fields")}}</div>
 
                 </v-card>
 
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
                     <div class="uiAction">
-                        <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">Save
+                        <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
                         </button>
-                        <button @click="backToList()" class="btn" type="button">close
+                        <button @click="backToList()" class="btn" type="button">{{$t('exoplatform.LeadCapture.leadManagement.close','Close')}}
                         </button>
                     </div>
                 </v-card-actions>

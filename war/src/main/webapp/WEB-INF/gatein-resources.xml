@@ -74,6 +74,10 @@
         <depends>
             <module>vuetify</module>
         </depends>
+        <depends>
+            <module>eXoVueI18n</module>
+        </depends>
+
     </module>
 
     <module>
@@ -88,6 +92,9 @@
         </depends>
         <depends>
             <module>vuetify</module>
+        </depends>
+        <depends>
+            <module>eXoVueI18n</module>
         </depends>
     </module>
 
@@ -104,6 +111,9 @@
         <depends>
             <module>vuetify</module>
         </depends>
+        <depends>
+            <module>eXoVueI18n</module>
+        </depends>
     </module>
     <module>
         <name>resourcesManagementjs</name>
@@ -117,6 +127,9 @@
         </depends>
         <depends>
             <module>vuetify</module>
+        </depends>
+        <depends>
+            <module>eXoVueI18n</module>
         </depends>
     </module>
 

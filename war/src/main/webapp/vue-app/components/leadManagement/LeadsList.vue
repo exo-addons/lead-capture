@@ -8,11 +8,12 @@
         <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
             <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
                 <v-icon x-large>mdi-settings</v-icon> <br>
-                <div>The lead capture feature should be configured</div>
+                <div>{{$t('exoplatform.LeadCapture.leadManagement.configrationWarning','The lead capture feature should be configured')}}</div>
             </v-btn>
             <div v-else class="ConfWarning">
                 <v-icon x-large>mdi-alert</v-icon> <br>
-                The lead capture feature is not configured, please contact your system administrator
+                {{$t('exoplatform.LeadCapture.leadManagement.configrationWarningMassage',"The lead capture feature is not configured, please contact your system administrator")}}
+
             </div>
 
         </v-overlay>
@@ -21,11 +22,12 @@
                 <v-toolbar color="white" flat>
                     <div class="flex-grow-1"></div>
                     <v-col cols="8" md="2" sm="4">
-                        <v-select :items="statusList" v-model="selectedStatus" label="Status"></v-select>
+                        <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
+
                     </v-col>
                     <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-switch class="mt-2" label="Only unassigned" v-model="notassigned"></v-switch>
-                    <v-switch class="mt-2" label="My Leads" v-model="myLeads"></v-switch>
+                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
+                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-col cols="12" md="3" sm="6">
                         <v-text-field append-icon="search" label="" v-model="search"></v-text-field>
@@ -46,25 +48,25 @@
                                     <v-container>
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required]" v-model="editedItem.firstName" label="First name"></v-text-field>
+                                                <v-text-field :rules="[rules.required]" v-model="editedItem.firstName" :label="$t('exoplatform.LeadCapture.leadManagement.firstName','First name')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required]" v-model="editedItem.lastName" label="Last name"></v-text-field>
+                                                <v-text-field :rules="[rules.required]" v-model="editedItem.lastName" :label="$t('exoplatform.LeadCapture.leadManagement.lastName','Last name')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required, rules.valideMail]" v-model="editedItem.mail" label="Mail"></v-text-field>
+                                                <v-text-field :rules="[rules.required, rules.valideMail]" v-model="editedItem.mail" :label="$t('exoplatform.LeadCapture.leadManagement.mail','Mail')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.company" label="Company"></v-text-field>
+                                                <v-text-field v-model="editedItem.company" :label="$t('exoplatform.LeadCapture.leadManagement.company','Company')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.phone" label="Phone"></v-text-field>
+                                                <v-text-field v-model="editedItem.phone" :label="$t('exoplatform.LeadCapture.leadManagement.phone','Phone')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.position" label="Position"></v-text-field>
+                                                <v-text-field v-model="editedItem.position" :label="$t('exoplatform.LeadCapture.leadManagement.position','Position')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.inferredCountry" label="Country"></v-text-field>
+                                                <v-text-field v-model="editedItem.inferredCountry" :label="$t('exoplatform.LeadCapture.leadManagement.country','Country')"></v-text-field>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -72,8 +74,8 @@
 
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn :disabled="!valid" color="blue darken-1" text @click="save">Save</v-btn>
+                                    <v-btn color="blue darken-1" text @click="close">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}</v-btn>
+                                    <v-btn :disabled="!valid" color="blue darken-1" text @click="save">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-form>
@@ -90,10 +92,15 @@
                     {{item.mail}}
                 </a>
             </template>
+
+            <template v-slot:item.captureMethod="{ item }">
+
+                {{$t(`exoplatform.LeadCapture.leadManagement.${item.captureMethod}`,item.captureMethod)}}
+            </template>
+
             <template v-slot:item.assignee="{ item }">
-                <!--                                 <v-select :items="assignees" item-text="fullName" item-value="userName" label="" :append-icon="''" dense solo></v-select>
- --> <select v-model="item.assignee" @change="onAssign(item)">
-                    <option :value="null">Not assigned
+                <select v-model="item.assignee" @change="onAssign(item)">
+                    <option :value="null">{{$t('exoplatform.LeadCapture.leadManagement.notAssigned','Not assigned')}}
                     </option>
                     <option :key="option.userName" v-bind:value="option.userName" v-for="option in assignees">
                         {{option.fullName}}
@@ -101,7 +108,16 @@
                 </select>
 
             </template>
-            <template v-slot:no-data>No Leads</template>
+            <template v-slot:item.status="{ item }">
+                <select v-model="item.status" @change="changeStatus(item)">
+
+                    <option :key="option" v-bind:value="option" v-for="option in statusList">
+                        {{$t(`exoplatform.LeadCapture.status.${option}`,option)}} 
+                    </option>
+                </select>
+
+            </template>
+            <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
     <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
@@ -114,8 +130,9 @@ export default {
     components: {
         leadDetails,
     },
+
     data: () => ({
-        statusList: ['All', 'Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Qualified', 'Bad Data'],
+        statusList: ['Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
         selectedStatus: null,
         valid: true,
         notassigned: false,
@@ -199,7 +216,6 @@ export default {
             }
         },
         selectedStatus: function (val) {
-            console.log(val)
             if (val !== null && val !== 'All') {
                 this.leadList = this.allLeads.filter(item => {
                     return val === item.status
@@ -210,38 +226,76 @@ export default {
         }
     },
     computed: {
+        filterStatusList() {
+            return [{
+                    text: this.$t('exoplatform.LeadCapture.status.All'),
+                    value: 'All'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Raw'),
+                    value: 'Raw'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Open'),
+                    value: 'Open'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Attempted'),
+                    value: 'Attempted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Contacted'),
+                    value: 'Contacted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Qualified'),
+                    value: 'Qualified'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Recycled'),
+                    value: 'Recycled'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Accepted'),
+                    value: 'Accepted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Bad_Data'),
+                    value: 'Bad_Data'
+                }
+            ]
+        },
         headers() {
             return [{
-                    text: 'Full Name',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.fullName`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'name',
                 },
                 {
-                    text: 'E mail',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.mail`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'mail',
                 },
                 {
-                    text: 'Created Date',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.createdDate`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'formattedCreatedDate',
                 },
                 {
-                    text: 'Capture Method',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.captureMethod`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'captureMethod',
                 },
                 {
-                    text: 'Owner',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.owner`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
                     filter: (value) => {
-                        console.log(value)
                         if (!this.notassigned) {
                             return true
                         }
@@ -250,13 +304,13 @@ export default {
                     }
                 },
                 {
-                    text: 'Country',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.country`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'inferredCountry',
                 },
                 {
-                    text: 'Status',
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.status`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'status',
@@ -265,11 +319,14 @@ export default {
         }
     },
     methods: {
+        test(stst) {
+            return (this.$t(`exoplatform.LeadCapture.status.${stst}`, stst))
+        },
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
             if (leadId != null) {
                 const lead = this.getLeadById(leadId)
-                if (this.lead===null) {
+                if (this.lead === null) {
                     this.getLeads()
                 }
             } else {
@@ -277,7 +334,6 @@ export default {
 
             }
         },
-
         getLeads() {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
                     credentials: 'include',

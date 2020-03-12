@@ -4,19 +4,20 @@
         <v-menu offset-y>
             <template v-slot:activator="{ on }">
                 <v-btn class="text-uppercase caption primary--text tasksBtn" outlined v-on="on">
-                    {{lead.status}}
+                    {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                 </v-btn>
             </template>
             <v-list>
                 <v-list-item v-for="(item, index) in statusList" :key="index" @click="changeStatus(item)">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    <v-list-item-title>{{ item.text }}</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-menu>
 
         <v-btn class="ma-2" outlined @click="addNote()">
             <v-icon>mdi-plus</v-icon>
-            Add Comment
+
+            {{$t('exoplatform.LeadCapture.leadManagement.addComment','Add Comment')}}
         </v-btn>
         <a fab dark small style="float: right;" :href="lead.taskUrl" target="_blank">
             <v-icon>mdi-open-in-new</v-icon>
@@ -32,8 +33,8 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="close()" color="blue darken-1" text>Close</v-btn>
-            <v-btn @click="saveNote()" color="blue darken-1" text>Save</v-btn>
+            <v-btn @click="close()" color="blue darken-1" text> {{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}</v-btn>
+            <v-btn @click="saveNote()" color="blue darken-1" text> {{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
         </v-card-actions>
     </v-card>
     <v-list>
@@ -71,34 +72,43 @@ export default {
     },
     props: ['lead', 'comments'],
     data: () => ({
-        statusList: [{
-                title: 'Open'
-            },
-            {
-                title: 'Attempted'
-            },
-            {
-                title: 'Contacted'
-            },
-            {
-                title: 'Qualified'
-            },
-            {
-                title: 'Recycled'
-            },
-            {
-                title: 'Accepted'
-            },
-            {
-                title: 'Qualified'
-            },
-            {
-                title: 'Bad Data'
-            },
-        ],
         dialog: false,
         content: ""
     }),
+    computed: {
+        statusList() {
+            return [
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Open'),
+                    value: 'Open'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Attempted'),
+                    value: 'Attempted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Contacted'),
+                    value: 'Contacted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Qualified'),
+                    value: 'Qualified'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Recycled'),
+                    value: 'Recycled'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Accepted'),
+                    value: 'Accepted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Bad_Data'),
+                    value: 'Bad_Data'
+                }
+            ]
+        },
+    },
     methods: {
         toggleDrawer() {
             this.$emit('toggleDrawer');
@@ -165,5 +175,4 @@ export default {
 .statusBtn {
     min-width: 30% !important;
 }
-
 </style>

@@ -64,8 +64,6 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
   public void onEvent(Event<LeadEntity, String> event) throws Exception {
     LeadEntity lead = event.getSource();
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-    lead.setPersonSource(getLeadSource(lead));
-    lead.setGeographiqueZone(getGeoZone(lead));
     if (StringUtils.isEmpty(lead.getCommunityUserName())) {
       Query query = new Query();
       query.setEmail(lead.getMail());

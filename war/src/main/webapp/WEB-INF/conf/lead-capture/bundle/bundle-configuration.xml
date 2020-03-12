@@ -12,11 +12,11 @@
             <init-params>
                 <values-param>
                     <name>classpath.resources</name>
-                    <value>locale.addon.lead-capture</value>
+                    <value>locale.addon.LeadCapture</value>
                 </values-param>
                 <values-param>
                     <name>portal.resource.names</name>
-                    <value>locale.addon.lead-capture</value>
+                    <value>locale.addon.LeadCapture</value>
                 </values-param>
             </init-params>
         </component-plugin>

@@ -9,32 +9,32 @@
             <v-container id="template">
                 <v-card outlined style="padding: 16px;">
                     <v-form ref="form" v-model="valid">
-                        <v-text-field v-model="setting.userExperienceGroup" :rules="[rules.required]" label="UX team Group" required></v-text-field>
-                        <v-text-field v-model="setting.userExperienceSpace" :rules="[rules.required]" label="Lead Capture Space" required></v-text-field>
-                        <v-text-field v-model="setting.leadTaskProject" label="Lead Task Project"></v-text-field>
-                        <v-text-field v-model="setting.userExperienceBotUserName" :rules="[rules.required]" label="Bot User Name" required></v-text-field>
-                        <v-text-field v-model="setting.senderMail" :rules="[rules.required]" label="Sender mail adress" required></v-text-field>
-                        <v-text-field v-model="setting.resourcesIdentifier" label="Resources identifiers"></v-text-field>
-                        <v-text-field v-model="setting.autoOpeningForms" label="Auto opening forms"></v-text-field>
-                        <v-text-field v-model="setting.mailsBlackList" label="Mails Black List"></v-text-field>
-                        <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" label="Allowed lead Source Domain" required></v-text-field>
-                        <v-text-field v-model="setting.captureToken" :rules="[rules.required]" label="lead capture security token" required></v-text-field>
-                        <v-text-field v-model="setting.unsubscribeUrl" label="Unsubscribe Url"></v-text-field>
-                        <v-text-field v-model="setting.leadManagementAppUrl" :rules="[rules.required]" label="Lead Management Application Url"></v-text-field>
+                        <v-text-field v-model="setting.userExperienceGroup" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.uxGroup','UX team Group')" required></v-text-field>
+                        <v-text-field v-model="setting.userExperienceSpace" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.leadCaptureSpace','Lead Capture Space')" required></v-text-field>
+                        <v-text-field v-model="setting.leadTaskProject" :label="$t('exoplatform.LeadCapture.leadSettings.leadTaskProject','Lead Task Project')"></v-text-field>
+                        <v-text-field v-model="setting.userExperienceBotUserName" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.botUserName','Bot User Name')" required></v-text-field>
+                        <v-text-field v-model="setting.senderMail" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.senderMailAdress','Sender mail adress')" required></v-text-field>
+                        <v-text-field v-model="setting.resourcesIdentifier" :label="$t('exoplatform.LeadCapture.leadSettings.resourcesIdentifiers','Resources identifiers')"></v-text-field>
+                        <v-text-field v-model="setting.autoOpeningForms" :label="$t('exoplatform.LeadCapture.leadSettings.autoOpeningForms','Auto opening forms')"></v-text-field>
+                        <v-text-field v-model="setting.mailsBlackList" :label="$t('exoplatform.LeadCapture.leadSettings.mailsBlackList','Mails Black List')"></v-text-field>
+                        <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.allowedLeadSourceDomain','Allowed lead Source Domain')" required></v-text-field>
+                        <v-text-field v-model="setting.captureToken" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.leadCaptureSecurityToken','Lead capture security token')" required></v-text-field>
+                        <v-text-field v-model="setting.unsubscribeUrl" :label="$t('exoplatform.LeadCapture.leadSettings.unsubscribeUrl','Unsubscribe Url')"></v-text-field>
+                        <v-text-field v-model="setting.leadManagementAppUrl" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.LeadManagementUrl','Lead Management Application Url')"></v-text-field>
                         <v-row>
                             <v-col cols="12" sm="6" md="5">
-                                <v-switch v-model="setting.captureEnabled" label="Capture Enabled"></v-switch>
+                                <v-switch v-model="setting.captureEnabled" :label="$t('exoplatform.LeadCapture.leadSettings.captureEnabled','Capture Enabled')"></v-switch>
                             </v-col>
                             <v-col cols="12" sm="6" md="5">
-                                <v-switch v-model="setting.mailingEnabled" label="Mailing Enabled"></v-switch>
+                                <v-switch v-model="setting.mailingEnabled" :label="$t('exoplatform.LeadCapture.leadSettings.mailingEnabled','Mailing Enabled')"></v-switch>
                             </v-col>
                         </v-row>
                         <v-card-actions>
                             <div class="flex-grow-1"></div>
                             <div class="uiAction">
-                                <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">Save
+                                <button :disabled="!valid" @click="save()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
                                 </button>
-                                <button @click="cancel()" class="btn" type="button">close
+                                <button @click="cancel()" class="btn" type="button">{{$t('exoplatform.LeadCapture.leadManagement.close','Close')}}
                                 </button>
                             </div>
                         </v-card-actions>

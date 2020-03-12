@@ -9,12 +9,12 @@
             <v-data-table :headers="headers" :items="resources" sort-by="id" sort-desc class="elevation-1">
                 <template v-slot:top>
                     <v-toolbar flat color="white">
-                        <v-toolbar-title>Resources list</v-toolbar-title>
+                        <v-toolbar-title>{{$t('exoplatform.LeadCapture.resourcesManagement.resourcesList','Resources list')}}</v-toolbar-title>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" max-width="500px">
                             <template v-slot:activator="{ on }">
-                                <v-btn color="primary" dark class="mb-2" v-on="on">New Resource</v-btn>
+                                <v-btn color="primary" dark class="mb-2" v-on="on">{{$t('exoplatform.LeadCapture.resourcesManagement.newResource','New Resource')}}</v-btn>
                             </template>
                             <v-card>
                                 <v-card-title>
@@ -25,17 +25,17 @@
                                     <v-container>
                                         <v-row>
                                             <v-col cols="12" sm="6" md="12">
-                                                <v-text-field v-model="editedItem.name" label="Resource name"></v-text-field>
+                                                <v-text-field v-model="editedItem.name" :label="$t('exoplatform.LeadCapture.resourcesManagement.resourceName','Resource name')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="12">
-                                                <v-select v-model="editedItem.type" :items="typeList" item-text="title" item-value="value" :rules="[rules.required]" label="Type" required></v-select>
+                                                <v-select v-model="editedItem.type" :items="typeList" item-text="title" item-value="value" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.resourcesManagement.type','Type')" required></v-select>
 
                                             </v-col>
                                             <v-col cols="12" sm="6" md="12">
-                                                <v-text-field v-model="editedItem.path" label="Path"></v-text-field>
+                                                <v-text-field v-model="editedItem.path" :label="$t('exoplatform.LeadCapture.resourcesManagement.path','Path')"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="12">
-                                                <v-text-field v-model="editedItem.url" label="Download Url"></v-text-field>
+                                                <v-text-field v-model="editedItem.url" :label="$t('exoplatform.LeadCapture.resourcesManagement.downloadUrl','Download Url')"></v-text-field>
                                             </v-col>
                                         </v-row>
                                     </v-container>
@@ -43,8 +43,8 @@
 
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                                    <v-btn color="blue darken-1" text @click="close">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}</v-btn>
+                                    <v-btn color="blue darken-1" text @click="save">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -52,14 +52,14 @@
                 </template>
                 <template v-slot:item.type="{ item }"> {{ getTypeTitle(item)}}</template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editItem(item)">
+                     <v-icon small class="mr-2" @click="editItem(item)">
                         edit
                     </v-icon>
                     <v-icon small @click="deleteItem(item)">
                         delete
                     </v-icon>
                 </template>
-                <template v-slot:no-data>No Resources</template>
+                <template v-slot:no-data>{{$t('exoplatform.LeadCapture.resourcesManagement.noResources','No Resources')}}</template>
             </v-data-table>
         </v-flex>
     </main>
@@ -74,17 +74,7 @@ export default {
         alert_type: '',
         alertIcon: '',
         valid: true,
-        resources: [{
-            name: 'DGFLA',
-            type: 'caseStudy',
-            path: 'customer-case-study-dgfla',
-            url: 'xxx/xxxx/customer-case-study-dgfla'
-        }, {
-            name: 'DGFLA',
-            type: 'whitePaper',
-            path: 'guide-employee-engagement-white-paper',
-            url: 'xxx/xxxx/guide-employee-engagement-white-paper'
-        }],
+        resources: [],
         rules: {
             required: value => !!value || 'Required.',
             counter: value => value.length >= 3 || 'Min 3 characters',
@@ -99,38 +89,7 @@ export default {
             }
         ],
         dialog: false,
-        headers: [{
-                text: 'Ressouce Name',
-                align: 'center',
-                sortable: true,
-                value: 'name',
-            },
-            {
-                text: 'Type',
-                align: 'center',
-                sortable: true,
-                value: 'type',
-            },
-            {
-                text: 'Path',
-                align: 'center',
-                sortable: true,
-                value: 'path',
-            },
-            {
-                text: 'Download Url',
-                align: 'center',
-                sortable: true,
-                value: 'url',
-            },
-            {
-                text: 'Actions',
-                align: 'center',
-                sortable: true,
-                value: 'action',
-            },
 
-        ],
         editedIndex: -1,
         editedItem: {
             name: '',
@@ -150,6 +109,40 @@ export default {
         formTitle() {
             return this.editedIndex === -1 ? 'New Resource' : 'Edit Resource'
         },
+                headers() {
+            return [{
+                text: this.$t(`exoplatform.LeadCapture.resourcesManagement.resourceName`,''),
+                align: 'center',
+                sortable: true,
+                value: 'name',
+            },
+            {
+                text: this.$t(`exoplatform.LeadCapture.resourcesManagement.type`,''),
+                align: 'center',
+                sortable: true,
+                value: 'type',
+            },
+            {
+                text: this.$t(`exoplatform.LeadCapture.resourcesManagement.path`,''),
+                align: 'center',
+                sortable: true,
+                value: 'path',
+            },
+            {
+                text: this.$t(`exoplatform.LeadCapture.resourcesManagement.downloadUrl`,''),
+                align: 'center',
+                sortable: true,
+                value: 'url',
+            },
+            {
+                text: 'Actions',
+                align: 'center',
+                sortable: true,
+                value: 'action',
+            },
+            ]
+
+        }
     },
 
     watch: {
@@ -161,7 +154,6 @@ export default {
     created() {
         this.initialize()
     },
-
     methods: {
 
         initialize() {

@@ -9,18 +9,18 @@
     <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
         <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
             <v-icon x-large>mdi-settings</v-icon> <br>
-            <div>The lead capture feature should be configured</div>
+            <div>{{$t('exoplatform.LeadCapture.leadManagement.configrationWarning','The lead capture feature should be configured')}}</div>
         </v-btn>
         <div v-else class="ConfWarning">
             <v-icon x-large>mdi-alert</v-icon> <br>
-            The lead capture feature is not configured, please contact your system administrator
+                            {{$t('exoplatform.LeadCapture.leadManagement.configrationWarningMassage',"The lead capture feature is not configured, please contact your system administrator")}}
         </div>
 
     </v-overlay>
     <v-data-table :headers="headers" :items="templatesList" :search="search" class="elevation-1" sort-by="id" sort-desc v-show="showTable">
         <template v-slot:top>
             <v-toolbar flat color="white">
-                <v-toolbar-title>Mail templates list</v-toolbar-title>
+                <v-toolbar-title>{{$t('exoplatform.LeadCapture.templatesManagement.mailTemplatesList','Mail templates list')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-btn color="primary" fab dark class="mb-2" @click="editItem(defaultItem)">
@@ -32,22 +32,22 @@
             <v-icon class="mr-2" @click="editItem(item)"> edit </v-icon>
             <v-icon @click="remove(item)"> delete </v-icon>
         </template>
-        <template v-slot:no-data>No Mail Templates</template>
+        <template v-slot:no-data>{{$t('exoplatform.LeadCapture.templatesManagement.noTemplates','No Mail Templates')}}</template>
     </v-data-table>
     </v-layout>
 
     <v-dialog max-width="290" v-model="confirmDialog">
         <v-card>
-            <v-card-title class="headline">Confirmation</v-card-title>
+            <v-card-title class="headline">{{$t('exoplatform.LeadCapture.templatesManagement.confirmation','Confirmation')}}</v-card-title>
 
-            <v-card-text>Are you sure to delete the template</v-card-text>
+            <v-card-text>{{$t('exoplatform.LeadCapture.templatesManagement.tempalteDeleteMessage','Are you sure to delete the template')}}</v-card-text>
 
             <v-card-actions>
                 <div class="flex-grow-1"></div>
                 <div class="uiAction">
-                    <button @click="remove()" class="btn btn-primary" type="button">Delete
+                    <button @click="remove()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
                     </button>
-                    <button @click="confirmDialog = false" class="btn" type="button">Cancel
+                    <button @click="confirmDialog = false" class="btn" type="button">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}
                     </button>
                 </div>
             </v-card-actions>
@@ -119,19 +119,19 @@ export default {
     computed: {
         headers() {
             return [{
-                    text: 'Template Name',
+                    text: this.$t(`exoplatform.LeadCapture.templatesManagement.name`,''),
                     align: 'center',
                     sortable: true,
                     value: 'name',
                 },
                 {
-                    text: 'Description',
+                    text: this.$t(`exoplatform.LeadCapture.templatesManagement.description`,''),
                     align: 'center',
                     sortable: true,
                     value: 'description',
                 },
                 {
-                    text: 'Event',
+                    text: this.$t(`exoplatform.LeadCapture.templatesManagement.event`,''),
                     align: 'center',
                     sortable: true,
                     value: 'event',

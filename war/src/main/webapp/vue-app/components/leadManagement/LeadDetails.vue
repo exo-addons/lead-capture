@@ -7,7 +7,7 @@
                     <v-icon dark>mdi-arrow-left</v-icon>
                 </v-btn>
             </template>
-            <span>Back to lead list</span>
+            <span>{{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}</span>
         </v-tooltip>
 
         <v-tooltip bottom>
@@ -37,15 +37,15 @@
             <v-card>
                 <v-card-title class="headline">Confirmation</v-card-title>
 
-                <v-card-text v-if="context.isManager">Are you sure to delete the Lead</v-card-text>
-                <v-card-text v-else>Only Managers can delete leads, pleas contact your manager.</v-card-text>
+                <v-card-text v-if="context.isManager">{{$t('exoplatform.LeadCapture.leadManagement.deleteWarning','Are you sure to delete the Lead')}}</v-card-text>
+                <v-card-text v-else>{{$t('exoplatform.LeadCapture.leadManagement.permissionWarning','Only Managers can delete leads, pleas contact your manager.')}}</v-card-text>
 
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
                     <div class="uiAction">
-                        <button v-if="context.isManager" @click="remove()" class="btn btn-primary" type="button">Delete
+                        <button v-if="context.isManager" @click="remove()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
                         </button>
-                        <button @click="confirmDialog = false" class="btn" type="button">Cancel
+                        <button @click="confirmDialog = false" class="btn" type="button">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}
                         </button>
                     </div>
                 </v-card-actions>
@@ -60,11 +60,11 @@
                         <v-btn icon dark @click="editLead = false">
                             <v-icon>mdi-close</v-icon>
                         </v-btn>
-                        <v-toolbar-title>Edit Lead</v-toolbar-title>
+                        <v-toolbar-title>{{$t('exoplatform.LeadCapture.leadManagement.editLead','Edit Lead')}}</v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-toolbar-items>
                             <v-btn :disabled="!valid" dark text @click="saveLead()">
-                                Save
+                                {{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
                             </v-btn>
                         </v-toolbar-items>
 
@@ -75,38 +75,38 @@
 
                             <v-row>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.firstName" label="First name"></v-text-field>
+                                    <v-text-field v-model="lead.firstName" :label="$t('exoplatform.LeadCapture.leadManagement.firstName','First name')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.lastName" label="Last name"></v-text-field>
+                                    <v-text-field v-model="lead.lastName" :label="$t('exoplatform.LeadCapture.leadManagement.lastName','Last name')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field :rules="[rules.required, rules.valideMail]" v-model="lead.mail" label="Mail"></v-text-field>
+                                    <v-text-field :rules="[rules.required, rules.valideMail]" v-model="lead.mail" :label="$t('exoplatform.LeadCapture.leadManagement.mail','Mail')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.company" label="Company"></v-text-field>
+                                    <v-text-field v-model="lead.company" :label="$t('exoplatform.LeadCapture.leadManagement.company','Company')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.phone" label="Phone"></v-text-field>
+                                    <v-text-field v-model="lead.phone" :label="$t('exoplatform.LeadCapture.leadManagement.phone','Phone')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.position" label="Position"></v-text-field>
+                                    <v-text-field v-model="lead.position" :label="$t('exoplatform.LeadCapture.leadManagement.position','Position')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.inferredCountry" label="Country"></v-text-field>
+                                    <v-text-field v-model="lead.inferredCountry" :label="$t('exoplatform.LeadCapture.leadManagement.country','Country')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.language" label="Language"></v-text-field>
+                                    <v-text-field v-model="lead.language" :label="$t('exoplatform.LeadCapture.leadManagement.language','Language')"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="6">
-                                    <v-text-field v-model="lead.geographiqueZone" label="Geographique Zone"></v-text-field>
+                                    <v-text-field v-model="lead.geographiqueZone" :label="$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')"></v-text-field>
 
                                 </v-col>
                                 <v-col cols="12" sm="6" md="2">
-                                    <v-switch v-model="lead.MarketingSuspended" label="Marketing Suspended"></v-switch>
+                                    <v-switch v-model="lead.marketingSuspended" :label="$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended')"></v-switch>
                                 </v-col>
-                                <v-col cols="12" sm="6" md="10">
-                                    <v-text-field v-model="lead.marketingSuspendedCause" label="Marketing Suspended Cause"></v-text-field>
+                                <v-col v-if="lead.marketingSuspended" cols="12" sm="6" md="10">
+                                    <v-text-field v-model="lead.marketingSuspendedCause" :label="$t('exoplatform.LeadCapture.leadManagement.marketingSuspendedCause','Marketing Suspended Cause')"></v-text-field>
                                 </v-col>
                             </v-row>
 
@@ -140,7 +140,7 @@
                     </div>
                     <div class="col-md-3">
 
-                        <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{lead.status}}</v-btn>
+                        <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}</v-btn>
                         <div class="tl">Telemarketer infos</div>
 
                         <p>{{lead.telemarketerFullName}}</p>
@@ -152,9 +152,9 @@
                         <v-flex class="white text-center" flat>
                             <v-tabs background-color="blue-grey lighten-5 icons-and-text" grow v-model="selectedTab">
                                 <v-tabs-slider color="primary" />
-                                <v-tab href="#leadInfo" key="leadInfo">Lead INfo</v-tab>
-                                <v-tab href="#captureInfo" key="captureInfo">Capture Info</v-tab>
-                                <v-tab href="#projectInfo" key="projectInfo">Project Info</v-tab>
+                                <v-tab href="#leadInfo" key="leadInfo">{{$t('exoplatform.LeadCapture.leadManagement.leadInfo','Lead Info')}}</v-tab>
+                                <v-tab href="#captureInfo" key="captureInfo">{{$t('exoplatform.LeadCapture.leadManagement.captureInfo','Capture Info')}}</v-tab>
+                                <v-tab href="#projectInfo" key="projectInfo">{{$t('exoplatform.LeadCapture.leadManagement.projectInfo','Project Info')}}</v-tab>
                             </v-tabs>
 
                             <v-tabs-items class="infoContent" v-model="selectedTab">
@@ -165,55 +165,55 @@
                                                 <b>Lead ID:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.id}}</div>
+                                                <div class="infoValue">{{lead.id}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Language:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.language','Language')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.language}}</div>
+                                                <div class="infoValue">{{lead.language}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Creation Date:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.creationDate','Creation Date')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.formattedCreatedDate}}</div>
+                                                <div class="infoValue">{{lead.formattedCreatedDate}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Update Date:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.updateDate','Update Date')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.formattedUpdatedDate}}</div>
+                                                <div class="infoValue">{{lead.formattedUpdatedDate}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Geographique Zone:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.geographiqueZone}}</div>
+                                                <div class="infoValue">{{lead.geographiqueZone}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Marketing Suspended:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <v-checkbox disabled v-model="lead.MarketingSuspended" class="editLead"></v-checkbox>
+                                                <v-switch disabled v-model="lead.marketingSuspended"></v-switch>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div v-if="lead.marketingSuspended" class="row">
                                             <div class="col-md-3">
-                                                <b>Marketing Suspended Cause:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspendedCause','Marketing Suspended Cause')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.marketingSuspendedCause}}</div>
+                                                <div class="infoValue">{{lead.marketingSuspendedCause}}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -223,52 +223,52 @@
                                     <div class="profile">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Person Source:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.personSource','Person Source')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.personSource}}</div>
+                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.${lead.personSource}`,lead.personSource)}}</div>
                                             </div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Capture Method</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.captureMethod}}</div>
+                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.${lead.captureMethod}`,lead.captureMethod)}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Capture Type</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.captureType}}</div>
+                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.${lead.captureType}`,lead.captureType)}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Capture Detail</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.captureDetail}}</div>
+                                                <div class="infoValue">{{lead.captureSourceInfo}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <b>Original Referrer:</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.originalReferrer','Original Referrer')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.originalReferrer}}</div>
+                                                <div class="infoValue">{{lead.originalReferrer}}</div>
                                             </div>
                                         </div>
 
                                         <div class="row" v-if="lead.blogSubscription==true">
                                             <div class="col-md-3">
-                                                <b>Blog Subscription Date</b>
+                                                <b>{{$t('exoplatform.LeadCapture.leadManagement.blogSubscriptionDate','Blog Subscription Date')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div>{{lead.formattedBlogSubscriptionDate}}</div>
+                                                <div class="infoValue">{{lead.formattedBlogSubscriptionDate}}</div>
                                             </div>
                                         </div>
 
@@ -285,34 +285,34 @@
 
                                                     <v-row>
                                                         <v-col cols="12" sm="12" md="12">
-                                                            <v-text-field v-model="lead.goal" label="Goal"></v-text-field>
+                                                            <v-text-field v-model="lead.goal" :label="$t('exoplatform.LeadCapture.leadManagement.goal','Goal')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.usersNumber" label="Users number"></v-text-field>
+                                                            <v-text-field v-model="lead.usersNumber" :label="$t('exoplatform.LeadCapture.leadManagement.usersNumber','Users number')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.howHear" label="How did you hear about us"></v-text-field>
+                                                            <v-text-field v-model="lead.howHear" :label="$t('exoplatform.LeadCapture.leadManagement.howDidYouHear','How did you hear about us')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.currentSolution" label="Current solution"></v-text-field>
+                                                            <v-text-field v-model="lead.currentSolution" :label="$t('exoplatform.LeadCapture.leadManagement.currentSolution','Current solution')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.solutionType" label="Solution type"></v-text-field>
+                                                            <v-text-field v-model="lead.solutionType" :label="$t('exoplatform.LeadCapture.leadManagement.solutionType','Solution type')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.shortlistVendors" label="Shortlist vendors"></v-text-field>
+                                                            <v-text-field v-model="lead.shortlistVendors" :label="$t('exoplatform.LeadCapture.leadManagement.shortlistVendors','Shortlist vendors')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.companyWebsite" label="Company website"></v-text-field>
+                                                            <v-text-field v-model="lead.companyWebsite" :label="$t('exoplatform.LeadCapture.leadManagement.companyWebsite','Company website')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.employeesNumber" label="Number of employees"></v-text-field>
+                                                            <v-text-field v-model="lead.employeesNumber" :label="$t('exoplatform.LeadCapture.leadManagement.numberOfEmployees','Number of employees')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="6">
-                                                            <v-text-field v-model="lead.industry" label="Industry"></v-text-field>
+                                                            <v-text-field v-model="lead.industry" :label="$t('exoplatform.LeadCapture.leadManagement.industry','Industry')"></v-text-field>
                                                         </v-col>
                                                         <v-col cols="12" sm="12" md="12" class="editor">
-                                                            <div v-on:dblclick="showFck1()" class="itemTitle v-label theme--light">Solution requirements</div>
+                                                            <div v-on:dblclick="showFck1()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.solutionRequirements','Solution requirements')}}</div>
                                                             <div v-show="!showEditor1" class="textContent" v-on:dblclick="showFck1()" v-html="lead.solutionRequirements"></div>
                                                             <div v-show="showEditor1">
                                                                 <ck-editor ref="ck1" :content="content" />
@@ -320,7 +320,7 @@
                                                         </v-col>
 
                                                         <v-col cols="12" sm="12" md="12" class="editor">
-                                                            <div v-on:dblclick="showFck()" class="itemTitle v-label theme--light">Interaction summary</div>
+                                                            <div v-on:dblclick="showFck()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.interactionSummary','Interaction summary')}}</div>
                                                             <div v-show="!showEditor" class="textContent" v-on:dblclick="showFck()" v-html="lead.interactionSummary"></div>
                                                             <div v-show="showEditor">
                                                                 <ck-editor ref="ck" :content="content" />
@@ -328,7 +328,7 @@
                                                         </v-col>
                                                     </v-row>
                                                     <div class="uiAction">
-                                                        <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">Save
+                                                        <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
                                                         </button>
                                                     </div>
 
@@ -421,7 +421,7 @@ export default {
             this.confirmDialog = false;
         },
         changeStatus(item) {
-            this.lead.status = item.title
+            this.lead.status = item.value
             this.$emit('changeStatus', this.lead);
         },
         saveLead() {
@@ -664,12 +664,17 @@ b {
 }
 
 .textContent {
-    border-bottom: solid 1px #555555;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.54);
     text-align: left;
+    color: rgba(0, 0, 0, 0.87);
 
 }
 
-.editor{
-   padding-bottom: 22px !important;
+.editor {
+    padding-bottom: 22px !important;
+}
+
+.infoValue {
+    text-align: left;
 }
 </style>

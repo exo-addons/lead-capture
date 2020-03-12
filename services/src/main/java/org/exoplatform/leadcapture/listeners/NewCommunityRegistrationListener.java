@@ -71,15 +71,16 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setPhone(phone);
         lead.setCountry(country);
-        lead.setPersonSource(getLeadSource(lead));
-        lead.setGeographiqueZone(getGeoZone(lead));
+        lead.setPersonSource(getLeadSource(lead.getOriginalReferrer()));
+        lead.setGeographiqueZone(getGeoZone(lead.getCountry()));
         leadDAO.update(lead);
       } else {
         lead = new LeadEntity();
         lead.setMail(email);
         lead.setFirstName(firstName);
         lead.setLastName(lastName);
-        lead.setCaptureMethod(regMethod);
+        lead.setCaptureMethod("Community registration");
+        lead.setCaptureType(regMethod);
         lead.setCaptureSourceInfo(captureSourceInfo);
         lead.setOriginalReferrer(referer);
         lead.setPersonSource(leadSource);
@@ -91,8 +92,8 @@ public class NewCommunityRegistrationListener extends Listener<Map<String, Strin
         lead.setCommunityRegistrationMethod(regMethod);
         lead.setCountry(country);
         lead.setStatus(LEAD_DEFAULT_STATUS);
-        lead.setPersonSource(getLeadSource(lead));
-        lead.setGeographiqueZone(getGeoZone(lead));
+        lead.setPersonSource(getLeadSource(lead.getOriginalReferrer()));
+        lead.setGeographiqueZone(getGeoZone(lead.getCountry()));
         leadDAO.create(lead);
         LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
                  lead.getFirstName() + " " + lead.getLastName());
