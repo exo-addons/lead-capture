@@ -17,7 +17,7 @@
             </div>
 
         </v-overlay>
-        <v-data-table :headers="headers" :items="leadList" :search="search" class="elevation-1" sort-by="id" sort-desc v-show="showTable">
+        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads"  :loading="loading" class="elevation-1" v-show="showTable">
             <template v-slot:top>
                 <v-toolbar color="white" flat>
                     <div class="flex-grow-1"></div>
@@ -112,7 +112,7 @@
                 <select v-model="item.status" @change="changeStatus(item)">
 
                     <option :key="option" v-bind:value="option" v-for="option in statusList">
-                        {{$t(`exoplatform.LeadCapture.status.${option}`,option)}} 
+                        {{$t(`exoplatform.LeadCapture.status.${option}`,option)}}
                     </option>
                 </select>
 
@@ -132,8 +132,12 @@ export default {
     },
 
     data: () => ({
-        statusList: ['Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
-        selectedStatus: null,
+
+        totalLeads: 0,
+        loading: true,
+        options: {},
+        statusList: ['Raw','Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
+        selectedStatus: "",
         valid: true,
         notassigned: false,
         myLeads: false,
@@ -203,10 +207,22 @@ export default {
             });
     },
     watch: {
+        options: {
+            handler() {
+                if (this.context.leadCaptureConfigured) {
+                    this.getLeads()
+                        .then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
+                }
+            },
+            deep: true,
+        },
         dialog(val) {
             return val === true || this.close() === true;
         },
-        myLeads: function (val) {
+/*         myLeads: function (val) {
             if (val) {
                 this.leadList = this.allLeads.filter(item => {
                     return item.assignee === this.context.currentUser
@@ -214,16 +230,31 @@ export default {
             } else {
                 this.leadList = this.allLeads
             }
-        },
+        }, */
         selectedStatus: function (val) {
-            if (val !== null && val !== 'All') {
-                this.leadList = this.allLeads.filter(item => {
-                    return val === item.status
-                })
-            } else {
-                this.leadList = this.allLeads
-            }
-        }
+            this.getLeads() .then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
+        },
+        search: function (val) {
+            this.getLeads().then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
+        },
+        notassigned: function (val) {
+            this.getLeads().then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
+        },
+        myLeads: function (val) {
+            this.getLeads().then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
+        },
     },
     computed: {
         filterStatusList() {
@@ -319,34 +350,34 @@ export default {
         }
     },
     methods: {
-        test(stst) {
-            return (this.$t(`exoplatform.LeadCapture.status.${stst}`, stst))
-        },
+
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
             if (leadId != null) {
                 const lead = this.getLeadById(leadId)
                 if (this.lead === null) {
                     this.getLeads()
+                        .then(data => {
+                            this.leadList = data.items
+                            this.totalLeads = data.total
+                        })
                 }
-            } else {
-                this.getLeads()
-
             }
-        },
-        getLeads() {
-            fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
-                    credentials: 'include',
-                })
-                .then((resp) => resp.json())
-                .then((resp) => {
-                    this.leadList = resp
-                    this.allLeads = resp
-                    this.showTable = true
-                    this.showDetails = false
-                });
 
         },
+        /*         getLeads() {
+                    fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
+                            credentials: 'include',
+                        })
+                        .then((resp) => resp.json())
+                        .then((resp) => {
+                            this.leadList = resp
+                            this.allLeads = resp
+                            this.showTable = true
+                            this.showDetails = false
+                        });
+        return this.leadList
+                } ,*/
 
         getLeadById(id) {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + id, {
@@ -583,9 +614,6 @@ export default {
             setTimeout(() => (this.alert = false), 5000);
         },
         backToList() {
-            if (this.leadList.length === 0) {
-                this.getLeads()
-            }
             this.showDetails = false;
             this.showTable = true;
             let url = window.location.href;
@@ -604,7 +632,57 @@ export default {
             if (!results) {return null}
             if (!results[2]) {return null}
             return decodeURIComponent(results[2].replace(/\+/g, " "))
-        }
+        },
+        getLeads() {
+            this.loading = true
+            return new Promise((resolve, reject) => {
+                const {
+                    sortBy,
+                    sortDesc,
+                    page,
+                    itemsPerPage
+                } = this.options
+                let sort = ""
+                let desc = false
+                let owner = ""
+                if(this.selectedStatus==="All"){
+                 this.selectedStatus=""   
+                }
+                if(this.myLeads){
+                    owner = this.context.currentUser
+                }else{
+                  owner = ""  
+                }
+                if (sortBy.length > 0) {
+                    sort = sortBy[0]
+                    if (sort==="name"){sort="firstName"}   
+                    if (sort==="formattedCreatedDate"){sort="createdDate"}   
+                    if (sortDesc.length > 0) {
+                        desc = sortDesc[0]
+                    }
+                }
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&owner=${owner}&notassigned=${this.notassigned}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
+                        credentials: 'include',
+                    })
+                    .then((resp) => resp.json())
+                    .then((resp) => {
+                        //this.leadList = resp.
+                        // this.allLeads = resp
+                        this.showTable = true
+                        this.showDetails = false
+                        const items = resp.leads
+                        const total = resp.size
+
+                        this.loading = false
+                        resolve({
+                            items,
+                            total,
+                        })
+
+                    })
+            });
+
+        },
     },
 };
 </script>
