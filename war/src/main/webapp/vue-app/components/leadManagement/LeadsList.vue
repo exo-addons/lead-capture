@@ -17,25 +17,14 @@
             </div>
 
         </v-overlay>
-        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads"  :loading="loading" class="elevation-1" v-show="showTable">
+        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads" :loading="loading" class="elevation-1" v-show="showTable">
             <template v-slot:top>
                 <v-toolbar color="white" flat>
-                    <div class="flex-grow-1"></div>
-                    <v-col cols="8" md="2" sm="4">
-                        <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
-
-                    </v-col>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
-                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-col cols="12" md="3" sm="6">
-                        <v-text-field append-icon="search" label="" v-model="search"></v-text-field>
-                    </v-col>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on }">
-                            <v-btn color="primary" fab dark class="mb-2" v-on="on">
-                                <v-icon>mdi-plus</v-icon>
+
+                            <v-btn class="ma-2 addBtn" tile  v-on="on">
+                                <v-icon left>mdi-plus</v-icon> Add Lead
                             </v-btn>
                         </template>
                         <v-form ref="form" v-model="valid">
@@ -80,6 +69,17 @@
                             </v-card>
                         </v-form>
                     </v-dialog>
+                    <v-col cols="8" md="2" sm="4">
+                        <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
+                    </v-col>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
+                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-col cols="12" md="3" sm="6">
+                        <v-text-field append-icon="search" single-line label="" v-model="search"></v-text-field>
+                    </v-col>
+
                 </v-toolbar>
             </template>
             <template v-slot:item.name="{ item }">
@@ -136,7 +136,7 @@ export default {
         totalLeads: 0,
         loading: true,
         options: {},
-        statusList: ['Raw','Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
+        statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
         selectedStatus: "",
         valid: true,
         notassigned: false,
@@ -222,38 +222,38 @@ export default {
         dialog(val) {
             return val === true || this.close() === true;
         },
-/*         myLeads: function (val) {
-            if (val) {
-                this.leadList = this.allLeads.filter(item => {
-                    return item.assignee === this.context.currentUser
-                })
-            } else {
-                this.leadList = this.allLeads
-            }
-        }, */
-        selectedStatus: function (val) {
-            this.getLeads() .then(data => {
-                            this.leadList = data.items
-                            this.totalLeads = data.total
+        /*         myLeads: function (val) {
+                    if (val) {
+                        this.leadList = this.allLeads.filter(item => {
+                            return item.assignee === this.context.currentUser
                         })
+                    } else {
+                        this.leadList = this.allLeads
+                    }
+                }, */
+        selectedStatus: function (val) {
+            this.getLeads().then(data => {
+                this.leadList = data.items
+                this.totalLeads = data.total
+            })
         },
         search: function (val) {
             this.getLeads().then(data => {
-                            this.leadList = data.items
-                            this.totalLeads = data.total
-                        })
+                this.leadList = data.items
+                this.totalLeads = data.total
+            })
         },
         notassigned: function (val) {
             this.getLeads().then(data => {
-                            this.leadList = data.items
-                            this.totalLeads = data.total
-                        })
+                this.leadList = data.items
+                this.totalLeads = data.total
+            })
         },
         myLeads: function (val) {
             this.getLeads().then(data => {
-                            this.leadList = data.items
-                            this.totalLeads = data.total
-                        })
+                this.leadList = data.items
+                this.totalLeads = data.total
+            })
         },
     },
     computed: {
@@ -645,18 +645,22 @@ export default {
                 let sort = ""
                 let desc = false
                 let owner = ""
-                if(this.selectedStatus==="All"){
-                 this.selectedStatus=""   
+                if (this.selectedStatus === "All") {
+                    this.selectedStatus = ""
                 }
-                if(this.myLeads){
+                if (this.myLeads) {
                     owner = this.context.currentUser
-                }else{
-                  owner = ""  
+                } else {
+                    owner = ""
                 }
                 if (sortBy.length > 0) {
                     sort = sortBy[0]
-                    if (sort==="name"){sort="firstName"}   
-                    if (sort==="formattedCreatedDate"){sort="createdDate"}   
+                    if (sort === "name") {
+                        sort = "firstName"
+                    }
+                    if (sort === "formattedCreatedDate") {
+                        sort = "createdDate"
+                    }
                     if (sortDesc.length > 0) {
                         desc = sortDesc[0]
                     }
@@ -700,4 +704,12 @@ export default {
 #LeftNavigation {
     z-index: 1100;
 }
+
+.VuetifyApp .v-text-field input {
+     padding: 0 !important;
+    }
+
+    .addBtn{
+       background-color: #6cb043 !important;
+    }
 </style>
