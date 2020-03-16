@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.leadcapture.entity.MailContentEntity;
 import org.exoplatform.leadcapture.entity.MailTemplateEntity;
@@ -16,6 +17,7 @@ public class MailTemplateDAO extends GenericDAOJPAImpl<MailTemplateEntity, Long>
 
   private static final Log LOG = ExoLogger.getLogger(MailTemplateDAO.class);
 
+  @ExoTransactional
   public List<MailTemplateEntity> getTemplatesbyEvent(String event) {
 
     TypedQuery<MailTemplateEntity> query = getEntityManager()
