@@ -129,7 +129,7 @@
 
 <script>
 import leadDetails from './LeadDetails.vue';
-import filterDrawer from './filterDrawer.vue';
+import filterDrawer from './FilterDrawer.vue';
 export default {
     components: {
         leadDetails,
