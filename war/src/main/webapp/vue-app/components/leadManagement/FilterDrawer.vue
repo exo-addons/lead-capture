@@ -5,29 +5,27 @@
             {{$t('exoplatform.LeadCapture.leadManagement.filter','Filter')}}
         </v-list-item-title>
 
-
         <v-list-item-action>
             <i class="uiCloseIcon" @click="toggleDrawer()"></i>
         </v-list-item-action>
     </v-list-item>
 
-        <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
-        <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
-        <v-switch  :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
-        <v-switch  :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
-        <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
+    <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
+    <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
+    <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
+    <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
+    <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
 
-<div>
-    <v-spacer></v-spacer>
+    <div>
+        <v-spacer></v-spacer>
 
-                        <v-btn color="secondary" class="ma-2" primary tile  @click="reset()">
-                                 {{$t('exoplatform.LeadCapture.leadManagement.reset','Reset')}}
-                            </v-btn>
-                            <v-btn color="primary" class="ma-2" primary tile  @click="aplyFilter()">
-                                 {{$t('exoplatform.LeadCapture.leadManagement.apply','Apply')}}
-                            </v-btn>
-</div>
-
+        <v-btn color="secondary" class="ma-2" primary tile @click="reset()">
+            {{$t('exoplatform.LeadCapture.leadManagement.reset','Reset')}}
+        </v-btn>
+        <v-btn color="primary" class="ma-2" primary tile @click="aplyFilter()">
+            {{$t('exoplatform.LeadCapture.leadManagement.apply','Apply')}}
+        </v-btn>
+    </div>
 
 </v-container>
 </template>
@@ -39,11 +37,11 @@ export default {
     data: () => ({
         selectedStatus: "",
         selectedMethod: "",
-        selectedOwner:"",
+        selectedOwner: "",
         notassigned: false,
         myLeads: false,
     }),
- 
+
     computed: {
         filterStatusList() {
             return [{
@@ -114,23 +112,23 @@ export default {
             this.$emit('toggleFilterDrawer');
         },
 
-reset(){
-        this.selectedStatus= ""
-        this.selectedMethod=  ""
-        this.selectedOwner=  ""
-        this.notassigned= false
-        this.myLeads= false
-},
-aplyFilter(){
-    const filter_={
-        selectedStatus: this.selectedStatus,
-        selectedMethod: this.selectedMethod,
-        selectedOwner:this.selectedOwner,
-        notassigned: this.notassigned,
-        myLeads: this.myLeads,
-    }
-    this.$emit('addFilter',filter_);
-},
+        reset() {
+            this.selectedStatus = ""
+            this.selectedMethod = ""
+            this.selectedOwner = ""
+            this.notassigned = false
+            this.myLeads = false
+        },
+        aplyFilter() {
+            const filter_ = {
+                selectedStatus: this.selectedStatus,
+                selectedMethod: this.selectedMethod,
+                selectedOwner: this.selectedOwner,
+                notassigned: this.notassigned,
+                myLeads: this.myLeads,
+            }
+            this.$emit('addFilter', filter_);
+        },
 
     }
 }
