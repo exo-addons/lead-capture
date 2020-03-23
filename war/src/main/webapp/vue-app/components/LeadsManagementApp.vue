@@ -18,6 +18,7 @@ export default {
 <style>
 #leadsManagementApp {
     overflow: hidden;
+     /* padding: 10px 20px; */
 }
 
 select {

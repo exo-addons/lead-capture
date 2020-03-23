@@ -1,5 +1,6 @@
 <template>
 <v-flex>
+    
     <div :class="alert_type" class="alert" id v-if="alert">
         <i :class="alertIcon"></i>
         {{message}}
@@ -69,16 +70,13 @@
                             </v-card>
                         </v-form>
                     </v-dialog>
-                    <v-col cols="8" md="2" sm="4">
-                        <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
-                    </v-col>
-                    <v-divider class="mx-4" inset vertical></v-divider>
-                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
-                    <v-switch class="mt-2" :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
-                    <v-divider class="mx-4" inset vertical></v-divider>
+                   <v-spacer />
                     <v-col cols="12" md="3" sm="6">
                         <v-text-field append-icon="search" single-line label="" v-model="search"></v-text-field>
                     </v-col>
+                        <v-btn icon :color=filtered @click="filterDrawer=true">
+                        <v-icon left>mdi-filter</v-icon>
+                            </v-btn>
 
                 </v-toolbar>
             </template>
@@ -117,35 +115,47 @@
                 </select>
 
             </template>
+            
             <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
+    <v-navigation-drawer absolute floating right temporary v-model="filterDrawer" width="30%">
+        <filter-drawer :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
+    </v-navigation-drawer>
     <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+
 </v-flex>
 </template>
 
 <script>
 import leadDetails from './LeadDetails.vue';
+import filterDrawer from './filterDrawer.vue';
 export default {
     components: {
         leadDetails,
+        filterDrawer
     },
 
     data: () => ({
-
+filterDrawer:null,
+filtered:null,
         totalLeads: 0,
         loading: true,
         options: {},
         statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
         selectedStatus: "",
+        selectedMethod: "",
+        selectedOwner:"",
         valid: true,
         notassigned: false,
         myLeads: false,
         currentUser: 'test1',
         assignees: [],
+        assigneesFilter: [{"fullName":"All","userName":"","email":""}],
         showTable: false,
         showDetails: false,
         search: '',
+        awaitingSearch:false,
         dialog: false,
         itemToDelete: 0,
         alert: false,
@@ -204,6 +214,7 @@ export default {
             .then((resp) => resp.json())
             .then((resp) => {
                 this.assignees = resp;
+                this.assigneesFilter.push(...this.assignees);
             });
     },
     watch: {
@@ -222,44 +233,27 @@ export default {
         dialog(val) {
             return val === true || this.close() === true;
         },
-        /*         myLeads: function (val) {
-                    if (val) {
-                        this.leadList = this.allLeads.filter(item => {
-                            return item.assignee === this.context.currentUser
-                        })
-                    } else {
-                        this.leadList = this.allLeads
-                    }
-                }, */
-        selectedStatus: function (val) {
-            this.getLeads().then(data => {
-                this.leadList = data.items
-                this.totalLeads = data.total
-            })
-        },
+
+    
         search: function (val) {
-            this.getLeads().then(data => {
+         if (!this.awaitingSearch) {
+          setTimeout(() => {
+                        this.getLeads().then(data => {
                 this.leadList = data.items
                 this.totalLeads = data.total
             })
+            this.awaitingSearch = false;
+          }, 1000); // 1 sec delay
+        }
+        this.awaitingSearch = true;
+
         },
-        notassigned: function (val) {
-            this.getLeads().then(data => {
-                this.leadList = data.items
-                this.totalLeads = data.total
-            })
-        },
-        myLeads: function (val) {
-            this.getLeads().then(data => {
-                this.leadList = data.items
-                this.totalLeads = data.total
-            })
-        },
+
     },
     computed: {
         filterStatusList() {
             return [{
-                    text: this.$t('exoplatform.LeadCapture.status.All'),
+                    text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
                     value: 'All'
                 },
                 {
@@ -296,6 +290,29 @@ export default {
                 }
             ]
         },
+        methodList() {
+            return [{
+                    text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
+                    value: 'All'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.method.contact-us'),
+                    value: 'contact-us'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.method.demo-request'),
+                    value: 'demo-request'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.method.resource-download'),
+                    value: 'resource-download'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.method.reward-form'),
+                    value: 'reward-form'
+                }
+            ]
+        },
         headers() {
             return [{
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.fullName`, ""),
@@ -326,13 +343,6 @@ export default {
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
-                    filter: (value) => {
-                        if (!this.notassigned) {
-                            return true
-                        }
-                        return (this.notassigned && (value === null || value === {} || typeof (value) === 'undefined'))
-
-                    }
                 },
                 {
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.country`, ""),
@@ -350,6 +360,31 @@ export default {
         }
     },
     methods: {
+        addFilter(val){
+            console.log(val)
+        this.selectedStatus= val.selectedStatus
+        this.selectedMethod= val.selectedMethod
+        this.selectedOwner= val.selectedOwner
+        this.notassigned= val.notassigned
+        this.myLeads= val.myLeads
+            this.getLeads().then(data => {
+                this.leadList = data.items
+                this.totalLeads = data.total
+            })  
+            this.filtered=this.getFilterColor()
+             this.filterDrawer = !this.filterDrawer;
+        },
+        toggleFilterDrawer() {
+            this.filterDrawer = !this.filterDrawer;
+        },
+
+        getFilterColor(){
+if(this.selectedStatus!=="" || this.selectedMethod!=="" || this.selectedOwner!=="" || this.notassigned || this.myLeads)
+{
+    return "blue"
+}
+return null
+        },
 
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
@@ -644,14 +679,17 @@ export default {
                 } = this.options
                 let sort = ""
                 let desc = false
-                let owner = ""
+                let owner = "" 
                 if (this.selectedStatus === "All") {
                     this.selectedStatus = ""
+                }
+                if (this.selectedMethod === "All") {
+                    this.selectedMethod = ""
                 }
                 if (this.myLeads) {
                     owner = this.context.currentUser
                 } else {
-                    owner = ""
+                    owner = this.selectedOwner
                 }
                 if (sortBy.length > 0) {
                     sort = sortBy[0]
@@ -665,7 +703,7 @@ export default {
                         desc = sortDesc[0]
                     }
                 }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&owner=${owner}&notassigned=${this.notassigned}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())

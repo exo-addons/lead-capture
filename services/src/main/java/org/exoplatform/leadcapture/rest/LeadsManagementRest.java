@@ -73,6 +73,7 @@ public class LeadsManagementRest implements ResourceContainer {
                            @QueryParam("search") String search,
                            @QueryParam("status") String status,
                            @QueryParam("owner") String owner,
+                           @QueryParam("method") String captureMethod,
                            @QueryParam("notassigned") Boolean notassigned,
                            @QueryParam("sortby") String sortBy,
                            @QueryParam("sortdesc") Boolean sortDesc,
@@ -84,7 +85,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     try {
 
-      return Response.ok(leadsManagementService.getLeads(search, status, owner, notassigned, sortBy, sortDesc, page, limit)).build();
+      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, notassigned, sortBy, sortDesc, page, limit)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

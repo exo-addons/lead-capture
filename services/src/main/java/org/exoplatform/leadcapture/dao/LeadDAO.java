@@ -19,6 +19,7 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
   public List<LeadEntity> getLeads(String search,
                                    String status,
                                    String owner,
+                                   String captureMethod,
                                    Boolean notassigned,
                                    int offset,
                                    int limit,
@@ -27,20 +28,25 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
     try {
       String queryString = "SELECT lead FROM LeadEntity lead";
-      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner) || notassigned) {
+      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)|| StringUtils.isNotEmpty(captureMethod)   ||  notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
-          search=search.toLowerCase();
-          queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search + "'|| '%' or lower(lead.firstName) LIKE '%' || '" + search + "'|| '%' or lower(lead.lastName) LIKE '%' || '"
-                  + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%' or lower(lead.assignee) LIKE '%' || '" + search+"'|| '%'";
+          search = search.toLowerCase();
+          queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search
+              + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
+              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
-          queryString = queryString + " lead.status = '" + status+"'";
+          queryString = queryString + " lead.status = '" + status + "'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(owner)) {
-          queryString = queryString + " lead.assignee = '" + owner+"'";
+          queryString = queryString + " lead.assignee = '" + owner + "'";
+          queryString = queryString + " and ";
+        }
+        if (StringUtils.isNotEmpty(captureMethod)) {
+          queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
           queryString = queryString + " and ";
         }
         if (notassigned) {
@@ -68,23 +74,28 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     }
   }
 
-  public long countLeads(String search, String status, String owner, Boolean notassigned) {
+  public long countLeads(String search, String status, String owner, String captureMethod, Boolean notassigned) {
     try {
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
-      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner) || notassigned) {
+      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner) || StringUtils.isNotEmpty(captureMethod) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
-          search=search.toLowerCase();
-          queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search + "'|| '%' or lower(lead.firstName) LIKE '%' || '" + search + "'|| '%' or lower(lead.lastName) LIKE '%' || '"
-                  + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%' or lower(lead.assignee) LIKE '%' || '" + search+"'|| '%'";
+          search = search.toLowerCase();
+          queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search
+              + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
+              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
-          queryString = queryString + " lead.status = '" + status+"'";
+          queryString = queryString + " lead.status = '" + status + "'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(owner)) {
-          queryString = queryString + " lead.assignee = '" + owner+"'";
+          queryString = queryString + " lead.assignee = '" + owner + "'";
+          queryString = queryString + " and ";
+        }
+        if (StringUtils.isNotEmpty(captureMethod)) {
+          queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
           queryString = queryString + " and ";
         }
         if (notassigned) {
