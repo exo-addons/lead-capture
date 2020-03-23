@@ -253,6 +253,23 @@ public class LeadsManagementService {
     return leadsList;
   }
 
+
+  public LeadsAccessList getLeads(String search, String status, String owner, String captureMethod, Boolean notassigned, String sortBy, Boolean sortDesc, int page, int limit) {
+    int offset = (page - 1) * limit;
+    List<LeadDTO> leadsList = new ArrayList<>();
+    List<LeadEntity> leadsEntities = leadDAO.getLeads(search, status, owner, captureMethod, notassigned, offset, limit, sortBy, sortDesc);
+    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, notassigned);
+    if (leadsEntities != null) {
+      for (LeadEntity leadEntity : leadsEntities) {
+        if (leadEntity != null) {
+          leadsList.add(toLeadDto(leadEntity));
+        }
+      }
+    }
+
+    return new LeadsAccessList(leadsList, leadsTotalNumber);
+  }
+
   public JSONArray getResponses(long leadId) {
     JSONArray formResponsesList = new JSONArray();
     List<FormEntity> formEntities = formDAO.findAll();
@@ -481,7 +498,7 @@ public class LeadsManagementService {
       updateLead(lead);
     }
     taskService.addTaskToLabel(task.getId(), label.getId());
-    return  new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
+    return new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
   }
 
   public Task updatePersonalTask(PersonalTask pTask) throws Exception {

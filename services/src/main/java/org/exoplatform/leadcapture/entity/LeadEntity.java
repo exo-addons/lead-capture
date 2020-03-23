@@ -14,8 +14,11 @@ import lombok.Data;
 @Table(name = "ADDONS_LC_LEAD")
 @Data
 @NamedQueries({
+    @NamedQuery(name = "LeadEntity.countLeads", query = "SELECT count(lead.id) FROM  LeadEntity lead"),
     @NamedQuery(name = "LeadEntity.getLeadByMail", query = "SELECT lead FROM LeadEntity lead where lead.mail = :mail "),
     @NamedQuery(name = "LeadEntity.getLeadByTask", query = "SELECT lead FROM LeadEntity lead where lead.taskId = :taskId ") })
+
+
 
 public class LeadEntity implements Serializable {
 

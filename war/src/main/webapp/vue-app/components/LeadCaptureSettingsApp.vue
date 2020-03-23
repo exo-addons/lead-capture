@@ -127,6 +127,7 @@ export default {
 <style>
 #leadCaptureSettingsApp {
     overflow: hidden;
+     /* padding: 10px 20px; */
 }
 
 select {

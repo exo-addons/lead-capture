@@ -69,13 +69,23 @@ public class LeadsManagementRest implements ResourceContainer {
   @Path("leads")
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
-  public Response getLeads(@Context UriInfo uriInfo) throws Exception {
+  public Response getLeads(@Context UriInfo uriInfo,
+                           @QueryParam("search") String search,
+                           @QueryParam("status") String status,
+                           @QueryParam("owner") String owner,
+                           @QueryParam("method") String captureMethod,
+                           @QueryParam("notassigned") Boolean notassigned,
+                           @QueryParam("sortby") String sortBy,
+                           @QueryParam("sortdesc") Boolean sortDesc,
+                           @QueryParam("page") int page,
+                           @QueryParam("limit") int limit) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      return Response.ok(leadsManagementService.getLeads()).build();
+
+      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, notassigned, sortBy, sortDesc, page, limit)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
