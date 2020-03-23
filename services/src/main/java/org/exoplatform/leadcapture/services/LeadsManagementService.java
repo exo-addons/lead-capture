@@ -728,4 +728,25 @@ public class LeadsManagementService {
     responseEntity.setFilelds(fields);
     return responseEntity;
   }
+
+  public boolean updateMethodes() throws Exception{
+    try {
+      List<LeadEntity> leadsEntities = leadDAO.findAll();
+      for(LeadEntity lead : leadsEntities){
+        if(lead.getCaptureMethod()!=null && !lead.getCaptureMethod().equals("Blog")) {
+          if (lead.getCaptureMethod().equals("Register form") || lead.getCaptureMethod().contains("community")) {
+            lead.setCaptureType(lead.getCaptureMethod());
+            lead.setCaptureMethod("Community registration");
+          } else {
+            lead.setCaptureMethod(getCaptureMethode(lead.getCaptureMethod()));
+            lead.setCaptureType(lead.getCaptureMethod());
+          }
+        }
+      }
+      leadDAO.updateAll(leadsEntities);
+      return true;
+    } catch (Exception e) {
+      throw (e);
+    }
+  }
 }

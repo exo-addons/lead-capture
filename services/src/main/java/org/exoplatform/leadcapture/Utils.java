@@ -429,7 +429,7 @@ public class Utils {
       if (isInList(form, LC_CAPTURE_METHODE_REWARD))
         return LC_REWARD;
     }
-    return null;
+    return form;
   }
 
   public static boolean isInList(String referrer, String[] sources) {

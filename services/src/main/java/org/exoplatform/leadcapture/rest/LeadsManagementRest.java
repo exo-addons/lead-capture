@@ -548,4 +548,24 @@ public class LeadsManagementRest implements ResourceContainer {
     }
   }
 
+  @POST
+  @RolesAllowed("administrators")
+  @Path("updatemethodes")
+  public Response updateMethodes(@Context UriInfo uriInfo) throws Exception {
+
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    try {
+      leadsManagementService.updateMethodes();
+      return Response.status(Response.Status.OK).entity("lead's methodes updated").build();
+
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to update methodes lead",  e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
 }
