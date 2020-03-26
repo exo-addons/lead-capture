@@ -18,7 +18,7 @@ export default {
 <style>
 #mailTemplatesManagementApp {
     overflow: hidden;
-     /* padding: 10px 20px; */
+    padding: 10px 20px;
 }
 
 select {

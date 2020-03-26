@@ -54,7 +54,7 @@ public class Utils {
 
   public static final String           LEAD_OPEN_STATUS                     = "Open";
 
-  public static final String[]         LEAD_BAD_STATUSES                    = { LEAD_DEFAULT_STATUS, "Bad Data", "Duplicate" };
+  public static final String[]         LEAD_BAD_STATUSES                    = { LEAD_DEFAULT_STATUS, "Bad_Data", "Duplicate" };
 
   public static final String           CREATION_DATE_FIELD_NAME             = "createdDate";
 

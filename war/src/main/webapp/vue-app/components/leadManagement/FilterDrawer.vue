@@ -1,31 +1,42 @@
 <template>
 <v-container class="">
-    <v-list-item>
-        <v-list-item-title>
-            {{$t('exoplatform.LeadCapture.leadManagement.filter','Filter')}}
-        </v-list-item-title>
+    <v-row class="mx-0 drawerHeader">
+        <v-list-item>
+            <v-list-item-content>
+                <span class="drawerTitle">{{
+              $t('exoplatform.LeadCapture.leadManagement.filter','Filter')
+            }}</span>
+            </v-list-item-content>
+            <v-list-item-action class="appLauncherDrawerIcons">
+                <i class="uiCloseIcon" @click="toggleDrawer()"></i>
+            </v-list-item-action>
+        </v-list-item>
+    </v-row>
+    <v-divider :inset="inset" class="my-0 headerBorder" />
+    <v-row class="drawerContent">
+        <v-col class="d-flex" cols="12" sm="11">
+            <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
+        </v-col>
+        <v-col class="d-flex" cols="12" sm="11">
+            <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
+        </v-col>
+        <v-col class="d-flex" cols="12" sm="5">
+            <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
+        </v-col>
+        <v-col class="d-flex" cols="12" sm="5">
+            <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
+        </v-col>
+        <v-col class="d-flex" cols="12" sm="11">
+            <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
+        </v-col>
+    </v-row>
 
-        <v-list-item-action>
-            <i class="uiCloseIcon" @click="toggleDrawer()"></i>
-        </v-list-item-action>
-    </v-list-item>
-
-    <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
-    <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
-    <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
-    <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
-    <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
-
-    <div>
-        <v-spacer></v-spacer>
-
-        <v-btn color="secondary" class="ma-2" primary tile @click="reset()">
-            {{$t('exoplatform.LeadCapture.leadManagement.reset','Reset')}}
-        </v-btn>
-        <v-btn color="primary" class="ma-2" primary tile @click="aplyFilter()">
-            {{$t('exoplatform.LeadCapture.leadManagement.apply','Apply')}}
-        </v-btn>
-    </div>
+    <v-row class="drawerFooter mx-0">
+        <v-card flat tile class="d-flex flex justify-end mx-2">
+            <a class="text-uppercase caption primary--text drawersBtn" @click="reset()">{{ $t('exoplatform.LeadCapture.leadManagement.reset','Reset') }}</a>
+            <a class="text-uppercase caption  drawersBtn" @click="aplyFilter()">{{ $t('exoplatform.LeadCapture.leadManagement.apply','Apply') }}</a>
+        </v-card>
+    </v-row>
 
 </v-container>
 </template>

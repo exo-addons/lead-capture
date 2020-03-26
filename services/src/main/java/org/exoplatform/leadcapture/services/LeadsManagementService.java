@@ -738,9 +738,10 @@ public class LeadsManagementService {
             lead.setCaptureType(lead.getCaptureMethod());
             lead.setCaptureMethod("Community registration");
           } else {
-            if(getCaptureMethode(lead.getCaptureMethod()).equals(lead.getCaptureMethod()))
+            if(!getCaptureMethode(lead.getCaptureMethod()).equals(lead.getCaptureMethod()))
             {
               lead.setCaptureMethod(getCaptureMethode(lead.getCaptureMethod()));
+              lead.setCaptureSourceInfo(lead.getCaptureType());
               lead.setCaptureType(lead.getCaptureMethod());
             }
           }

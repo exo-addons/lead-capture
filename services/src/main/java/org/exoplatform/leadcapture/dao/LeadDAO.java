@@ -62,6 +62,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         } else {
           queryString = queryString + " ORDER BY lead." + sortBy + " ASC";
         }
+      }else{
+        queryString = queryString + " ORDER BY lead.id DESC";
       }
       TypedQuery<LeadEntity> query = getEntityManager().createQuery(queryString, LeadEntity.class);
       if (offset >= 0 && limit > 0) {

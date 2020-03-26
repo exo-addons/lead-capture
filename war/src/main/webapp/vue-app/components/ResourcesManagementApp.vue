@@ -310,7 +310,7 @@ export default {
 <style>
 #resourcesManagementApp {
     overflow: hidden;
-    /* padding: 10px 20px; */
+    padding: 10px 20px;
 }
 
 select {

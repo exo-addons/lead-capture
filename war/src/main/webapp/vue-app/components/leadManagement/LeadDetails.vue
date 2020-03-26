@@ -1,49 +1,47 @@
 <template>
 <v-flex>
     <v-container id="lead">
-        <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-btn class="returnBoutton" color="secondary" @click="backToList()" fab dark v-on="on">
-                    <v-icon dark>mdi-arrow-left</v-icon>
-                </v-btn>
-            </template>
-            <span>{{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}</span>
-        </v-tooltip>
 
-        <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-btn class="notesBoutton" fab dark color="secondary" @click.stop="toDodrawer = !toDodrawer" v-on="on">
-                    <v-icon dark>mdi-clipboard-text</v-icon>
+        <template>
+            <v-toolbar class="leadToolBar" flat>
+
+                <v-toolbar-title>
+                    <v-btn text class="headerBtn" @click="backToList()">
+                        <v-icon dark>mdi-arrow-left</v-icon>
+                        {{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}
+                    </v-btn>
+                </v-toolbar-title>
+
+                <v-spacer></v-spacer>
+                <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}</v-btn>
+
+                <v-btn icon @click.stop="toDodrawer = !toDodrawer" v-on="on">
+
+                    <v-badge :value="badge > 0" :content="badge" flat color="red" overlap>
+                        <v-icon>mdi-clipboard-text</v-icon>
+                    </v-badge>
                 </v-btn>
-            </template>
-            <span>Notes</span>
-        </v-tooltip>
-        <v-speed-dial class="manageBoutton" v-model="fab" top right direction="bottom" transition="slide-x-reverse-transition" open-on-hover>
-            <template v-slot:activator>
-                <v-btn v-model="fab" color="blue darken-2" dark fab>
-                    <v-icon v-if="fab">mdi-close</v-icon>
-                    <v-icon large v-else>mdi-account-edit</v-icon>
+
+                <v-btn icon @click="editLead=true">
+                    <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-            </template>
-            <v-btn fab dark small color="blue darken-2" @click="editLead=true">
-                <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn fab dark small color="blue darken-2" @click="deleteLead()">
-                <v-icon>mdi-delete</v-icon>
-            </v-btn>
-        </v-speed-dial>
+
+                <v-btn v-if="context.isManager" icon @click="deleteLead()">
+                    <v-icon>mdi-delete</v-icon>
+                </v-btn>
+            </v-toolbar>
+        </template>
 
         <v-dialog max-width="290" v-model="confirmDialog">
             <v-card>
                 <v-card-title class="headline">Confirmation</v-card-title>
 
-                <v-card-text v-if="context.isManager">{{$t('exoplatform.LeadCapture.leadManagement.deleteWarning','Are you sure to delete the Lead')}}</v-card-text>
-                <v-card-text v-else>{{$t('exoplatform.LeadCapture.leadManagement.permissionWarning','Only Managers can delete leads, pleas contact your manager.')}}</v-card-text>
+                <v-card-text>{{$t('exoplatform.LeadCapture.leadManagement.deleteWarning','Are you sure to delete the Lead')}}</v-card-text>
 
                 <v-card-actions>
                     <div class="flex-grow-1"></div>
                     <div class="uiAction">
-                        <button v-if="context.isManager" @click="remove()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
+                        <button @click="remove()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
                         </button>
                         <button @click="confirmDialog = false" class="btn" type="button">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}
                         </button>
@@ -140,7 +138,6 @@
                     </div>
                     <div class="col-md-3">
 
-                        <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}</v-btn>
                         <div class="tl">Telemarketer infos</div>
 
                         <p>{{lead.telemarketerFullName}}</p>
@@ -150,7 +147,7 @@
                 <div class="row col-md-12">
                     <v-layout>
                         <v-flex class="white text-center" flat>
-                            <v-tabs background-color="blue-grey lighten-5 icons-and-text" grow v-model="selectedTab">
+                            <v-tabs background-color="icons-and-text" grow v-model="selectedTab">
                                 <v-tabs-slider color="primary" />
                                 <v-tab href="#leadInfo" key="leadInfo">{{$t('exoplatform.LeadCapture.leadManagement.leadInfo','Lead Info')}}</v-tab>
                                 <v-tab href="#captureInfo" key="captureInfo">{{$t('exoplatform.LeadCapture.leadManagement.captureInfo','Capture Info')}}</v-tab>
@@ -400,6 +397,12 @@ export default {
                 return "/eXoSkin/skin/images/system/UserAvtDefault.png"
             }
             return "/rest/v1/social/users/" + this.lead.communityUserName + "/avatar"
+        },
+        badge : function () {
+            const undone = this.tasks.filter(item => {
+                    return !item.completed
+              });
+              return undone.length
         }
     },
 
@@ -676,5 +679,15 @@ b {
 
 .infoValue {
     text-align: left;
+}
+
+.leadToolBar {
+    padding-bottom: 10px;
+    border: 1px solid #e1e8ee !important;
+}
+
+.headerBtn {
+    max-width: 200px;
+    padding-left: 0px !important;
 }
 </style>

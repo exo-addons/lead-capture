@@ -74,10 +74,7 @@
                     <v-col cols="12" md="3" sm="6">
                         <v-text-field append-icon="search" single-line label="" v-model="search"></v-text-field>
                     </v-col>
-                        <v-btn icon :color=filtered @click="filterDrawer=true">
-                        <v-icon left>mdi-filter</v-icon>
-                            </v-btn>
-
+                    <a class="actionIcon" title="" rel="tooltip"  @click="filterDrawer=true"><i class="uiIcon uiIconFilter" :class="filtered"></i></a>
                 </v-toolbar>
             </template>
             <template v-slot:item.name="{ item }">
@@ -138,11 +135,11 @@ export default {
 
     data: () => ({
 filterDrawer:null,
-filtered:null,
+filtered:"notFiltered",
         totalLeads: 0,
         loading: true,
         options: {},
-        statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data'],
+        statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data', 'Duplicate'],
         selectedStatus: "",
         selectedMethod: "",
         selectedOwner:"",
@@ -287,6 +284,10 @@ filtered:null,
                 {
                     text: this.$t('exoplatform.LeadCapture.status.Bad_Data'),
                     value: 'Bad_Data'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Duplicate'),
+                    value: 'Duplicate'
                 }
             ]
         },
@@ -371,19 +372,19 @@ filtered:null,
                 this.leadList = data.items
                 this.totalLeads = data.total
             })  
-            this.filtered=this.getFilterColor()
+            this.filtered=this.getFilterClass()
              this.filterDrawer = !this.filterDrawer;
         },
         toggleFilterDrawer() {
             this.filterDrawer = !this.filterDrawer;
         },
 
-        getFilterColor(){
+        getFilterClass(){
 if(this.selectedStatus!=="" || this.selectedMethod!=="" || this.selectedOwner!=="" || this.notassigned || this.myLeads)
 {
-    return "blue"
+    return "uiIconBlue"
 }
-return null
+return "notFiltered"
         },
 
         initialize() {
@@ -750,4 +751,7 @@ return null
     .addBtn{
        background-color: #6cb043 !important;
     }
+    .notFiltered{
+    color: #9a9b9c;
+}
 </style>
