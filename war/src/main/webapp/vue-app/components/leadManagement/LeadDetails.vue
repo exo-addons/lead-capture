@@ -687,7 +687,6 @@ b {
 }
 
 .headerBtn {
-    max-width: 200px;
     padding-left: 0px !important;
 }
 </style>
