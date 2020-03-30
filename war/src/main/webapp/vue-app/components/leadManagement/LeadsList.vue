@@ -23,9 +23,9 @@
                 <v-toolbar color="white" flat>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on }">
-
-                            <v-btn class="ma-2 addBtn" tile  v-on="on">
-                                <v-icon left>mdi-plus</v-icon> Add Lead
+                            <v-btn x-large color="green lighten-1"  v-on="on">
+                                <v-icon left>mdi-plus</v-icon>
+                                {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}} 
                             </v-btn>
                         </template>
                         <v-form ref="form" v-model="valid">
@@ -746,12 +746,25 @@ return "notFiltered"
 
 .VuetifyApp .v-text-field input {
      padding: 0 !important;
-    }
+}
 
     .addBtn{
-       background-color: #6cb043 !important;
+    align-items: center;
+    color: white;
+    display: flex;
+    flex: 1 0 auto;
+    justify-content: inherit;
+    line-height: normal;
+    position: relative;
     }
     .notFiltered{
     color: #9a9b9c;
-}
+    }
+    .v-data-table__wrapper{
+        padding-top: 30px;
+    }
+    .v-data-table-header{
+        border-top: solid 1px #d0d0d0;
+        border-bottom: solid #d0d0d0;
+    }
 </style>

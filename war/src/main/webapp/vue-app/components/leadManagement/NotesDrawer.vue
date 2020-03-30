@@ -21,11 +21,11 @@
                         </v-list-item>
                     </v-list>
                 </v-menu>
-                <v-btn text small @click="addNote()">
+                <v-btn v-if="lead.taskId!=null && lead.taskId!=0" text small @click="addNote()">
                     <v-icon>mdi-plus</v-icon>
                     {{$t('exoplatform.LeadCapture.leadManagement.addComment','Add Comment')}}
                 </v-btn>
-                <v-btn small icon @click="navigateTo(`tasks/taskDetail/${lead.taskId}`)">
+                <v-btn v-if="lead.taskId!=null && lead.taskId!=0" small icon @click="navigateTo(`tasks/taskDetail/${lead.taskId}`)">
                     <v-icon>mdi-open-in-new</v-icon>
                 </v-btn>
                 <i class="actionIcon  uiCloseIcon" @click="toggleDrawer()"></i>
