@@ -143,6 +143,8 @@ filtered:"notFiltered",
         selectedStatus: "",
         selectedMethod: "",
         selectedOwner:"",
+        fromDate:"",
+        toDate:"",
         valid: true,
         notassigned: false,
         myLeads: false,
@@ -367,6 +369,8 @@ filtered:"notFiltered",
         this.selectedMethod= val.selectedMethod
         this.selectedOwner= val.selectedOwner
         this.notassigned= val.notassigned
+        this.fromDate= val.fromDate
+        this.toDate= val.toDate
         this.myLeads= val.myLeads
             this.getLeads().then(data => {
                 this.leadList = data.items
@@ -380,7 +384,7 @@ filtered:"notFiltered",
         },
 
         getFilterClass(){
-if(this.selectedStatus!=="" || this.selectedMethod!=="" || this.selectedOwner!=="" || this.notassigned || this.myLeads)
+if(this.selectedStatus!=="" || this.selectedMethod!=="" || this.selectedOwner!=="" || this.fromDate!=="" ||this.toDate!=="" ||this.notassigned || this.myLeads)
 {
     return "uiIconBlue"
 }
@@ -704,7 +708,7 @@ return "notFiltered"
                         desc = sortDesc[0]
                     }
                 }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())

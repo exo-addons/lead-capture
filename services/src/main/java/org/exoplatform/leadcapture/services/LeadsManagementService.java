@@ -201,12 +201,12 @@ public class LeadsManagementService {
     }
   }
 
-  public void suspendLead(Long leadId) throws Exception {
+  public void suspendLead(Long leadId, String cause) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setMarketingSuspended(true);
-      leadEntity.setMarketingSuspendedCause("Unsubscribed");
+      leadEntity.setMarketingSuspendedCause("Unsubscribed - "+ cause);
       leadDAO.update(leadEntity);
     } catch (Exception e) {
       LOG.error(e);
@@ -254,11 +254,11 @@ public class LeadsManagementService {
   }
 
 
-  public LeadsAccessList getLeads(String search, String status, String owner, String captureMethod, Boolean notassigned, String sortBy, Boolean sortDesc, int page, int limit) {
+  public LeadsAccessList getLeads(String search, String status, String owner, String captureMethod, String from, String to,  Boolean notassigned, String sortBy, Boolean sortDesc, int page, int limit) {
     int offset = (page - 1) * limit;
     List<LeadDTO> leadsList = new ArrayList<>();
-    List<LeadEntity> leadsEntities = leadDAO.getLeads(search, status, owner, captureMethod, notassigned, offset, limit, sortBy, sortDesc);
-    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, notassigned);
+    List<LeadEntity> leadsEntities = leadDAO.getLeads(search, status, owner, captureMethod, from, to , notassigned, offset, limit, sortBy, sortDesc);
+    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to , notassigned);
     if (leadsEntities != null) {
       for (LeadEntity leadEntity : leadsEntities) {
         if (leadEntity != null) {

@@ -29,6 +29,58 @@
         <v-col class="d-flex" cols="12" sm="11">
             <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
         </v-col>
+<v-col class="d-flex" cols="12" sm="11">
+     <v-menu
+        ref="menu1"
+        v-model="menu1"
+        :close-on-content-click="false"
+        :return-value.sync="fromDate"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            v-model="fromDate"
+            :label="$t('exoplatform.LeadCapture.leadManagement.createdFrom','Created From')"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="fromDate" no-title scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="menu1 = false">Cancel</v-btn>
+          <v-btn text color="primary" @click="$refs.menu1.save(fromDate)">OK</v-btn>
+        </v-date-picker>
+      </v-menu>
+      </v-col>
+      <v-col class="d-flex" cols="12" sm="11">
+     <v-menu
+        ref="menu2"
+        v-model="menu2"
+        :close-on-content-click="false"
+        :return-value.sync="toDate"
+        transition="scale-transition"
+        offset-y
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            v-model="toDate"
+            :label="$t('exoplatform.LeadCapture.leadManagement.createdBefore','Created Before')"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="toDate" no-title scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
+          <v-btn text color="primary" @click="$refs.menu2.save(toDate)">OK</v-btn>
+        </v-date-picker>
+      </v-menu>
+      </v-col>
     </v-row>
 
     <v-row class="drawerFooter mx-0">
@@ -46,6 +98,8 @@ export default {
 
     props: ['assigneesFilter'],
     data: () => ({
+        fromDate: "",
+        toDate: "",
         selectedStatus: "",
         selectedMethod: "",
         selectedOwner: "",
@@ -58,6 +112,9 @@ export default {
             return [{
                     text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
                     value: 'All'
+                },{
+                    text: this.$t('exoplatform.LeadCapture.status.active'),
+                    value: 'active'
                 },
                 {
                     text: this.$t('exoplatform.LeadCapture.status.Raw'),
@@ -129,14 +186,20 @@ export default {
             this.selectedOwner = ""
             this.notassigned = false
             this.myLeads = false
+            this.fromDate= ""
+            this.toDate= ""
         },
         aplyFilter() {
+            console.log(this.fromDate)
+            console.log(this.toDate)
             const filter_ = {
                 selectedStatus: this.selectedStatus,
                 selectedMethod: this.selectedMethod,
                 selectedOwner: this.selectedOwner,
                 notassigned: this.notassigned,
                 myLeads: this.myLeads,
+                fromDate: this.fromDate,
+                toDate: this.toDate,
             }
             this.$emit('addFilter', filter_);
         },

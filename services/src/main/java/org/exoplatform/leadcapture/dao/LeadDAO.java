@@ -1,5 +1,7 @@
 package org.exoplatform.leadcapture.dao;
 
+import static org.exoplatform.leadcapture.Utils.*;
+
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -20,6 +22,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                                    String status,
                                    String owner,
                                    String captureMethod,
+                                   String from,
+                                   String to,
                                    Boolean notassigned,
                                    int offset,
                                    int limit,
@@ -28,7 +32,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
     try {
       String queryString = "SELECT lead FROM LeadEntity lead";
-      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)|| StringUtils.isNotEmpty(captureMethod)   ||  notassigned) {
+      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
+          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
@@ -38,8 +43,14 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
-          queryString = queryString + " lead.status = '" + status + "'";
-          queryString = queryString + " and ";
+          if (status.equals(ACTIVE_FILTER)) {
+
+            queryString = queryString + " lead.status NOT IN (" + getStatusList(LEAD_INACTIVE_STATUSES) + ")";
+            queryString = queryString + " and ";
+          } else {
+            queryString = queryString + " lead.status = '" + status + "'";
+            queryString = queryString + " and ";
+          }
         }
         if (StringUtils.isNotEmpty(owner)) {
           queryString = queryString + " lead.assignee = '" + owner + "'";
@@ -48,6 +59,27 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         if (StringUtils.isNotEmpty(captureMethod)) {
           queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
           queryString = queryString + " and ";
+        }
+
+        if (StringUtils.isNotEmpty(from)) {
+          try {
+            long fromDate = taskFormatter.parse(from).getTime();
+            String date = quryDateFormatter.format(fromDate);
+            queryString = queryString + " TIMESTAMP(lead.createdDate) >= '" + date + "'";
+            queryString = queryString + " and ";
+          } catch (Exception e) {
+            LOG.error("Cannot parse from date, the from date filer will not applied to get th list of leads");
+          }
+        }
+        if (StringUtils.isNotEmpty(to)) {
+          try {
+            long toDate = taskFormatter.parse(to).getTime();
+            String date = quryDateFormatter.format(toDate);
+            queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
+            queryString = queryString + " and ";
+          } catch (Exception e) {
+            LOG.error("Cannot parse from date, the to date filer will not applied to get th list of leads");
+          }
         }
         if (notassigned) {
           queryString = queryString + " lead.assignee is null";
@@ -62,7 +94,7 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         } else {
           queryString = queryString + " ORDER BY lead." + sortBy + " ASC";
         }
-      }else{
+      } else {
         queryString = queryString + " ORDER BY lead.id DESC";
       }
       TypedQuery<LeadEntity> query = getEntityManager().createQuery(queryString, LeadEntity.class);
@@ -76,21 +108,34 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     }
   }
 
-  public long countLeads(String search, String status, String owner, String captureMethod, Boolean notassigned) {
+  public long countLeads(String search,
+                         String status,
+                         String owner,
+                         String captureMethod,
+                         String from,
+                         String to,
+                         Boolean notassigned) {
     try {
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
-      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner) || StringUtils.isNotEmpty(captureMethod) || notassigned) {
+      if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
+              || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
           queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search
-              + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
-              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
+                  + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
+                  + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
-          queryString = queryString + " lead.status = '" + status + "'";
-          queryString = queryString + " and ";
+          if (status.equals(ACTIVE_FILTER)) {
+
+            queryString = queryString + " lead.status NOT IN (" + getStatusList(LEAD_INACTIVE_STATUSES) + ")";
+            queryString = queryString + " and ";
+          } else {
+            queryString = queryString + " lead.status = '" + status + "'";
+            queryString = queryString + " and ";
+          }
         }
         if (StringUtils.isNotEmpty(owner)) {
           queryString = queryString + " lead.assignee = '" + owner + "'";
@@ -99,6 +144,27 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         if (StringUtils.isNotEmpty(captureMethod)) {
           queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
           queryString = queryString + " and ";
+        }
+
+        if (StringUtils.isNotEmpty(from)) {
+          try {
+            long fromDate = taskFormatter.parse(from).getTime();
+            String date = quryDateFormatter.format(fromDate);
+            queryString = queryString + " TIMESTAMP(lead.createdDate) >= '" + date + "'";
+            queryString = queryString + " and ";
+          } catch (Exception e) {
+            LOG.error("Cannot parse from date, the from date filer will not applied to get th list of leads");
+          }
+        }
+        if (StringUtils.isNotEmpty(to)) {
+          try {
+            long toDate = taskFormatter.parse(to).getTime();
+            String date = quryDateFormatter.format(toDate);
+            queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
+            queryString = queryString + " and ";
+          } catch (Exception e) {
+            LOG.error("Cannot parse from date, the to date filer will not applied to get th list of leads");
+          }
         }
         if (notassigned) {
           queryString = queryString + " lead.assignee is null";
@@ -142,6 +208,17 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
       LOG.error("Error occurred when trying to get lead by taskId {}", taskId, e);
       return null;
     }
+  }
+
+  private String getStatusList(String[] statuses) {
+    String statusList = "";
+    for (String status : statuses) {
+      statusList += "'" + status + "',";
+    }
+    if (statusList.endsWith(",")) {
+      statusList = statusList.substring(0, statusList.length() - 1);
+    }
+    return statusList;
   }
 
 }

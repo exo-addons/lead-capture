@@ -54,7 +54,11 @@ public class Utils {
 
   public static final String           LEAD_OPEN_STATUS                     = "Open";
 
+  public static final String           LEAD_COMPLET_STATUS                  = "Recycled";
+
   public static final String[]         LEAD_BAD_STATUSES                    = { LEAD_DEFAULT_STATUS, "Bad_Data", "Duplicate" };
+
+  public static final String[]         LEAD_INACTIVE_STATUSES               = { LEAD_COMPLET_STATUS, "Bad_Data", "Duplicate" };
 
   public static final String           CREATION_DATE_FIELD_NAME             = "createdDate";
 
@@ -70,11 +74,17 @@ public class Utils {
 
   public static final String           TASK_DATE_FORMAT                     = "yyyy-MM-dd";
 
+  public static final String           QUERY_DATE_FORMAT                     = "yyyy-MM-dd HH:mm:ss";
+
   public static final String           EMPTY_STR                            = "";
+
+  public static final String           ACTIVE_FILTER                         = "active";
 
   public static final SimpleDateFormat formatter                            = new SimpleDateFormat(DATE_FORMAT);
 
   public static final SimpleDateFormat taskFormatter                        = new SimpleDateFormat(TASK_DATE_FORMAT);
+
+  public static final SimpleDateFormat quryDateFormatter                        = new SimpleDateFormat(TASK_DATE_FORMAT);
 
   public static final String           LEAD_CAPTURE_SCOPE_NAME              = "ADDONS_LEAD_CAPTURE_SCOPE";
 
