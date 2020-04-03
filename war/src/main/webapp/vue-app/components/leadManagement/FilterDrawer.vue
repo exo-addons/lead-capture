@@ -100,7 +100,7 @@ export default {
     data: () => ({
         fromDate: "",
         toDate: "",
-        selectedStatus: "",
+        selectedStatus: "active",
         selectedMethod: "",
         selectedOwner: "",
         notassigned: false,
@@ -154,6 +154,10 @@ export default {
             return [{
                     text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
                     value: 'All'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.leadManagement.community-registration'),
+                    value: 'Community registration'
                 },
                 {
                     text: this.$t('exoplatform.LeadCapture.method.contact-us'),

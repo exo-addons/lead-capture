@@ -219,14 +219,22 @@ public class LeadsManagementService {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
+      boolean isBadStatus = Arrays.stream(LEAD_BAD_STATUSES).anyMatch(status::equals);
       if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
-        boolean isBadStatus = Arrays.stream(LEAD_BAD_STATUSES).anyMatch(status::equals);
         if (!isBadStatus) {
           Task task_ = createTask(leadEntity);
           if (task_ != null) {
             leadEntity.setTaskId(task_.getId());
             leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
           }
+        }
+      }else{
+        if (isBadStatus) {
+          removeTask(leadEntity.getTaskId());
+          leadEntity.setTaskId(null);
+          leadEntity.setTaskUrl(null);
+        }else if(status.equals(LEAD_COMPLET_STATUS)){
+          completeTask(leadEntity.getTaskId());
         }
       }
       leadEntity = leadDAO.update(leadEntity);
@@ -443,6 +451,17 @@ public class LeadsManagementService {
       return task;
     }
     return null;
+  }
+
+  public void removeTask(Long id) throws Exception {
+    Task task = taskService.getTask(id);
+    taskService.removeTask(task.getId());
+  }
+
+  public void completeTask(Long id) throws Exception {
+    Task task = taskService.getTask(id);
+    task.setCompleted(true);
+    taskService.updateTask(task);
   }
 
   public List<PersonalTask> getPersonalTasks(long id, String userId) throws Exception {

@@ -58,6 +58,9 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field v-model="editedItem.inferredCountry" :label="$t('exoplatform.LeadCapture.leadManagement.country','Country')"></v-text-field>
                                             </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.captureSourceInfo" :label="$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')"></v-text-field>
+                                            </v-col>
                                         </v-row>
                                     </v-container>
                                 </v-card-text>
@@ -140,7 +143,7 @@ filtered:"notFiltered",
         loading: true,
         options: {},
         statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data', 'Duplicate'],
-        selectedStatus: "",
+        selectedStatus: "active",
         selectedMethod: "",
         selectedOwner:"",
         fromDate:"",
@@ -730,7 +733,53 @@ return "notFiltered"
             });
 
         },
+
+        exportLeads() {
+            this.loading = true
+                const {
+                    sortBy,
+                    sortDesc,
+                    page,
+                    itemsPerPage
+                } = this.options
+                let sort = ""
+                let desc = false
+                let owner = "" 
+                if (this.selectedStatus === "All") {
+                    this.selectedStatus = ""
+                }
+                if (this.selectedMethod === "All") {
+                    this.selectedMethod = ""
+                }
+                if (this.myLeads) {
+                    owner = this.context.currentUser
+                } else {
+                    owner = this.selectedOwner
+                }
+                if (sortBy.length > 0) {
+                    sort = sortBy[0]
+                    if (sort === "name") {
+                        sort = "firstName"
+                    }
+                    if (sort === "formattedCreatedDate") {
+                        sort = "createdDate"
+                    }
+                    if (sortDesc.length > 0) {
+                        desc = sortDesc[0]
+                    }
+                }
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&sortby=${sort}&sortdesc=${desc}&page=1&limit=-1`, {
+                        credentials: 'include',
+                    })
+                    .then((resp) => resp.json())
+                    .then((resp) => {
+                        this.loading = false
+                       return(resp.leads) 
+                    })
+
+        },
     },
+    
 };
 </script>
 

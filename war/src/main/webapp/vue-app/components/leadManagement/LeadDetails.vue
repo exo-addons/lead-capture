@@ -138,7 +138,7 @@
                     </div>
                     <div class="col-md-3">
 
-                        <div class="tl">Telemarketer infos</div>
+                        <div class="tl">{{$t(`exoplatform.LeadCapture.leadManagement.owner`, "Owner")}}</div>
 
                         <p>{{lead.telemarketerFullName}}</p>
 
@@ -232,7 +232,7 @@
                                                 <b>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.${lead.captureMethod}`,lead.captureMethod)}}</div>
+                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.method.${lead.captureMethod}`,lead.captureMethod)}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -240,7 +240,7 @@
                                                 <b>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.${lead.captureType}`,lead.captureType)}}</div>
+                                                <div class="infoValue">{{lead.captureType}}</div>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -248,7 +248,7 @@
                                                 <b>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</b>
                                             </div>
                                             <div class="col-md-8">
-                                                <div class="infoValue">{{lead.captureSourceInfo}}</div>
+                                                <div class="infoValue">{{$t(`exoplatform.LeadCapture.detail.${lead.captureSourceInfo}`,lead.captureSourceInfo)}}</div>
                                             </div>
                                         </div>
                                         <div class="row">

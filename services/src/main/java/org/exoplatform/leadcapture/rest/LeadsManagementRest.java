@@ -519,7 +519,7 @@ public class LeadsManagementRest implements ResourceContainer {
       lead.setCreatedDate(new Date());
       lead.setUpdatedDate(new Date());
       lead.setStatus(LEAD_DEFAULT_STATUS);
-
+      lead.setCaptureMethod("manually_created");
       leadsManagementService.createLead(lead);
       LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{}\"",
                lead.getFirstName() + " " + lead.getLastName());
