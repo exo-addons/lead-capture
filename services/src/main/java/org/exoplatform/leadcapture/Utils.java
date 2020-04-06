@@ -84,7 +84,7 @@ public class Utils {
 
   public static final SimpleDateFormat taskFormatter                        = new SimpleDateFormat(TASK_DATE_FORMAT);
 
-  public static final SimpleDateFormat quryDateFormatter                        = new SimpleDateFormat(TASK_DATE_FORMAT);
+  public static final SimpleDateFormat quryDateFormatter                        = new SimpleDateFormat(QUERY_DATE_FORMAT);
 
   public static final String           LEAD_CAPTURE_SCOPE_NAME              = "ADDONS_LEAD_CAPTURE_SCOPE";
 

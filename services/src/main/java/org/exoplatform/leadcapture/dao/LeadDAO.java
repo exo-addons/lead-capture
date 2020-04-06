@@ -2,6 +2,8 @@ package org.exoplatform.leadcapture.dao;
 
 import static org.exoplatform.leadcapture.Utils.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -79,8 +81,13 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         }
         if (StringUtils.isNotEmpty(to)) {
           try {
-            long toDate = taskFormatter.parse(to).getTime();
-            String date = quryDateFormatter.format(toDate);
+            Date toDate = taskFormatter.parse(to);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(toDate);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            String date = quryDateFormatter.format(cal.getTime());
             queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
             queryString = queryString + " and ";
           } catch (Exception e) {
@@ -171,8 +178,13 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         }
         if (StringUtils.isNotEmpty(to)) {
           try {
-            long toDate = taskFormatter.parse(to).getTime();
-            String date = quryDateFormatter.format(toDate);
+            Date toDate = taskFormatter.parse(to);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(toDate);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            String date = quryDateFormatter.format(cal.getTime());
             queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
             queryString = queryString + " and ";
           } catch (Exception e) {
