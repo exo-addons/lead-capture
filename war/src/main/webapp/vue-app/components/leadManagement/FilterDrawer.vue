@@ -20,6 +20,9 @@
         <v-col class="d-flex" cols="12" sm="11">
             <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
         </v-col>
+        <v-col class="d-flex" cols="12" sm="11">
+            <v-select :items="gZoneList" v-model="selectedGeoZone" :label="$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')"></v-select>
+        </v-col>
         <v-col class="d-flex" cols="12" sm="5">
             <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
         </v-col>
@@ -105,6 +108,8 @@ export default {
         selectedOwner: "",
         notassigned: false,
         myLeads: false,
+        selectedGeoZone:"",
+        gZoneList:["US-Canada","Western Europe","Eastern Europe","LatAm","APAC","MEA"]
     }),
 
     computed: {
@@ -185,13 +190,14 @@ export default {
         },
 
         reset() {
-            this.selectedStatus = ""
+            this.selectedStatus = "active"
             this.selectedMethod = ""
             this.selectedOwner = ""
             this.notassigned = false
             this.myLeads = false
             this.fromDate= ""
             this.toDate= ""
+            this.selectedGeoZone=""
         },
         aplyFilter() {
             console.log(this.fromDate)
@@ -204,6 +210,7 @@ export default {
                 myLeads: this.myLeads,
                 fromDate: this.fromDate,
                 toDate: this.toDate,
+                selectedGeoZone:this.selectedGeoZone
             }
             this.$emit('addFilter', filter_);
         },

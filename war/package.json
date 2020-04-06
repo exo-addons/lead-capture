@@ -18,7 +18,8 @@
   "license": "LGPL",
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^16.0.0",
-    "@ckeditor/ckeditor5-vue": "^1.0.1"
+    "@ckeditor/ckeditor5-vue": "^1.0.1",
+    "vue-json-excel": "^0.2.98"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

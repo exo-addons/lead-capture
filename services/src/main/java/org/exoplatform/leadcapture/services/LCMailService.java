@@ -80,7 +80,7 @@ public class LCMailService {
     content_ = StringUtils.replace(content_, "$MAIL", lead.getMail());
     content_ = StringUtils.replace(content_, "$RESOURCE_NAME", resourceName);
     content_ = StringUtils.replace(content_, "$RESOURCE", resource);
-    content_ = StringUtils.replace(content_, "$UNSUBSCRIBE_URL", leadCaptureSettingsService.getSettings().getUnsubscribeUrl()+lead.getId());
+    content_ = StringUtils.replace(content_, "$UNSUBSCRIBE_URL", leadCaptureSettingsService.getSettings().getUnsubscribeUrl());
     return convertCodeHTML(content_);
   }
 

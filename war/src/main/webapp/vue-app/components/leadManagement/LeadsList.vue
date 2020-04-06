@@ -1,6 +1,6 @@
 <template>
 <v-flex>
-    
+
     <div :class="alert_type" class="alert" id v-if="alert">
         <i :class="alertIcon"></i>
         {{message}}
@@ -23,9 +23,9 @@
                 <v-toolbar color="white" flat>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on }">
-                            <v-btn x-large color="green lighten-1"  v-on="on">
+                            <v-btn x-large color="green lighten-1" v-on="on">
                                 <v-icon left>mdi-plus</v-icon>
-                                {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}} 
+                                {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
                             </v-btn>
                         </template>
                         <v-form ref="form" v-model="valid">
@@ -73,11 +73,15 @@
                             </v-card>
                         </v-form>
                     </v-dialog>
-                   <v-spacer />
+                    <v-spacer />
                     <v-col cols="12" md="3" sm="6">
                         <v-text-field append-icon="search" single-line label="" v-model="search"></v-text-field>
                     </v-col>
-                    <a class="actionIcon" title="" rel="tooltip"  @click="filterDrawer=true"><i class="uiIcon uiIconFilter" :class="filtered"></i></a>
+                    <a class="actionIcon" title="" rel="tooltip" @click="filterDrawer=true"><i class="uiIcon uiIconFilter" :class="filtered"></i></a>
+                    <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
+
+                        <div class="actionIcon "><i class="uiIcon grey-color uiIconExport"></i></div>
+                    </download-excel>
                 </v-toolbar>
             </template>
             <template v-slot:item.name="{ item }">
@@ -115,7 +119,7 @@
                 </select>
 
             </template>
-            
+
             <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
@@ -130,34 +134,81 @@
 <script>
 import leadDetails from './LeadDetails.vue';
 import filterDrawer from './FilterDrawer.vue';
+import downloadExcel from "vue-json-excel";
 export default {
     components: {
+        downloadExcel,
         leadDetails,
         filterDrawer
     },
 
     data: () => ({
-filterDrawer:null,
-filtered:"notFiltered",
+        json_fields: {
+            'id': 'id',
+            'Mail': 'mail',
+            'First name': 'firstName',
+            'Last name': 'lastName',
+            'status': 'status',
+            'Created date': 'formattedCreatedDate',
+            'Updated date': 'formattedUpdatedDate',
+            'Language': 'language',
+            'Company': 'company',
+            'Country': 'inferredCountry',
+            'Geo zone': 'geographiqueZone',
+            'Phone': 'phone',
+            'Position': 'position',
+            'Industry': 'industry',
+            'captureMethod': 'captureMethod',
+            'Capture type': 'captureType',
+            'Capture details': 'captureSourceInfo',
+            'Person Source': 'personSource',
+            'Original referrer': 'originalReferrer',
+            'Community registration': 'communityRegistration',
+            'Community UserName': 'communityUserName',
+            'Community registration method': 'communityRegistrationMethod',
+            'Community registration date': 'formattedCommunityRegistrationDate',
+            'Blog subscription': 'blogSubscription',
+            'Blog subscription date': 'formattedBlogSubscriptionDate',
+            'Marketing suspended': 'marketingSuspended',
+            'Marketing suspended cause': 'marketingSuspendedCause',
+            'Goal': 'goal',
+            'Users number': 'usersNumber',
+            'How': 'howHear',
+            'Solution type': 'solutionType',
+            'Interaction summary': 'interactionSummary',
+            'Employees number': 'employeesNumber',
+            'Solution requirements': 'solutionRequirements',
+            'shortlistVendors': 'shortlistVendors',
+            'Landing page info': 'landingPageInfo',
+            'Company Website': 'companyWebsite',
+            'Current solution': 'currentSolution',
+        },
+        filterDrawer: null,
+        //filtered: "grey-color",
         totalLeads: 0,
         loading: true,
         options: {},
         statusList: ['Raw', 'Open', 'Attempted', 'Contacted', 'Qualified', 'Recycled', 'Accepted', 'Bad_Data', 'Duplicate'],
         selectedStatus: "active",
         selectedMethod: "",
-        selectedOwner:"",
-        fromDate:"",
-        toDate:"",
+        selectedOwner: "",
+        selectedGeoZone: "",
+        fromDate: "",
+        toDate: "",
         valid: true,
         notassigned: false,
         myLeads: false,
         currentUser: 'test1',
         assignees: [],
-        assigneesFilter: [{"fullName":"All","userName":"","email":""}],
+        assigneesFilter: [{
+            "fullName": "All",
+            "userName": "",
+            "email": ""
+        }],
         showTable: false,
         showDetails: false,
         search: '',
-        awaitingSearch:false,
+        awaitingSearch: false,
         dialog: false,
         itemToDelete: 0,
         alert: false,
@@ -236,18 +287,17 @@ filtered:"notFiltered",
             return val === true || this.close() === true;
         },
 
-    
         search: function (val) {
-         if (!this.awaitingSearch) {
-          setTimeout(() => {
-                        this.getLeads().then(data => {
-                this.leadList = data.items
-                this.totalLeads = data.total
-            })
-            this.awaitingSearch = false;
-          }, 1000); // 1 sec delay
-        }
-        this.awaitingSearch = true;
+            if (!this.awaitingSearch) {
+                setTimeout(() => {
+                    this.getLeads().then(data => {
+                        this.leadList = data.items
+                        this.totalLeads = data.total
+                    })
+                    this.awaitingSearch = false;
+                }, 1000); // 1 sec delay
+            }
+            this.awaitingSearch = true;
 
         },
 
@@ -357,41 +407,45 @@ filtered:"notFiltered",
                     value: 'inferredCountry',
                 },
                 {
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.geographiqueZone`, ""),
+                    align: 'center',
+                    sortable: true,
+                    value: 'geographiqueZone',
+                },
+                {
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.status`, ""),
                     align: 'center',
                     sortable: true,
                     value: 'status',
                 },
             ]
+        },
+        filtered(){
+            if (this.selectedStatus !== "" || this.selectedMethod !== "" || this.selectedOwner !== "" || this.fromDate !== "" || this.toDate !== "" || this.selectedGeoZone !== "" || this.notassigned || this.myLeads) {
+                return "uiIconBlue"
+            }
+            return "grey-color"
         }
+
     },
     methods: {
-        addFilter(val){
-            console.log(val)
-        this.selectedStatus= val.selectedStatus
-        this.selectedMethod= val.selectedMethod
-        this.selectedOwner= val.selectedOwner
-        this.notassigned= val.notassigned
-        this.fromDate= val.fromDate
-        this.toDate= val.toDate
-        this.myLeads= val.myLeads
+        addFilter(val) {
+            this.selectedStatus = val.selectedStatus
+            this.selectedMethod = val.selectedMethod
+            this.selectedOwner = val.selectedOwner
+            this.notassigned = val.notassigned
+            this.fromDate = val.fromDate
+            this.toDate = val.toDate
+            this.selectedGeoZone = val.selectedGeoZone
+            this.myLeads = val.myLeads
             this.getLeads().then(data => {
                 this.leadList = data.items
                 this.totalLeads = data.total
-            })  
-            this.filtered=this.getFilterClass()
-             this.filterDrawer = !this.filterDrawer;
+            })
+            this.filterDrawer = !this.filterDrawer;
         },
         toggleFilterDrawer() {
             this.filterDrawer = !this.filterDrawer;
-        },
-
-        getFilterClass(){
-if(this.selectedStatus!=="" || this.selectedMethod!=="" || this.selectedOwner!=="" || this.fromDate!=="" ||this.toDate!=="" ||this.notassigned || this.myLeads)
-{
-    return "uiIconBlue"
-}
-return "notFiltered"
         },
 
         initialize() {
@@ -408,19 +462,6 @@ return "notFiltered"
             }
 
         },
-        /*         getLeads() {
-                    fetch(`/portal/rest/leadcapture/leadsmanagement/leads`, {
-                            credentials: 'include',
-                        })
-                        .then((resp) => resp.json())
-                        .then((resp) => {
-                            this.leadList = resp
-                            this.allLeads = resp
-                            this.showTable = true
-                            this.showDetails = false
-                        });
-        return this.leadList
-                } ,*/
 
         getLeadById(id) {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + id, {
@@ -667,6 +708,7 @@ return "notFiltered"
                 }, 'Leads List', url);
             }
         },
+
         getUrlParameterByName(name) {
             const url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&")
@@ -675,8 +717,9 @@ return "notFiltered"
             if (!results) {return null}
             if (!results[2]) {return null}
             return decodeURIComponent(results[2].replace(/\+/g, " "))
-        },
-        getLeads() {
+        },    
+
+        getLeads(all) {
             this.loading = true
             return new Promise((resolve, reject) => {
                 const {
@@ -687,7 +730,13 @@ return "notFiltered"
                 } = this.options
                 let sort = ""
                 let desc = false
-                let owner = "" 
+                let owner = ""
+                let page_ = page
+                let itemsPerPage_ = itemsPerPage
+                if (all) {
+                    page_ = 1
+                    itemsPerPage_ = -1
+                }
                 if (this.selectedStatus === "All") {
                     this.selectedStatus = ""
                 }
@@ -711,7 +760,7 @@ return "notFiltered"
                         desc = sortDesc[0]
                     }
                 }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&sortby=${sort}&sortdesc=${desc}&page=${page}&limit=${itemsPerPage}`, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&zone=${this.selectedGeoZone}&sortby=${sort}&sortdesc=${desc}&page=${page_}&limit=${itemsPerPage_}`, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())
@@ -734,52 +783,13 @@ return "notFiltered"
 
         },
 
-        exportLeads() {
-            this.loading = true
-                const {
-                    sortBy,
-                    sortDesc,
-                    page,
-                    itemsPerPage
-                } = this.options
-                let sort = ""
-                let desc = false
-                let owner = "" 
-                if (this.selectedStatus === "All") {
-                    this.selectedStatus = ""
-                }
-                if (this.selectedMethod === "All") {
-                    this.selectedMethod = ""
-                }
-                if (this.myLeads) {
-                    owner = this.context.currentUser
-                } else {
-                    owner = this.selectedOwner
-                }
-                if (sortBy.length > 0) {
-                    sort = sortBy[0]
-                    if (sort === "name") {
-                        sort = "firstName"
-                    }
-                    if (sort === "formattedCreatedDate") {
-                        sort = "createdDate"
-                    }
-                    if (sortDesc.length > 0) {
-                        desc = sortDesc[0]
-                    }
-                }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&sortby=${sort}&sortdesc=${desc}&page=1&limit=-1`, {
-                        credentials: 'include',
-                    })
-                    .then((resp) => resp.json())
-                    .then((resp) => {
-                        this.loading = false
-                       return(resp.leads) 
-                    })
-
+        async exportData() {
+            const response = await this.getLeads(true);
+            console.log(response);
+            return response.items;
         },
     },
-    
+
 };
 </script>
 
@@ -798,10 +808,10 @@ return "notFiltered"
 }
 
 .VuetifyApp .v-text-field input {
-     padding: 0 !important;
+    padding: 0 !important;
 }
 
-    .addBtn{
+.addBtn {
     align-items: center;
     color: white;
     display: flex;
@@ -809,15 +819,18 @@ return "notFiltered"
     justify-content: inherit;
     line-height: normal;
     position: relative;
-    }
-    .notFiltered{
-    color: #9a9b9c;
-    }
-    .v-data-table__wrapper{
-        padding-top: 30px;
-    }
-    .v-data-table-header{
-        border-top: solid 1px #d0d0d0;
-        border-bottom: solid #d0d0d0;
-    }
+}
+
+.v-data-table__wrapper {
+    padding-top: 30px;
+}
+
+.v-data-table-header {
+    border-top: solid 1px #d0d0d0;
+    border-bottom: solid #d0d0d0;
+}
+
+.btn-export {
+    cursor: pointer;
+}
 </style>

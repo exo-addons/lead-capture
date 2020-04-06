@@ -24,6 +24,7 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                                    String captureMethod,
                                    String from,
                                    String to,
+                                   String zone,
                                    Boolean notassigned,
                                    int offset,
                                    int limit,
@@ -33,7 +34,7 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     try {
       String queryString = "SELECT lead FROM LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
-          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to) || notassigned) {
+          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)  || StringUtils.isNotEmpty(zone) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
@@ -58,6 +59,11 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         }
         if (StringUtils.isNotEmpty(captureMethod)) {
           queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
+          queryString = queryString + " and ";
+        }
+
+        if (StringUtils.isNotEmpty(zone)) {
+          queryString = queryString + " lead.geographiqueZone = '" + zone + "'";
           queryString = queryString + " and ";
         }
 
@@ -114,11 +120,12 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                          String captureMethod,
                          String from,
                          String to,
+                         String zone,
                          Boolean notassigned) {
     try {
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
-              || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to) || notassigned) {
+              || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)  || StringUtils.isNotEmpty(zone)  || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
@@ -145,6 +152,12 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString + " lead.captureMethod = '" + captureMethod + "'";
           queryString = queryString + " and ";
         }
+
+        if (StringUtils.isNotEmpty(zone)) {
+          queryString = queryString + " lead.geographiqueZone = '" + zone + "'";
+          queryString = queryString + " and ";
+        }
+
 
         if (StringUtils.isNotEmpty(from)) {
           try {

@@ -5,6 +5,7 @@ import static org.exoplatform.leadcapture.Utils.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
@@ -76,6 +77,7 @@ public class LeadsManagementRest implements ResourceContainer {
                            @QueryParam("method") String captureMethod,
                            @QueryParam("from") String from,
                            @QueryParam("to") String to,
+                           @QueryParam("zone") String zone,
                            @QueryParam("notassigned") Boolean notassigned,
                            @QueryParam("sortby") String sortBy,
                            @QueryParam("sortdesc") Boolean sortDesc,
@@ -87,7 +89,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     try {
 
-      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to,  notassigned, sortBy, sortDesc, page, limit)).build();
+      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, notassigned, sortBy, sortDesc, page, limit)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -219,20 +221,24 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @POST
-  @Path("suspend/{id}")
+  @Path("suspend")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response suspend(@Context UriInfo uriInfo,
-                          //@HeaderParam("token") String headerToken,
-                          @PathParam("id") Long id,
-                          String cause) throws Exception {
+                          Map<String, String> obj) throws Exception {
     try {
-      leadsManagementService.suspendLead(id, cause);
-      LOG.info("Lead {} suspended", id);
+      String mail = obj.get("mail");
+      String cause = obj.get("cause");
+      LeadEntity lead = leadsManagementService.suspendLead(mail, cause);
+      if(lead==null){
+        LOG.warn("Lead not found");
+        return Response.status(Response.Status.NOT_FOUND).entity("Lead Not found").build();
+      }
+      LOG.info("Lead  suspended");
       return Response.status(Response.Status.OK)
-                     .entity("lead suspended")
-                     .build();
+              .entity("lead suspended")
+              .build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to suspend lead {}", id, e);
+      LOG.error("An error occured when trying to suspend lead ", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                      .build();
     }
