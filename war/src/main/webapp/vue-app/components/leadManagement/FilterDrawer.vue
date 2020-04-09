@@ -165,6 +165,10 @@ export default {
                     value: 'Community registration'
                 },
                 {
+                    text: this.$t('exoplatform.LeadCapture.method.Blog'),
+                    value: 'Blog'
+                },
+                {
                     text: this.$t('exoplatform.LeadCapture.method.contact-us'),
                     value: 'contact-us'
                 },
