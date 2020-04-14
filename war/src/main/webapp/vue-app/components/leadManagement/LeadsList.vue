@@ -126,7 +126,7 @@
     <v-navigation-drawer absolute floating right temporary v-model="filterDrawer" width="30%">
         <filter-drawer :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
     </v-navigation-drawer>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
 
 </v-flex>
 </template>
@@ -175,9 +175,7 @@ export default {
             'Users number': 'usersNumber',
             'How': 'howHear',
             'Solution type': 'solutionType',
-            'Interaction summary': 'interactionSummary',
             'Employees number': 'employeesNumber',
-            'Solution requirements': 'solutionRequirements',
             'shortlistVendors': 'shortlistVendors',
             'Landing page info': 'landingPageInfo',
             'Company Website': 'companyWebsite',
@@ -241,6 +239,7 @@ export default {
             leadCaptureConfigured: true
         },
         formResponses: [],
+        timeline: [],
         comments: [],
         tasks: [],
         selectedLead: {},
@@ -505,6 +504,14 @@ export default {
                     this.formResponses = resp;
                 });
 
+            fetch(`/portal/rest/leadcapture/leadsmanagement/timeline/` + item.id, {
+                    credentials: 'include',
+                })
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    this.timeline = resp.sort((a, b) => b.time - a.time);; 
+                });    
+
             fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.id, {
                     credentials: 'include',
                 })
@@ -551,7 +558,6 @@ export default {
                     });
                 });
         },
-
         delete_(item) {
             fetch(`/portal/rest/leadcapture/leadsmanagement/leads/` + item.id, {
                     method: 'delete',

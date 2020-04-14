@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.task.domain.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,10 +32,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Label;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.service.StatusService;
@@ -204,10 +201,10 @@ public class LeadsManagementService {
   public LeadEntity suspendLead(String mail, String cause) throws Exception {
     try {
       LeadEntity leadEntity = getLeadByMail(mail);
-      if(leadEntity!=null){
-      leadEntity.setUpdatedDate(new Date());
-      leadEntity.setMarketingSuspended(true);
-      leadEntity.setMarketingSuspendedCause("Unsubscribed - "+ cause);
+      if (leadEntity != null) {
+        leadEntity.setUpdatedDate(new Date());
+        leadEntity.setMarketingSuspended(true);
+        leadEntity.setMarketingSuspendedCause("Unsubscribed - " + cause);
         leadEntity = leadDAO.update(leadEntity);
         return leadEntity;
       }
@@ -232,12 +229,12 @@ public class LeadsManagementService {
             leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
           }
         }
-      }else{
+      } else {
         if (isBadStatus) {
           removeTask(leadEntity.getTaskId());
           leadEntity.setTaskId(null);
           leadEntity.setTaskUrl(null);
-        }else if(status.equals(LEAD_COMPLET_STATUS)){
+        } else if (status.equals(LEAD_COMPLET_STATUS)) {
           completeTask(leadEntity.getTaskId());
         }
       }
@@ -265,12 +262,33 @@ public class LeadsManagementService {
     return leadsList;
   }
 
-
-  public LeadsAccessList getLeads(String search, String status, String owner, String captureMethod, String from, String to, String zone, Boolean notassigned, String sortBy, Boolean sortDesc, int page, int limit) {
+  public LeadsAccessList getLeads(String search,
+                                  String status,
+                                  String owner,
+                                  String captureMethod,
+                                  String from,
+                                  String to,
+                                  String zone,
+                                  Boolean notassigned,
+                                  String sortBy,
+                                  Boolean sortDesc,
+                                  int page,
+                                  int limit) {
     int offset = (page - 1) * limit;
     List<LeadDTO> leadsList = new ArrayList<>();
-    List<LeadEntity> leadsEntities = leadDAO.getLeads(search, status, owner, captureMethod, from, to , zone, notassigned, offset, limit, sortBy, sortDesc);
-    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone , notassigned);
+    List<LeadEntity> leadsEntities = leadDAO.getLeads(search,
+                                                      status,
+                                                      owner,
+                                                      captureMethod,
+                                                      from,
+                                                      to,
+                                                      zone,
+                                                      notassigned,
+                                                      offset,
+                                                      limit,
+                                                      sortBy,
+                                                      sortDesc);
+    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone, notassigned);
     if (leadsEntities != null) {
       for (LeadEntity leadEntity : leadsEntities) {
         if (leadEntity != null) {
@@ -309,6 +327,76 @@ public class LeadsManagementService {
     }
 
     return formResponsesList;
+  }
+
+  public JSONArray getTimeLine(long leadId) {
+    JSONArray responsesList = new JSONArray();
+    try {
+      LeadEntity lead = getLeadbyId(leadId);
+      if (lead != null) {
+        if (lead.getCommunityRegistration()) {
+          JSONObject obj = new JSONObject();
+          obj.put("form","Community  Registration");
+          obj.put("communityUserName",lead.getCommunityUserName());
+          obj.put("communityRegistrationMethod",lead.getCommunityRegistrationMethod());
+          obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getCommunityRegistrationDate()));
+          obj.put("time", lead.getCommunityRegistrationDate().getTime());
+          JSONArray fields = new JSONArray();
+          fields.put("communityUserName");
+          fields.put("communityRegistrationMethod");
+          obj.put("fields",fields);
+          responsesList.put(obj);
+        }
+
+        if (lead.getBlogSubscription()) {
+          JSONObject obj = new JSONObject();
+          obj.put("form","Blog  Registration");
+          obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getBlogSubscriptionDate()));
+          obj.put("time", lead.getBlogSubscriptionDate().getTime());
+          obj.put("fields",new JSONArray());
+          responsesList.put(obj);
+        }
+
+        List<ResponseEntity> responsesEntities = responseDAO.getResponsesByLead(leadId);
+        if (responsesEntities != null && responsesEntities.size() > 0) {
+          for (ResponseEntity responseEntity : responsesEntities) {
+            if (responseEntity != null) {
+              responseEntity.setFilelds(fieldDAO.getFieldsByResponse(responseEntity.getId()));
+              JSONObject obj = Utils.toResponseJson(responseEntity);
+              obj.put("form", responseEntity.getFormEntity().getName());
+              obj.put("fields", responseEntity.getFormEntity().getFields().split(FIELDS_DELIMITER));
+              obj.put("time", responseEntity.getCreatedDate().getTime());
+              responsesList.put(obj);
+            }
+          }
+        }
+
+        if (lead.getTaskId() != null && lead.getTaskId() > 0) {
+          ListAccess<ChangeLog> logs = taskService.getTaskLogs(lead.getTaskId());
+          for(ChangeLog log : logs.load(0,logs.getSize())){
+            if(log.getActionName().equals("edit_status")){
+            JSONObject obj = new JSONObject();
+            obj.put("form","Task LOG");
+            obj.put("author",log.getAuthor());
+            obj.put("new_status",log.getTarget());
+            obj.put(CREATION_DATE_FIELD_NAME, formatter.format(log.getCreatedTime()));
+            obj.put("time", log.getCreatedTime());
+            JSONArray fields = new JSONArray();
+            fields.put("author");
+            fields.put("new_status");
+            obj.put("fields",fields);
+            responsesList.put(obj);
+            }
+          }
+
+        }
+
+      }
+    } catch (Exception e) {
+      LOG.error("Cannot get responses for lead {}", leadId, e);
+    }
+
+    return responsesList;
   }
 
   public void addResponse(ResponseDTO responseDTO, LeadEntity leadEntity) throws Exception {
@@ -752,17 +840,16 @@ public class LeadsManagementService {
     return responseEntity;
   }
 
-  public boolean updateMethodes() throws Exception{
+  public boolean updateMethodes() throws Exception {
     try {
       List<LeadEntity> leadsEntities = leadDAO.findAll();
-      for(LeadEntity lead : leadsEntities){
-        if(lead.getCaptureMethod()!=null && !lead.getCaptureMethod().equals("Blog")) {
+      for (LeadEntity lead : leadsEntities) {
+        if (lead.getCaptureMethod() != null && !lead.getCaptureMethod().equals("Blog")) {
           if (lead.getCaptureMethod().equals("Register form") || lead.getCaptureMethod().contains("community")) {
             lead.setCaptureType(lead.getCaptureMethod());
             lead.setCaptureMethod("Community registration");
           } else {
-            if(!getCaptureMethode(lead.getCaptureMethod()).equals(lead.getCaptureMethod()))
-            {
+            if (!getCaptureMethode(lead.getCaptureMethod()).equals(lead.getCaptureMethod())) {
               lead.setCaptureMethod(getCaptureMethode(lead.getCaptureMethod()));
               lead.setCaptureSourceInfo(lead.getCaptureType());
               lead.setCaptureType(lead.getCaptureMethod());

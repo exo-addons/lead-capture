@@ -298,6 +298,22 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
+  @GET
+  @Path("timeline/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  public Response getTimeLine(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      return Response.ok(leadsManagementService.getTimeLine(id).toString()).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to get responses for lead {}", id, e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
 
   @POST
   @Path("task")
