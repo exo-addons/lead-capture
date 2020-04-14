@@ -538,6 +538,17 @@ b {
     text-align: left;
 }
 
+.panel {
+    margin: 5px;
+}
+
+.panel-header {
+    min-height: 20px !important;
+    font-size: 16px !important;
+    /* color: #818182 !important; */
+    font-weight: 600 !important;
+}
+
 .tl {
     font-size: 16px;
     color: #818182;
