@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.*;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -336,7 +339,7 @@ public class LeadsManagementService {
       if (lead != null) {
         if (lead.getCommunityRegistration()) {
           JSONObject obj = new JSONObject();
-          obj.put("form","Community  Registration");
+          obj.put("form","communityRegistration");
           obj.put("communityUserName",lead.getCommunityUserName());
           obj.put("communityRegistrationMethod",lead.getCommunityRegistrationMethod());
           obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getCommunityRegistrationDate()));
@@ -350,7 +353,7 @@ public class LeadsManagementService {
 
         if (lead.getBlogSubscription()) {
           JSONObject obj = new JSONObject();
-          obj.put("form","Blog  Registration");
+          obj.put("form","blogRegistration");
           obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getBlogSubscriptionDate()));
           obj.put("time", lead.getBlogSubscriptionDate().getTime());
           obj.put("fields",new JSONArray());
@@ -372,19 +375,23 @@ public class LeadsManagementService {
         }
 
         if (lead.getTaskId() != null && lead.getTaskId() > 0) {
+          IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
           ListAccess<ChangeLog> logs = taskService.getTaskLogs(lead.getTaskId());
           for(ChangeLog log : logs.load(0,logs.getSize())){
             if(log.getActionName().equals("edit_status")){
             JSONObject obj = new JSONObject();
-            obj.put("form","Task LOG");
+            obj.put("form","task");
             obj.put("author",log.getAuthor());
-            obj.put("new_status",log.getTarget());
+            obj.put("newStatus",log.getTarget());
+            Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, log.getAuthor());
+            if(identity!=null){
+              obj.put("authorName",identity.getProfile().getFullName());
+            }else {
+              obj.put("authorName",log.getAuthor());
+            }
             obj.put(CREATION_DATE_FIELD_NAME, formatter.format(log.getCreatedTime()));
             obj.put("time", log.getCreatedTime());
-            JSONArray fields = new JSONArray();
-            fields.put("author");
-            fields.put("new_status");
-            obj.put("fields",fields);
+            obj.put("fields",new JSONArray());
             responsesList.put(obj);
             }
           }

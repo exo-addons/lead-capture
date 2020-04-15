@@ -23,10 +23,10 @@
                 <v-toolbar color="white" flat>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ on }">
-                            <v-btn x-large color="green lighten-1" v-on="on">
-                                <v-icon left>mdi-plus</v-icon>
-                                {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
-                            </v-btn>
+ 
+                            <button class="btn btn-primary pull-left" type="button" v-on="on">
+          <i class="uiIconSocSimplePlus uiIconSocWhite"></i> {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
+        </button>
                         </template>
                         <v-form ref="form" v-model="valid">
                             <v-card>
@@ -73,15 +73,21 @@
                             </v-card>
                         </v-form>
                     </v-dialog>
+
+                     <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
+                            <button class="btn btn-export" type="button">
+          <i class="uiIconExport"></i> {{$t('exoplatform.LeadCapture.leadManagement.export',"Export")}}
+        </button>                    </download-excel>
+                     
+
                     <v-spacer />
                     <v-col cols="12" md="3" sm="6">
-                        <v-text-field append-icon="search" single-line label="" v-model="search"></v-text-field>
+                        <v-text-field placeholder="Look for leads" prepend-inner-icon="mdi-filter" single-line label="" v-model="search"></v-text-field>
                     </v-col>
-                    <a class="actionIcon" title="" rel="tooltip" @click="filterDrawer=true"><i class="uiIcon uiIconFilter" :class="filtered"></i></a>
-                    <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
 
-                        <div class="actionIcon "><i class="uiIcon grey-color uiIconExport"></i></div>
-                    </download-excel>
+                   <a class="caption primary--text drawersBtn" @click="filterDrawer=true"> <v-icon color="primary" left>mdi-tune</v-icon> Filter </a>
+
+                   
                 </v-toolbar>
             </template>
             <template v-slot:item.name="{ item }">
@@ -832,11 +838,13 @@ export default {
 }
 
 .v-data-table-header {
-    border-top: solid 1px #d0d0d0;
     border-bottom: solid #d0d0d0;
 }
 
 .btn-export {
-    cursor: pointer;
+    border-style: solid !important;
+    margin-left: 10px;
 }
+
+
 </style>

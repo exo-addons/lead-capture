@@ -8,7 +8,7 @@
                 <v-card elevation="0">
                     <v-card-text>
                         <v-card-title>
-                            <v-btn text class="headerBtn" @click="backToList()">
+                            <v-btn text @click="backToList()">
                                 <v-icon dark>mdi-arrow-left</v-icon>
                                 {{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}
                             </v-btn>
@@ -28,13 +28,15 @@
                                             <h3>{{lead.firstName}} {{lead.lastName}}</h3>
                                         </v-col>
                                         <v-col cols="12" sm="2" md="2">
-                                            <a @click="editLead=true"  rel="tooltip" data-placement="bottom"><i class="uiIconEdit"></i></a>
+                                            <a @click="editLead=true" rel="tooltip" data-placement="bottom"><i class="uiIconEdit"></i></a>
                                         </v-col>
                                     </v-row>
                                     <v-row>
 
                                         <v-col cols="12" sm="6" md="4"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.owner`, "Owner")}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> <v-avatar size="24"><img :src="ownerAvatar"></v-avatar> {{lead.telemarketerFullName}} </v-col>
+                                        <v-col cols="12" sm="6" md="8">
+                                            <v-avatar size="24"><img :src="ownerAvatar"></v-avatar> {{lead.telemarketerFullName}}
+                                        </v-col>
 
                                     </v-row>
                                     <v-row>
@@ -168,18 +170,17 @@
                         </v-toolbar-title>
 
                         <v-spacer></v-spacer>
-                        <v-btn class="text-uppercase caption primary--text tasksBtn" outlined x-large @click.stop="drawer = !drawer" v-on="on">{{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}</v-btn>
-
-                        <v-btn icon @click.stop="toDodrawer = !toDodrawer" v-on="on">
-
-                            <v-badge :value="badge > 0" :content="badge" flat color="red" overlap>
-                                <v-icon>mdi-clipboard-text</v-icon>
-                            </v-badge>
-                        </v-btn>
-
-                        <v-btn v-if="context.isManager" icon @click="deleteLead()">
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
+                        <a class="caption  headerBtn" @click.stop="toDodrawer = !toDodrawer" v-on="on">
+                            <v-badge :value="badge > 0" :content="badge" flat color="red" left overlap>
+                                <v-icon left>mdi-clipboard-text</v-icon>
+                            </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
+                        </a>
+                        <a v-if="context.isManager" class="caption  headerBtn" @click="deleteLead()">
+                            <v-icon left>mdi-delete</v-icon> {{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
+                        </a>
+                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
+                            <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
+                        </a>
                     </v-toolbar>
                 </template>
 
@@ -285,15 +286,15 @@
                                             <div class="text-right">
                                                 <v-btn-toggle v-model="view">
                                                     <v-btn value="event">
-                                                       
+
                                                         <span class="hidden-sm-and-down">Event</span>
- <v-icon right>mdi-calendar-check</v-icon>
+                                                        <v-icon right>mdi-calendar-check</v-icon>
                                                     </v-btn>
 
                                                     <v-btn value="timeline">
-                                                       
+
                                                         <span class="hidden-sm-and-down">Timeline</span>
-                                                         <v-icon right>mdi-clock-outline</v-icon>
+                                                        <v-icon right>mdi-clock-outline</v-icon>
                                                     </v-btn>
 
                                                 </v-btn-toggle>
@@ -301,17 +302,23 @@
                                             <form-responses v-if="view ==='event'" :lead="lead" :formResponses="formResponses" />
 
                                             <v-timeline v-if="view ==='timeline'" reverse dense>
-                                                <v-timeline-item  v-for="formResponse in timeline" :key="formResponse.id" :icon="getIcon(formResponse.form)"  right dense>
+                                                <v-timeline-item v-for="formResponse in timeline" :key="formResponse.id" :icon="getIcon(formResponse.form)" right dense>
                                                     <v-card class="elevation-2">
-                                                        <v-card-title><div class="headline">{{formResponse.form}}</div> <v-spacer></v-spacer> <div class="response_date">{{formResponse.createdDate}}</div> </v-card-title>
-                                                        <v-card-text>
-                                    <v-row v-for="field in formResponse.fields" :key="field">
+                                                        <v-card-title>
+                                                            <div v-if="isTask(formResponse.form)" class="headline">{{formResponse.authorName}} {{$t('exoplatform.LeadCapture.task.statusChanged','changed lead status to ')}} {{formResponse.newStatus}}</div>
+                                                            <div v-else class="headline">{{$t(`exoplatform.LeadCapture.leadManagement.${formResponse.form}`,formResponse.form)}}</div>
+                                                            <v-spacer></v-spacer>
+                                                            <div class="response_date">{{formResponse.createdDate}}</div>
+                                                        </v-card-title>
+                                                        <v-card-text v-if="formResponse.fields.length>0">
+                                                            <v-row class="fields-text" v-for="field in formResponse.fields" :key="field">
 
-                                        <v-col v-if="field!=='createdDate'" cols="12" sm="4" md="3"><strong>{{field}}:</strong>
-                                        </v-col>
-                                        <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9"> {{formResponse[field]}} </v-col>
+                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="4" md="3"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.${field}`,field)}}:</strong>
+                                                                </v-col>
+                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9">  {{formResponse[field]}} </v-col>
 
-                                    </v-row>                                                        </v-card-text>
+                                                            </v-row>
+                                                        </v-card-text>
                                                     </v-card>
                                                 </v-timeline-item>
                                             </v-timeline>
@@ -504,20 +511,33 @@ export default {
             this.$refs.ck1.setContent(this.lead.solutionRequirements)
             this.showEditor1 = true;
         },
-        getValueByField(formResponse,field){
-            console.log(formResponse +" _ "+ field)
+        getValueByField(formResponse, field) {
+            console.log(formResponse + " _ " + field)
             return field
         },
-        getIcon(form){
-            if(form.includes("demo")) {return "mdi-presentation"}
-            else if(form.includes("contact")) {return "mdi-email-outline"}
-            else if(form.includes("whitePaper")) {return "mdi-paperclip"}
-            else if(form.includes("case")) {return "mdi-book-open"}
-            else if(form.includes("reward")) {return "mdi-cash-usd-outline"}
-            else if(form.includes("Blog")) {return "mdi-post-outline"}
-            else if(form.includes("Community")) {return "mdi-tent"}
-            else if(form.includes("Task")) {return "mdi-calendar-check"}
-            else  {return "mdi-bookmark-outline"}
+        getIcon(form) {
+            if (form.includes("demo")) {
+                return "mdi-presentation"
+            } else if (form.includes("contact")) {
+                return "mdi-email-outline"
+            } else if (form.includes("whitePaper")) {
+                return "mdi-paperclip"
+            } else if (form.includes("case")) {
+                return "mdi-book-open"
+            } else if (form.includes("reward")) {
+                return "mdi-cash-usd-outline"
+            } else if (form.includes("blog")) {
+                return "mdi-post-outline"
+            } else if (form.includes("community")) {
+                return "mdi-tent"
+            } else if (form.includes("task")) {
+                return "mdi-calendar-check"
+            } else {
+                return "mdi-bookmark-outline"
+            }
+        },
+        isTask(form) {
+            return form.includes("task")
         }
 
     },
@@ -579,9 +599,8 @@ b {
 }
 
 .infoContent {
-    border: 1px solid #e1e8ee;
+    border-top: 1px solid #e1e8ee;
 }
-
 
 .v-dialog__content {
     z-index: 2000 !important;
@@ -615,13 +634,26 @@ b {
 
 .leadToolBar {
     padding-bottom: 10px;
-    border: 1px solid #e1e8ee !important;
+    /* border: 1px solid #e1e8ee !important; */
 }
 
-.headerBtn {
-    padding-left: 0px !important;
-}
-.response_date{
+
+.response_date {
     font-size: small;
+}
+.headerBtn {
+    border: 1px solid rgba(181, 181, 181, 0.87) !important;
+    margin-right: 5px;
+    padding: 8px 15px;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    letter-spacing: .5px;
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+.VuetifyApp .v-application .headline {
+    font-size: large !important;
+}
+.fields-text{
+    text-align: left
 }
 </style>
