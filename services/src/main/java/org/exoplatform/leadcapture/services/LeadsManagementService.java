@@ -337,7 +337,7 @@ public class LeadsManagementService {
     try {
       LeadEntity lead = getLeadbyId(leadId);
       if (lead != null) {
-        if (lead.getCommunityRegistration()) {
+        if (lead.getCommunityRegistration()!=null&&lead.getCommunityRegistration().booleanValue()) {
           JSONObject obj = new JSONObject();
           obj.put("form","communityRegistration");
           obj.put("communityUserName",lead.getCommunityUserName());
@@ -351,7 +351,7 @@ public class LeadsManagementService {
           responsesList.put(obj);
         }
 
-        if (lead.getBlogSubscription()) {
+        if (lead.getBlogSubscription()!=null&&lead.getBlogSubscription().booleanValue()) {
           JSONObject obj = new JSONObject();
           obj.put("form","blogRegistration");
           obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getBlogSubscriptionDate()));
