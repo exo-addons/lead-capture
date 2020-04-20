@@ -132,7 +132,7 @@
     <v-navigation-drawer absolute floating right temporary v-model="filterDrawer" width="30%">
         <filter-drawer :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
     </v-navigation-drawer>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
 </v-flex>
 </template>

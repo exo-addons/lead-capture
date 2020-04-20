@@ -83,6 +83,7 @@ select {
 
 .drawerContent {
     margin-top: 50px;
+    margin-bottom: 60px;
 }
 
 .drawerHeader {

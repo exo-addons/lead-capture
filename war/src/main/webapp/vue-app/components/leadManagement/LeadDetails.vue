@@ -6,15 +6,21 @@
 
             <v-col cols="12" sm="12" md="3">
                 <v-card elevation="0">
-                    <v-card-text>
-                        <v-card-title>
-                            <v-btn text @click="backToList()">
+                     <v-row>
+                         <v-col cols="12" sm="9" md="9">
+                            <v-btn  text @click="backToList()">
                                 <v-icon dark>mdi-arrow-left</v-icon>
                                 {{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}
                             </v-btn>
-                        </v-card-title>
-                        <div class="text-center">
-                            <v-avatar size="164">
+                            </v-col>
+                            <v-col cols="12" sm="1" md="1">
+                                <a v-if="context.isManager" rel="tooltip" data-placement="bottom" @click="deleteLead()">
+                                    <i class="uiIconDelete delete_btn"></i></a>
+                            </v-col>
+                    </v-row>
+                    <v-card-text>
+                        <div class="text-center avatar-field">
+                            <v-avatar class="avatar-pl" size="130">
                                 <img :src="leadAvatar">
                             </v-avatar>
                         </div>
@@ -28,122 +34,134 @@
                                             <h3>{{lead.firstName}} {{lead.lastName}}</h3>
                                         </v-col>
                                         <v-col cols="12" sm="2" md="2">
-                                            <a @click="editLead=true" rel="tooltip" data-placement="bottom"><i class="uiIconEdit"></i></a>
+                                            <a @click="editLead=true" rel="tooltip" data-placement="bottom"><i class="uiIconEdit edit_btn"></i></a>
                                         </v-col>
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.owner`, "Owner")}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">
-                                            <v-avatar size="24"><img :src="ownerAvatar"></v-avatar> {{lead.telemarketerFullName}}
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.owner`, "Owner")}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">
+                                            <v-menu offset-y>
+                                                <template v-slot:activator="{ on }">
+                                                    <div v-on="on" class="cl-field">
+                                                        <v-avatar size="40"><img :src="ownerAvatar"></v-avatar> {{lead.telemarketerFullName}}
+                                                    </div>
+                                                </template>
+                                                <v-list>
+                                                    <v-list-item v-for="(item, index) in assignees" :key="index" @click="changeAssignee(item)">
+                                                        <v-list-item-title>
+                                                            <v-avatar size="24"><img :src="`/rest/v1/social/users/${item.userName}/avatar`"></v-avatar> {{ item.fullName }}
+                                                        </v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
                                         </v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.mail','Mail')}}:</strong>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.mail','Mail')}}:</strong>
                                         </v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.mail}} </v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.mail}} </v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.company','Company')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.company}} </v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.company','Company')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.company}} </v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.country','Country')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.inferredCountry}} </v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.country','Country')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.inferredCountry}} </v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.phone','Phone')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.phone}} </v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.phone','Phone')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.phone}} </v-col>
 
                                     </v-row>
 
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>Lead ID:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.id}} </v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>Lead ID:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7" class="cl-field" @click="navigateTo(`activity?id=${lead.activityId}`)"> {{lead.id}} </v-col>
+                                    </v-row>
+                                    <v-row>
+
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.language','Language')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.language}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.language','Language')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.language}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.creationDate','Creation Date')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.formattedCreatedDate}} </v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.creationDate','Creation Date')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8"> {{lead.formattedCreatedDate}} </v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.updateDate','Update Date')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.formattedUpdatedDate}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.updateDate','Update Date')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.formattedUpdatedDate}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.geographiqueZone}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.geographiqueZone}}</v-col>
-
-                                    </v-row>
-                                    <v-row>
-
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">
                                             <v-switch disabled v-model="lead.marketingSuspended"></v-switch>
                                         </v-col>
 
                                     </v-row>
                                     <v-row v-if="lead.marketingSuspended==true">
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspendedCause','Marketing Suspended Cause')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.marketingSuspendedCause}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.marketingSuspendedCause','Marketing Suspended Cause')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.marketingSuspendedCause}}</v-col>
 
                                     </v-row>
                                     <v-divider></v-divider>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.personSource','Person Source')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{$t(`exoplatform.LeadCapture.${lead.personSource}`,lead.personSource)}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.personSource','Person Source')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.${lead.personSource}`,lead.personSource)}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{$t(`exoplatform.LeadCapture.method.${lead.captureMethod}`,lead.captureMethod)}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.method.${lead.captureMethod}`,lead.captureMethod)}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.captureType}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.captureType}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{$t(`exoplatform.LeadCapture.detail.${lead.captureSourceInfo}`,lead.captureSourceInfo)}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.detail.${lead.captureSourceInfo}`,lead.captureSourceInfo)}}</v-col>
 
                                     </v-row>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.originalReferrer','Original Referrer')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.originalReferrer}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.originalReferrer','Original Referrer')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.originalReferrer}}</v-col>
 
                                     </v-row>
                                     <v-row v-if="lead.blogSubscription==true">
 
-                                        <v-col cols="12" sm="6" md="4"><strong>{{$t('exoplatform.LeadCapture.leadManagement.blogSubscriptionDate','formattedBlogSubscriptionDate')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="8">{{lead.formattedBlogSubscriptionDate}}</v-col>
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.blogSubscriptionDate','formattedBlogSubscriptionDate')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">{{lead.formattedBlogSubscriptionDate}}</v-col>
 
                                     </v-row>
                                 </v-container>
@@ -174,9 +192,6 @@
                             <v-badge :value="badge > 0" :content="badge" flat color="red" left overlap>
                                 <v-icon left>mdi-clipboard-text</v-icon>
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
-                        </a>
-                        <a v-if="context.isManager" class="caption  headerBtn" @click="deleteLead()">
-                            <v-icon left>mdi-delete</v-icon> {{$t('exoplatform.LeadCapture.leadManagement.delete','Delete')}}
                         </a>
                         <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
@@ -315,7 +330,7 @@
 
                                                                 <v-col v-if="field!=='createdDate'" cols="12" sm="4" md="3"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.${field}`,field)}}:</strong>
                                                                 </v-col>
-                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9">  {{formResponse[field]}} </v-col>
+                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9"> {{formResponse[field]}} </v-col>
 
                                                             </v-row>
                                                         </v-card-text>
@@ -423,7 +438,7 @@ export default {
         FormResponses,
         ckEditor
     },
-    props: ['lead', 'formResponses', 'timeline', 'comments', 'context', 'tasks'],
+    props: ['lead', 'formResponses', 'timeline', 'comments', 'context', 'assignees', 'tasks'],
     data: () => ({
         view: 'timeline',
         valid: true,
@@ -538,6 +553,16 @@ export default {
         },
         isTask(form) {
             return form.includes("task")
+        },
+        navigateTo(pagelink) {
+            window.open(`${ eXo.env.portal.context }/${ eXo.env.portal.portalName }/${ pagelink }`, '_blank');
+        },
+        changeAssignee(item) {
+            if (this.lead.assignee !== item.userName) {
+                this.lead.telemarketerFullName = item.fullName
+                this.lead.assignee = item.userName
+                this.$emit('assigne', this.lead)
+            }
         }
 
     },
@@ -637,10 +662,10 @@ b {
     /* border: 1px solid #e1e8ee !important; */
 }
 
-
 .response_date {
     font-size: small;
 }
+
 .headerBtn {
     border: 1px solid rgba(181, 181, 181, 0.87) !important;
     margin-right: 5px;
@@ -650,10 +675,41 @@ b {
     letter-spacing: .5px;
     color: rgba(0, 0, 0, 0.87) !important;
 }
+
 .VuetifyApp .v-application .headline {
     font-size: large !important;
 }
-.fields-text{
+
+.fields-text {
     text-align: left
+}
+
+.cl-field {
+    cursor: pointer;
+}
+
+.back_btn {
+    margin-top: 15px;
+}
+
+.edit_btn {
+    font-size: 25px;
+    top: 10px;
+}
+
+
+.delete_btn {
+    font-size: 20px;
+    top: 10px;
+}
+
+.avatar-field {
+    padding: 2px;
+}
+
+.avatar-pl {
+    box-shadow: 0px 0px 3px 2px rgba(111, 80, 80, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    border: solid 5px white;
+
 }
 </style>
