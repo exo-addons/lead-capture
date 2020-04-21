@@ -27,6 +27,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                                    String from,
                                    String to,
                                    String zone,
+                                   int min,
+                                   int max,
                                    Boolean notassigned,
                                    int offset,
                                    int limit,
@@ -66,6 +68,16 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
         if (StringUtils.isNotEmpty(zone)) {
           queryString = queryString + " lead.geographiqueZone = '" + zone + "'";
+          queryString = queryString + " and ";
+        }
+
+        if (min>0) {
+          queryString = queryString + " lead.usersNumber >= '" + min + "'";
+          queryString = queryString + " and ";
+        }
+
+        if (max>0) {
+          queryString = queryString + " lead.usersNumber <= '" + max + "'";
           queryString = queryString + " and ";
         }
 
@@ -128,6 +140,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                          String from,
                          String to,
                          String zone,
+                         int min,
+                         int max,
                          Boolean notassigned) {
     try {
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
@@ -160,8 +174,20 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString + " and ";
         }
 
+
         if (StringUtils.isNotEmpty(zone)) {
           queryString = queryString + " lead.geographiqueZone = '" + zone + "'";
+          queryString = queryString + " and ";
+        }
+
+
+        if (min>0) {
+          queryString = queryString + " lead.usersNumber >= '" + min + "'";
+          queryString = queryString + " and ";
+        }
+
+        if (max>0) {
+          queryString = queryString + " lead.usersNumber <= '" + max + "'";
           queryString = queryString + " and ";
         }
 

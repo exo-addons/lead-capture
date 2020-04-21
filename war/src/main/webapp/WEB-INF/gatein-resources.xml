@@ -75,6 +75,9 @@
             <module>vuetify</module>
         </depends>
         <depends>
+            <module>taskDrawer</module>
+        </depends>
+        <depends>
             <module>eXoVueI18n</module>
         </depends>
 

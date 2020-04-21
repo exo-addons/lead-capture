@@ -132,7 +132,7 @@
     <v-navigation-drawer absolute floating right temporary v-model="filterDrawer" width="30%">
         <filter-drawer :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
     </v-navigation-drawer>
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :task="task" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
 </v-flex>
 </template>
@@ -197,6 +197,8 @@ export default {
         selectedMethod: "",
         selectedOwner: "",
         selectedGeoZone: "",
+        userNumberMax:0,
+        userNumberMin:0,
         fromDate: "",
         toDate: "",
         valid: true,
@@ -246,7 +248,7 @@ export default {
         },
         formResponses: [],
         timeline: [],
-        comments: [],
+        task: null,
         tasks: [],
         selectedLead: {},
         rules: {
@@ -441,8 +443,10 @@ export default {
             this.notassigned = val.notassigned
             this.fromDate = val.fromDate
             this.toDate = val.toDate
-            this.selectedGeoZone = val.selectedGeoZone
+            if(val.selectedGeoZone!=="All"){this.selectedGeoZone = val.selectedGeoZone}
             this.myLeads = val.myLeads
+            if(val.userNumberMax!==""){this.userNumberMax = val.userNumberMax}
+            if(val.userNumberMin!==""){this.userNumberMin = val.userNumberMin}
             this.getLeads().then(data => {
                 this.leadList = data.items
                 this.totalLeads = data.total
@@ -518,7 +522,7 @@ export default {
                     this.timeline = resp.sort((a, b) => b.time - a.time);; 
                 });    
 
-            fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.id, {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/ptask/` + item.id, {
                     credentials: 'include',
                 })
                 .then((resp) => resp.json())
@@ -527,12 +531,12 @@ export default {
                 });
 
             if (item.taskId != null) {
-                fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.taskId, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())
                     .then((resp) => {
-                        this.comments = resp;
+                        this.task = resp;
                     });
 
             }
@@ -637,6 +641,12 @@ export default {
         onAssign(item) {
             this.assigne(item);
         },
+
+        assignLead(item) {
+            this.assigne(item);
+            this.selectedLead.assignee = item.assignee           
+        },
+
 
         changeStatus(item) {
             const lead = {
@@ -772,7 +782,7 @@ export default {
                         desc = sortDesc[0]
                     }
                 }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&zone=${this.selectedGeoZone}&sortby=${sort}&sortdesc=${desc}&page=${page_}&limit=${itemsPerPage_}`, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&zone=${this.selectedGeoZone}&min=${this.userNumberMin}&max=${this.userNumberMax}&sortby=${sort}&sortdesc=${desc}&page=${page_}&limit=${itemsPerPage_}`, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())

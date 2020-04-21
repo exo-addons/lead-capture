@@ -272,6 +272,8 @@ public class LeadsManagementService {
                                   String from,
                                   String to,
                                   String zone,
+                                  int min,
+                                  int max,
                                   Boolean notassigned,
                                   String sortBy,
                                   Boolean sortDesc,
@@ -286,12 +288,14 @@ public class LeadsManagementService {
                                                       from,
                                                       to,
                                                       zone,
+                                                      min,
+                                                      max,
                                                       notassigned,
                                                       offset,
                                                       limit,
                                                       sortBy,
                                                       sortDesc);
-    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone, notassigned);
+    Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned);
     if (leadsEntities != null) {
       for (LeadEntity leadEntity : leadsEntities) {
         if (leadEntity != null) {
@@ -487,6 +491,15 @@ public class LeadsManagementService {
 
   public JSONArray getTaskComments(long taskId) {
     return Utils.getCommentsJson(taskService.getComments(taskId));
+  }
+
+  public Task getTask(long taskId) throws Exception{
+    try {
+      return taskService.getTask(taskId);
+    } catch (EntityNotFoundException e) {
+      LOG.error("Cannot get Task", e);
+      throw e;
+    }
   }
 
   public JSONObject addTaskComment(long taskId, String username, String comment) throws Exception {
