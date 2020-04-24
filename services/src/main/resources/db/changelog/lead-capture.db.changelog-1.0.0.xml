@@ -237,6 +237,12 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="exo-lead-capture" id="1.0.0-6">
+        <modifyDataType columnName="USERS_NUMBER"
+                        newDataType="INT"
+                        tableName="ADDONS_LC_LEAD"/>
+    </changeSet>
 </databaseChangeLog>
 
 

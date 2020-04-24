@@ -116,7 +116,7 @@ export default {
             this.newItem.formattedDueDate = this.date
             this.newItem.title = this.title
 
-            fetch(`/portal/rest/leadcapture/leadsmanagement/task`, {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/ptask`, {
                     method: 'post',
                     credentials: 'include',
                     headers: {
@@ -135,7 +135,7 @@ export default {
         completeTask(item) {
             item.completed = true
 
-            fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.id, {
+            fetch(`/portal/rest/leadcapture/leadsmanagement/ptask/` + item.id, {
                     method: 'put',
                     credentials: 'include',
                     headers: {

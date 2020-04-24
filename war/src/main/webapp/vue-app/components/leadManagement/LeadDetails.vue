@@ -6,17 +6,17 @@
 
             <v-col cols="12" sm="12" md="3">
                 <v-card elevation="0">
-                     <v-row>
-                         <v-col cols="12" sm="9" md="9">
-                            <v-btn  text @click="backToList()">
+                    <v-row>
+                        <v-col cols="12" sm="9" md="9">
+                            <v-btn text @click="backToList()">
                                 <v-icon dark>mdi-arrow-left</v-icon>
                                 {{$t('exoplatform.LeadCapture.leadManagement.BackToList','Back to lead list')}}
                             </v-btn>
-                            </v-col>
-                            <v-col cols="12" sm="1" md="1">
-                                <a v-if="context.isManager" rel="tooltip" data-placement="bottom" @click="deleteLead()">
-                                    <i class="uiIconDelete delete_btn"></i></a>
-                            </v-col>
+                        </v-col>
+                        <v-col cols="12" sm="1" md="1">
+                            <a v-if="context.isManager" rel="tooltip" data-placement="bottom" @click="deleteLead()">
+                                <i class="uiIconDelete delete_btn"></i></a>
+                        </v-col>
                     </v-row>
                     <v-card-text>
                         <div class="text-center avatar-field">
@@ -41,7 +41,7 @@
 
                                         <v-col cols="12" sm="6" md="5"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.owner`, "Owner")}}:</strong></v-col>
                                         <v-col cols="12" sm="6" md="7">
-                                            <v-menu offset-y>
+                                            <v-menu offset-y close-on-click=true>
                                                 <template v-slot:activator="{ on }">
                                                     <div v-on="on" class="cl-field">
                                                         <v-avatar size="40"><img :src="ownerAvatar"></v-avatar> {{lead.telemarketerFullName}}
@@ -193,7 +193,8 @@
                                 <v-icon left>mdi-clipboard-text</v-icon>
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
                         </a>
-                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
+                        <!-- <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on"> -->
+                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">    
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                         </a>
                     </v-toolbar>
@@ -415,6 +416,7 @@
             </v-col>
         </v-row>
     </div>
+    <!-- <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" /> -->
     <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
         <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
     </v-navigation-drawer>
@@ -433,7 +435,7 @@ import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
-        notesDrawer,
+         notesDrawer,
         toDoDrawer,
         FormResponses,
         ckEditor
@@ -483,9 +485,20 @@ export default {
     },
 
     methods: {
+/*         openTaskDrawer() {
+            this.drawer = true;
+            document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
+        },
+        updateTask(){
+            console.log("update")
+        },
+        onCloseDrawer: function(drawer){
+            this.drawer = drawer;
+            document.body.style.overflow = 'auto';
+        }, */
         toggleDrawer() {
             this.drawer = !this.drawer;
-        },
+        },    
         toggleToDoDrawer() {
             this.toDodrawer = !this.toDodrawer;
         },
@@ -696,7 +709,6 @@ b {
     font-size: 25px;
     top: 10px;
 }
-
 
 .delete_btn {
     font-size: 20px;

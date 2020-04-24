@@ -78,6 +78,8 @@ public class LeadsManagementRest implements ResourceContainer {
                            @QueryParam("from") String from,
                            @QueryParam("to") String to,
                            @QueryParam("zone") String zone,
+                           @QueryParam("min") int min,
+                           @QueryParam("max") int max,
                            @QueryParam("notassigned") Boolean notassigned,
                            @QueryParam("sortby") String sortBy,
                            @QueryParam("sortdesc") Boolean sortDesc,
@@ -89,7 +91,7 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     try {
 
-      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, notassigned, sortBy, sortDesc, page, limit)).build();
+      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned, sortBy, sortDesc, page, limit)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -316,7 +318,7 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @POST
-  @Path("task")
+  @Path("ptask")
   @RolesAllowed("ux-team")
   public Response addPersonalTask(@Context UriInfo uriInfo, PersonalTask task) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
@@ -334,7 +336,7 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @PUT
-  @Path("task/{id}")
+  @Path("ptask/{id}")
   @RolesAllowed("ux-team")
   public Response updateTask(@Context UriInfo uriInfo, @PathParam("id") Long id, PersonalTask task) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
@@ -350,7 +352,7 @@ public class LeadsManagementRest implements ResourceContainer {
   }
 
   @GET
-  @Path("task/{id}")
+  @Path("ptask/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @RolesAllowed("ux-team")
   public Response getPersonalTasks(@Context UriInfo uriInfo, @PathParam("id") long id) throws Exception {
@@ -395,6 +397,23 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.ok(leadsManagementService.getTaskComments(taskId).toString()).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get task {} comments", taskId, e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
+  @GET
+  @Path("task/{taskid}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  public Response getTask(@Context UriInfo uriInfo, @PathParam("taskid") long taskId) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      return Response.ok(leadsManagementService.getTask(taskId)).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to get task {}", taskId, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
