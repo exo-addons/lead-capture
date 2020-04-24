@@ -193,7 +193,8 @@
                                 <v-icon left>mdi-clipboard-text</v-icon>
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
                         </a>
-                        <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on">
+                        <!-- <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on"> -->
+                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">    
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                         </a>
                     </v-toolbar>
@@ -415,7 +416,10 @@
             </v-col>
         </v-row>
     </div>
-    <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" />
+    <!-- <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" /> -->
+    <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
+        <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
+    </v-navigation-drawer>
     <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
         <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
     </v-navigation-drawer>
@@ -424,17 +428,19 @@
 
 <script>
 import Vue from 'vue';
+import notesDrawer from './NotesDrawer.vue';
 import toDoDrawer from './ToDoDrawer.vue';
 import FormResponses from './FormResponses.vue';
 import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
+         notesDrawer,
         toDoDrawer,
         FormResponses,
         ckEditor
     },
-    props: ['lead', 'formResponses', 'timeline', 'task', 'context', 'assignees', 'tasks'],
+    props: ['lead', 'formResponses', 'timeline', 'comments', 'context', 'assignees', 'tasks'],
     data: () => ({
         view: 'timeline',
         valid: true,
@@ -479,17 +485,20 @@ export default {
     },
 
     methods: {
-        openTaskDrawer() {
+/*         openTaskDrawer() {
             this.drawer = true;
             document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
         },
         updateTask(){
-            console.log("ddddddddddddddddddddd")
+            console.log("update")
         },
         onCloseDrawer: function(drawer){
             this.drawer = drawer;
             document.body.style.overflow = 'auto';
-        },
+        }, */
+        toggleDrawer() {
+            this.drawer = !this.drawer;
+        },    
         toggleToDoDrawer() {
             this.toDodrawer = !this.toDodrawer;
         },
