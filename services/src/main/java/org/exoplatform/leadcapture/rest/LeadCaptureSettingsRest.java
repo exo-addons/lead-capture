@@ -18,7 +18,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.service.rest.RestChecker;
 import org.exoplatform.social.service.rest.Util;
 
 @Path("/leadcapture/lcsettings")
@@ -50,7 +49,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     try {
       return Response.ok(leadCaptureSettingsService.getSettings()).build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to get capture settings",e);
+      LOG.error("An error occured when trying to get capture settings", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -69,7 +68,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
       LOG.info("Lead capture settings updated by {}", sourceIdentity.getRemoteId());
       return Response.status(Response.Status.NO_CONTENT).entity("Settings updated").build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to set capture settings",e);
+      LOG.error("An error occured when trying to set capture settings", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -92,7 +91,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
       context.put("leadCaptureConfigured", isConfigured(settings));
       return Response.ok(context.toString()).build();
     } catch (Exception e) {
-      LOG.error("An error occured when trying to get capture context",e);
+      LOG.error("An error occured when trying to get capture context", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
   }
@@ -105,7 +104,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
         return true;
       }
     } catch (Exception e) {
-      LOG.error("An error occured when trying check if user is a manager of the group {}",group,e);
+      LOG.error("An error occured when trying check if user is a manager of the group {}", group, e);
       return false;
     }
     return false;
