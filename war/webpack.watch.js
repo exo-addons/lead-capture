@@ -5,8 +5,8 @@ const merge = require('webpack-merge');
 const webpackProductionConfig = require('./webpack.prod.js');
 
 module.exports = merge(webpackProductionConfig, {
-  output: {
-    path: 'D:\\exo\\exo-working\\servers\\platform-6.0.0-M25\\webapps\\lead-capture',
-    filename: 'js/[name].bundle.js'
-  }
+    output: {
+        path: 'D:\\\eXo\\servers\\platform-6.0.0-M28\\webapps\\lead-capture',
+        filename: 'js/[name].bundle.js'
+    }
 });
