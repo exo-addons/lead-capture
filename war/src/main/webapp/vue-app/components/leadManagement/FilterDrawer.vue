@@ -236,10 +236,6 @@ export default {
     },
 
     methods: {
-        toggleDrawer() {
-            this.$emit('toggleFilterDrawer');
-        },
-
         reset() {
             this.selectedStatus = "active"
             this.selectedMethod = ""

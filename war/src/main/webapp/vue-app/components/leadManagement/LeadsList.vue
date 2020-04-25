@@ -129,7 +129,7 @@
             <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
-        <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
+        <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter"/>
     
     <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
