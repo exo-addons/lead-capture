@@ -85,7 +85,7 @@
                         <v-text-field placeholder="Look for leads" prepend-inner-icon="mdi-filter" single-line label="" v-model="search"></v-text-field>
                     </v-col>
 
-                   <a class="caption primary--text drawersBtn" @click="filterDrawer=true"> <v-icon color="primary" left>mdi-tune</v-icon> Filter </a>
+                   <a class="caption primary--text drawersBtn" @click="toggleFilterDrawer"> <v-icon color="primary" left>mdi-tune</v-icon> Filter </a>
 
                    
                 </v-toolbar>
@@ -129,9 +129,8 @@
             <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
-    <v-navigation-drawer absolute floating right temporary v-model="filterDrawer" width="30%">
-        <filter-drawer :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
-    </v-navigation-drawer>
+        <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" v-on:toggleFilterDrawer="toggleFilterDrawer" />
+    
     <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
 </v-flex>
@@ -454,7 +453,8 @@ export default {
             this.filterDrawer = !this.filterDrawer;
         },
         toggleFilterDrawer() {
-            this.filterDrawer = !this.filterDrawer;
+           // this.filterDrawer = !this.filterDrawer;
+            this.$refs.filterDrawer.open()
         },
 
         initialize() {

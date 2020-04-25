@@ -68,6 +68,9 @@
             <path>/js/leadsManagement.bundle.js</path>
         </script>
         <depends>
+            <module>commonVueComponents</module>
+        </depends>
+        <depends>
             <module>jquery</module>
             <as>$</as>
         </depends>

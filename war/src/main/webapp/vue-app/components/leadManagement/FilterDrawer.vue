@@ -1,77 +1,144 @@
 <template>
-<v-container class="">
-    <v-row class="mx-0 drawerHeader">
-        <v-list-item>
-            <v-list-item-content>
-                <span class="drawerTitle">{{
-              $t('exoplatform.LeadCapture.leadManagement.filter','Filter')
-            }}</span>
-            </v-list-item-content>
-            <v-list-item-action class="appLauncherDrawerIcons">
-                <i class="uiCloseIcon" @click="toggleDrawer()"></i>
-            </v-list-item-action>
-        </v-list-item>
-    </v-row>
-    <v-divider :inset="inset" class="my-0 headerBorder" />
-    <v-row class="drawerContent">
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-select :items="filterStatusList" v-model="selectedStatus" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.status','Status')"></v-select>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-select :items="methodList" v-model="selectedMethod" item-value="value" item-text="text" :label="$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode')"></v-select>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-select :items="gZoneList" v-model="selectedGeoZone" :label="$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')"></v-select>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="5">
-            <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned')" v-model="notassigned"></v-switch>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="5">
-            <v-switch :label="$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads')" v-model="myLeads"></v-switch>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-select v-show="!notassigned && !myLeads" :items="assigneesFilter" v-model="selectedOwner" item-value="userName" item-text="fullName" :label="$t('exoplatform.LeadCapture.leadManagement.owner','Owner')"></v-select>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :return-value.sync="fromDate" transition="scale-transition" offset-y min-width="290px">
-                <template v-slot:activator="{ on }">
-                    <v-text-field v-model="fromDate" :label="$t('exoplatform.LeadCapture.leadManagement.createdFrom','Created From')" prepend-icon="event" readonly v-on="on"></v-text-field>
-                </template>
-                <v-date-picker v-model="fromDate" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu1 = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.menu1.save(fromDate)">OK</v-btn>
-                </v-date-picker>
-            </v-menu>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="11">
-            <v-menu ref="menu2" v-model="menu2" :close-on-content-click="false" :return-value.sync="toDate" transition="scale-transition" offset-y min-width="290px">
-                <template v-slot:activator="{ on }">
-                    <v-text-field v-model="toDate" :label="$t('exoplatform.LeadCapture.leadManagement.createdBefore','Created Before')" prepend-icon="event" readonly v-on="on"></v-text-field>
-                </template>
-                <v-date-picker v-model="toDate" no-title scrollable>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
-                    <v-btn text color="primary" @click="$refs.menu2.save(toDate)">OK</v-btn>
-                </v-date-picker>
-            </v-menu>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="5">
-            <v-text-field v-model="userNumberMin" :label="$t('exoplatform.LeadCapture.leadManagement.userNumberMin','Min Users number')"></v-text-field>
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="5">
-            <v-text-field v-model="userNumberMax" :label="$t('exoplatform.LeadCapture.leadManagement.userNumberMax','Max Users number')"></v-text-field>
-        </v-col>
-    </v-row>
+<exo-drawer ref="filterDrawer" right class="">
+    <template slot="title">
+        {{$t('exoplatform.LeadCapture.leadManagement.filter','Filter')}}
+    </template>
+    <template slot="content">
+        <div>
+            <form ref="form1">
+                <v-row>
+                    <v-label for="status">
+                        {{ $t('exoplatform.LeadCapture.leadManagement.status','Status') }}
+                    </v-label>
+                    <select v-model="selectedStatus" name="status"  class="input-block-level ignore-vuetify-classes my-3">
+                        <option v-for="item in filterStatusList" :key="item.value" :value="item.value">
+                            {{ item.text}}
+                        </option>
+                    </select>
+                </v-row>
 
-    <v-row class="drawerFooter mx-0">
-        <v-card flat tile class="d-flex flex justify-end mx-2">
-            <a class="text-uppercase caption primary--text drawersBtn" @click="reset()">{{ $t('exoplatform.LeadCapture.leadManagement.reset','Reset') }}</a>
-            <a class="text-uppercase caption  drawersBtn" @click="aplyFilter()">{{ $t('exoplatform.LeadCapture.leadManagement.apply','Apply') }}</a>
-        </v-card>
-    </v-row>
+                <v-row>
+                    <v-label for="captureMethod">
+                        {{ $t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Methode') }}
+                    </v-label>
+                    <select v-model="selectedMethod" name="captureMethod" class="input-block-level ignore-vuetify-classes my-3">
+                        <option v-for="item in methodList" :key="item.value" :value="item.value">
+                            {{ item.text}}
+                        </option>
+                    </select>
+                </v-row>
 
-</v-container>
+                <v-row>
+                    <v-label for="geoZone">
+                        {{ $t('exoplatform.LeadCapture.leadManagement.geoZone','Geographique Zone') }}
+                    </v-label>
+                    <select v-model="selectedGeoZone" name="geoZone" class="input-block-level ignore-vuetify-classes my-3">
+                        <option v-for="item in gZoneList" :key="item" :value="item">
+                            {{ item}}
+                        </option>
+                    </select>
+                </v-row>
+
+                <v-row>
+
+                    <v-col class="d-flex" cols="12" sm="6">
+
+                        <div class="d-flex flex-wrap pt-2">
+                            <label for="notassigned" class="v-label theme--light my-auto float-left">
+                                {{$t('exoplatform.LeadCapture.leadManagement.onlyUnassigned','Only unassigned') }}
+                            </label>
+                            <v-switch ref="notassigned" v-model="notassigned" class="float-left my-0 ml-4" />
+                        </div>
+
+                    </v-col>
+                    <v-col class="d-flex" cols="12" sm="6">
+                        <div class="d-flex flex-wrap pt-2">
+                            <label for="myLeads" class="v-label theme--light my-auto float-left">
+                                {{$t('exoplatform.LeadCapture.leadManagement.myLeads','My Leads') }}
+                            </label>
+                            <v-switch ref="myLeads" v-model="myLeads" class="float-left my-0 ml-4" />
+                        </div>
+                    </v-col>
+                </v-row>
+
+                <v-row v-show="!notassigned && !myLeads">
+                    <v-label for="assigneesFilter">
+                        {{ $t('exoplatform.LeadCapture.leadManagement.owner','Owner')}}
+                    </v-label>
+                    <select v-model="selectedOwner" name="assigneesFilter" class="input-block-level ignore-vuetify-classes my-3">
+                        <option v-for="item in assigneesFilter" :key="item.userName" :value="item.userName">
+                            {{ item.fullName}}
+                        </option>
+                    </select>
+                </v-row>
+                <v-row>
+                    <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :return-value.sync="fromDate" transition="scale-transition" offset-y min-width="290px">
+                        <template v-slot:activator="{ on }">
+                            <v-label for="fromDate">
+                                {{ $t('exoplatform.LeadCapture.leadManagement.createdFrom','Created From')}}
+                            </v-label>
+                            <input ref="fromDate" v-model="fromDate" type="text" name="fromDate" v-on="on" class="input-block-level ignore-vuetify-classes my-3" />
+                        </template>
+                        <v-date-picker v-model="fromDate" no-title scrollable>
+                            <v-spacer></v-spacer>
+                            <v-btn text color="primary" @click="menu1 = false">Cancel</v-btn>
+                            <v-btn text color="primary" @click="$refs.menu1.save(fromDate)">OK</v-btn>
+                        </v-date-picker>
+                    </v-menu>
+                </v-row>
+                <v-row>
+                    <v-menu ref="menu2" v-model="menu2" :close-on-content-click="false" :return-value.sync="toDate" transition="scale-transition" offset-y min-width="290px">
+                        <template v-slot:activator="{ on }">
+
+                            <v-label for="toDate">
+                                {{ $t('exoplatform.LeadCapture.leadManagement.createdBefore','Created Before')}}
+                            </v-label>
+                            <input ref="toDate" v-model="toDate" type="text" name="toDate" v-on="on" class="input-block-level ignore-vuetify-classes my-3" />
+
+                        </template>
+                        <v-date-picker v-model="toDate" no-title scrollable>
+                            <v-spacer></v-spacer>
+                            <v-btn text color="primary" @click="menu2 = false">Cancel</v-btn>
+                            <v-btn text color="primary" @click="$refs.menu2.save(toDate)">OK</v-btn>
+                        </v-date-picker>
+                    </v-menu>
+                </v-row>
+                <v-row>
+                    <v-label for="userNumberMine">
+                        {{ $t('exoplatform.LeadCapture.leadManagement.userNumberMin','Min Users number') }}
+                    </v-label>
+                    <input ref="userNumberMine" v-model="userNumberMine" type="text" name="userNumberMine" class="input-block-level ignore-vuetify-classes my-3" />
+                </v-row>
+                <v-row>
+                    <v-label for="userNumberMax">
+                        {{$t('exoplatform.LeadCapture.leadManagement.userNumberMax','Max Users number') }}
+                    </v-label>
+                    <input ref="userNumberMax" v-model="userNumberMax" type="text" name="userNumberMax" class="input-block-level ignore-vuetify-classes my-3" />
+                </v-row>
+            </form>
+        </div>
+    </template>
+    <template slot="footer">
+        <div class="d-flex">
+            <v-spacer />
+            <v-btn class="btn mr-2" @click="reset()">
+                <template>
+                    {{ $t('exoplatform.LeadCapture.leadManagement.reset','Reset')  }}
+                </template>
+            </v-btn>
+            <v-btn class="btn mr-2" @click="cancel()">
+                <template>
+                    {{ $t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')  }}
+                </template>
+            </v-btn>
+            <v-btn class="btn btn-primary" @click="aplyFilter()">
+                <template>
+                    {{ $t('exoplatform.LeadCapture.leadManagement.apply','Apply') }}
+                </template>
+            </v-btn>
+        </div>
+    </template>
+</exo-drawer>
 </template>
 
 <script>
@@ -87,9 +154,9 @@ export default {
         notassigned: false,
         myLeads: false,
         selectedGeoZone: "",
-        userNumberMax:"",
-        userNumberMin:"",
-        gZoneList: ["All","US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
+        userNumberMax: "",
+        userNumberMin: "",
+        gZoneList: ["All", "US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
     }),
 
     computed: {
@@ -182,8 +249,8 @@ export default {
             this.fromDate = ""
             this.toDate = ""
             this.selectedGeoZone = ""
-            this.userNumberMax=""
-            this.userNumberMin=""
+            this.userNumberMax = ""
+            this.userNumberMin = ""
         },
         aplyFilter() {
             console.log(this.fromDate)
@@ -201,6 +268,15 @@ export default {
                 userNumberMin: this.userNumberMin
             }
             this.$emit('addFilter', filter_);
+            this.$refs.filterDrawer.close();
+        },
+        cancel() {
+            this.$refs.filterDrawer.close();
+        },
+        open() {
+
+            this.$refs.filterDrawer.open();
+
         },
 
     }
@@ -208,4 +284,7 @@ export default {
 </script>
 
 <style>
+.drawerContent {
+    padding: 15px 27px;
+}
 </style>
