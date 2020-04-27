@@ -1,10 +1,11 @@
 <template>
-<v-flex>
-
-    <div :class="alert_type" class="alert" id v-if="alert">
+ <div>
+         <div :class="alert_type" class="alert" id v-if="alert">
         <i :class="alertIcon"></i>
         {{message}}
     </div>
+<v-card elevation="0"   v-show="showTable">
+   <v-card-text>
     <v-layout>
         <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
             <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
@@ -18,61 +19,16 @@
             </div>
 
         </v-overlay>
-        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads" :loading="loading" class="elevation-1" v-show="showTable">
+        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads" :loading="loading"  elevation="0" >
             <template v-slot:top>
                 <v-toolbar color="white" flat>
-                    <v-dialog v-model="dialog" max-width="500px">
-                        <template v-slot:activator="{ on }">
+                        <template>
  
-                            <button class="btn btn-primary pull-left" type="button" v-on="on">
+                            <button class="btn btn-primary pull-left" type="button" @click="openAddLeadDrawer">
           <i class="uiIconSocSimplePlus uiIconSocWhite"></i> {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
         </button>
-                        </template>
-                        <v-form ref="form" v-model="valid">
-                            <v-card>
-                                <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
-                                </v-card-title>
+                       
 
-                                <v-card-text>
-                                    <v-container>
-                                        <v-row>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required]" v-model="editedItem.firstName" :label="$t('exoplatform.LeadCapture.leadManagement.firstName','First name')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required]" v-model="editedItem.lastName" :label="$t('exoplatform.LeadCapture.leadManagement.lastName','Last name')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field :rules="[rules.required, rules.valideMail]" v-model="editedItem.mail" :label="$t('exoplatform.LeadCapture.leadManagement.mail','Mail')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.company" :label="$t('exoplatform.LeadCapture.leadManagement.company','Company')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.phone" :label="$t('exoplatform.LeadCapture.leadManagement.phone','Phone')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.position" :label="$t('exoplatform.LeadCapture.leadManagement.position','Position')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.inferredCountry" :label="$t('exoplatform.LeadCapture.leadManagement.country','Country')"></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field v-model="editedItem.captureSourceInfo" :label="$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')"></v-text-field>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </v-card-text>
-
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">{{$t('exoplatform.LeadCapture.leadManagement.cancel','Cancel')}}</v-btn>
-                                    <v-btn :disabled="!valid" color="blue darken-1" text @click="save">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-form>
-                    </v-dialog>
 
                      <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
                             <button class="btn btn-export" type="button">
@@ -87,7 +43,7 @@
 
                    <a class="caption primary--text drawersBtn" @click="toggleFilterDrawer"> <v-icon color="primary" left>mdi-tune</v-icon> Filter </a>
 
-                   
+                    </template>
                 </v-toolbar>
             </template>
             <template v-slot:item.name="{ item }">
@@ -129,22 +85,28 @@
             <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
         </v-data-table>
     </v-layout>
+
+    </v-card-text>
+</v-card>
         <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter"/>
-    
+         <add-lead-drawer ref="addLeadDrawer"  v-on:save="save"/>
+
     <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
-</v-flex>
+</div>
 </template>
 
 <script>
 import leadDetails from './LeadDetails.vue';
 import filterDrawer from './FilterDrawer.vue';
+import addLeadDrawer from './AddLeadDrawer.vue';
 import downloadExcel from "vue-json-excel";
 export default {
     components: {
         downloadExcel,
         leadDetails,
-        filterDrawer
+        filterDrawer,
+        addLeadDrawer
     },
 
     data: () => ({
@@ -186,7 +148,6 @@ export default {
             'Company Website': 'companyWebsite',
             'Current solution': 'currentSolution',
         },
-        filterDrawer: null,
         //filtered: "grey-color",
         totalLeads: 0,
         loading: true,
@@ -226,22 +187,6 @@ export default {
         leadList: [],
         allLeads: [],
         editedIndex: -1,
-        editedItem: {
-            name: '',
-            mail: '',
-            company: '',
-            position: '',
-            inferredCountry: '',
-            status: '',
-        },
-        defaultItem: {
-            name: '',
-            mail: '',
-            company: '',
-            position: '',
-            inferredCountry: '',
-            status: '',
-        },
         context: {
             leadCaptureConfigured: true
         },
@@ -250,11 +195,6 @@ export default {
         comments: [],
         tasks: [],
         selectedLead: {},
-        rules: {
-            required: value => !!value || 'Required.',
-            counter: value => value.length >= 3 || 'Min 3 characters',
-            valideMail: value => /.+@.+/.test(value) || 'E-mail must be valid',
-        }
     }),
     created() {
         fetch(`/portal/rest/leadcapture/lcsettings/context`, {
@@ -450,12 +390,15 @@ export default {
                 this.leadList = data.items
                 this.totalLeads = data.total
             })
-            this.filterDrawer = !this.filterDrawer;
         },
         toggleFilterDrawer() {
-           // this.filterDrawer = !this.filterDrawer;
             this.$refs.filterDrawer.open()
         },
+        openAddLeadDrawer() {
+            this.$refs.addLeadDrawer.open()
+        },
+
+        
 
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
@@ -606,17 +549,17 @@ export default {
             }, 300);
         },
 
-        save() {
+        save(editedItem) {
 
-            this.leadList.push(this.editedItem);
-            this.allLeads.push(this.editedItem);
+            this.leadList.push(editedItem);
+            this.allLeads.push(editedItem);
             fetch(`/portal/rest/leadcapture/leadsmanagement/create`, {
                     method: 'post',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(this.editedItem),
+                    body: JSON.stringify(editedItem),
                 })
                 .then((result) => {
                     if (!result.ok) {

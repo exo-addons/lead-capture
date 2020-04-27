@@ -30,7 +30,7 @@
 
                 <v-row>
                     <v-label for="geoZone">
-                        {{ $t('exoplatform.LeadCapture.leadManagement.geoZone','Geographique Zone') }}
+                        {{ $t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone') }}
                     </v-label>
                     <select v-model="selectedGeoZone" name="geoZone" class="input-block-level ignore-vuetify-classes my-3">
                         <option v-for="item in gZoneList" :key="item" :value="item">
@@ -148,6 +148,8 @@ export default {
     data: () => ({
         fromDate: "",
         toDate: "",
+        menu1:null,
+        menu2:null,
         selectedStatus: "active",
         selectedMethod: "",
         selectedOwner: "",

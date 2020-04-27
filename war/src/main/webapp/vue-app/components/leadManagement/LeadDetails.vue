@@ -1,9 +1,8 @@
 <template>
-<v-flex>
-    <div id="lead">
+<v-card elevation="0" class="leadDetails">
+    <v-card-text>
 
         <v-row>
-
             <v-col cols="12" sm="12" md="3">
                 <v-card elevation="0">
                     <v-row>
@@ -34,7 +33,7 @@
                                             <h3>{{lead.firstName}} {{lead.lastName}}</h3>
                                         </v-col>
                                         <v-col cols="12" sm="2" md="2">
-                                            <a @click="editLead=true" rel="tooltip" data-placement="bottom"><i class="uiIconEdit edit_btn"></i></a>
+                                            <a @click="openEditDrawer" rel="tooltip" data-placement="bottom"><i class="uiIconEdit edit_btn"></i></a>
                                         </v-col>
                                     </v-row>
                                     <v-row>
@@ -178,7 +177,7 @@
                 </v-card>
             </v-col>
 
-            <v-col cols="12" sm="12" md="8">
+            <v-col cols="12" sm="12" md="9">
 
                 <template>
                     <v-toolbar class="leadToolBar" flat>
@@ -194,7 +193,7 @@
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
                         </a>
                         <!-- <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on"> -->
-                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">    
+                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                         </a>
                     </v-toolbar>
@@ -217,226 +216,153 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <template>
 
-                <v-dialog v-model="editLead" fullscreen hide-overlay transition="dialog-bottom-transition" scrollable>
-                    <v-form ref="form" v-model="valid">
-                        <v-card tile>
+                    <v-tabs class="tabContainer" grow v-model="selectedTab">
+                        <v-tabs-slider color="primary" />
+                        <v-tab href="#projectInfo" key="projectInfo">{{$t('exoplatform.LeadCapture.leadManagement.projectInfo','Project Info')}}</v-tab>
+                        <v-tab href="#captureInfo" key="captureInfo">{{$t('exoplatform.LeadCapture.leadManagement.captureInfo','Capture Info')}}</v-tab>
+                    </v-tabs>
 
-                            <v-toolbar dark color="primary">
-                                <v-btn icon dark @click="editLead = false">
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                                <v-toolbar-title>{{$t('exoplatform.LeadCapture.leadManagement.editLead','Edit Lead')}}</v-toolbar-title>
-                                <v-spacer></v-spacer>
-                                <v-toolbar-items>
-                                    <v-btn :disabled="!valid" dark text @click="saveLead()">
-                                        {{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
+                    <v-tabs-items class="infoContent" v-model="selectedTab">
+                        <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
+                            <div class="text-right">
+                                <v-btn-toggle v-model="view">
+                                    <v-btn value="event">
+
+                                        <span class="hidden-sm-and-down">Event</span>
+                                        <v-icon right>mdi-calendar-check</v-icon>
                                     </v-btn>
-                                </v-toolbar-items>
 
-                            </v-toolbar>
-                            <v-card-text>
+                                    <v-btn value="timeline">
 
-                                <v-container>
+                                        <span class="hidden-sm-and-down">Timeline</span>
+                                        <v-icon right>mdi-clock-outline</v-icon>
+                                    </v-btn>
 
-                                    <v-row>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.firstName" :label="$t('exoplatform.LeadCapture.leadManagement.firstName','First name')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.lastName" :label="$t('exoplatform.LeadCapture.leadManagement.lastName','Last name')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field :rules="[rules.required, rules.valideMail]" v-model="lead.mail" :label="$t('exoplatform.LeadCapture.leadManagement.mail','Mail')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.company" :label="$t('exoplatform.LeadCapture.leadManagement.company','Company')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.phone" :label="$t('exoplatform.LeadCapture.leadManagement.phone','Phone')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.position" :label="$t('exoplatform.LeadCapture.leadManagement.position','Position')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.inferredCountry" :label="$t('exoplatform.LeadCapture.leadManagement.country','Country')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.language" :label="$t('exoplatform.LeadCapture.leadManagement.language','Language')"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="lead.geographiqueZone" :label="$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')"></v-text-field>
+                                </v-btn-toggle>
+                            </div>
+                            <form-responses v-if="view ==='event'" :lead="lead" :formResponses="formResponses" />
 
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="2">
-                                            <v-switch v-model="lead.marketingSuspended" :label="$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended')"></v-switch>
-                                        </v-col>
-                                        <v-col v-if="lead.marketingSuspended" cols="12" sm="6" md="10">
-                                            <v-text-field v-model="lead.marketingSuspendedCause" :label="$t('exoplatform.LeadCapture.leadManagement.marketingSuspendedCause','Marketing Suspended Cause')"></v-text-field>
-                                        </v-col>
-                                    </v-row>
+                            <v-timeline v-if="view ==='timeline'" reverse dense>
+                                <v-timeline-item v-for="formResponse in timeline" :key="formResponse.id" :icon="getIcon(formResponse.form)" right dense>
+                                    <v-card class="elevation-2">
+                                        <v-card-title>
+                                            <div v-if="isTask(formResponse.form)" class="headline">{{formResponse.authorName}} {{$t('exoplatform.LeadCapture.task.statusChanged','changed lead status to ')}} {{formResponse.newStatus}}</div>
+                                            <div v-else class="headline">{{$t(`exoplatform.LeadCapture.leadManagement.${formResponse.form}`,formResponse.form)}}</div>
+                                            <v-spacer></v-spacer>
+                                            <div class="response_date">{{formResponse.createdDate}}</div>
+                                        </v-card-title>
+                                        <v-card-text v-if="formResponse.fields.length>0">
+                                            <v-row class="fields-text" v-for="field in formResponse.fields" :key="field">
 
-                                </v-container>
+                                                <v-col v-if="field!=='createdDate'" cols="12" sm="4" md="3"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.${field}`,field)}}:</strong>
+                                                </v-col>
+                                                <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9"> {{formResponse[field]}} </v-col>
 
-                            </v-card-text>
+                                            </v-row>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-timeline-item>
+                            </v-timeline>
 
-                            <div style="flex: 1 1 auto;"></div>
+                        </v-tab-item>
 
-                        </v-card>
-                    </v-form>
-                </v-dialog>
-                <div class="container">
-                    <form method="post">
+                        <v-tab-item class="tabContent" eager id="projectInfo" value="projectInfo">
+                            <v-form>
+                                <v-card elevation="0">
+                                    <v-card-text>
 
-                        <div class="row col-md-12">
-                            <v-layout>
-                                <v-flex class="white text-center" flat>
-                                    <v-tabs background-color="icons-and-text" grow v-model="selectedTab">
-                                        <v-tabs-slider color="primary" />
-                                        <v-tab href="#projectInfo" key="projectInfo">{{$t('exoplatform.LeadCapture.leadManagement.projectInfo','Project Info')}}</v-tab>
-                                        <v-tab href="#captureInfo" key="captureInfo">{{$t('exoplatform.LeadCapture.leadManagement.captureInfo','Capture Info')}}</v-tab>
-                                    </v-tabs>
+                                        <v-container>
 
-                                    <v-tabs-items class="infoContent" v-model="selectedTab">
-                                        <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
-                                            <div class="text-right">
-                                                <v-btn-toggle v-model="view">
-                                                    <v-btn value="event">
+                                            <v-row>
+                                                <v-col cols="12" sm="12" md="12">
+                                                    <v-text-field v-model="lead.goal" :label="$t('exoplatform.LeadCapture.leadManagement.goal','Goal')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.usersNumber" :label="$t('exoplatform.LeadCapture.leadManagement.usersNumber','Users number')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.howHear" :label="$t('exoplatform.LeadCapture.leadManagement.howDidYouHear','How did you hear about us')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.currentSolution" :label="$t('exoplatform.LeadCapture.leadManagement.currentSolution','Current solution')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.solutionType" :label="$t('exoplatform.LeadCapture.leadManagement.solutionType','Solution type')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.shortlistVendors" :label="$t('exoplatform.LeadCapture.leadManagement.shortlistVendors','Shortlist vendors')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.companyWebsite" :label="$t('exoplatform.LeadCapture.leadManagement.companyWebsite','Company website')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.employeesNumber" :label="$t('exoplatform.LeadCapture.leadManagement.numberOfEmployees','Number of employees')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="6">
+                                                    <v-text-field v-model="lead.industry" :label="$t('exoplatform.LeadCapture.leadManagement.industry','Industry')"></v-text-field>
+                                                </v-col>
+                                                <v-col cols="12" sm="12" md="12" class="editor">
+                                                    <div v-on:dblclick="showFck1()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.solutionRequirements','Solution requirements')}}</div>
+                                                    <div v-show="!showEditor1" class="textContent" v-on:dblclick="showFck1()" v-html="lead.solutionRequirements"></div>
+                                                    <div v-show="showEditor1">
+                                                        <ck-editor ref="ck1" :content="content" />
+                                                    </div>
+                                                </v-col>
 
-                                                        <span class="hidden-sm-and-down">Event</span>
-                                                        <v-icon right>mdi-calendar-check</v-icon>
-                                                    </v-btn>
-
-                                                    <v-btn value="timeline">
-
-                                                        <span class="hidden-sm-and-down">Timeline</span>
-                                                        <v-icon right>mdi-clock-outline</v-icon>
-                                                    </v-btn>
-
-                                                </v-btn-toggle>
+                                                <v-col cols="12" sm="12" md="12" class="editor">
+                                                    <div v-on:dblclick="showFck()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.interactionSummary','Interaction summary')}}</div>
+                                                    <div v-show="!showEditor" class="textContent" v-on:dblclick="showFck()" v-html="lead.interactionSummary"></div>
+                                                    <div v-show="showEditor">
+                                                        <ck-editor ref="ck" :content="content" />
+                                                    </div>
+                                                </v-col>
+                                            </v-row>
+                                            <div class="uiAction">
+                                                <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
+                                                </button>
                                             </div>
-                                            <form-responses v-if="view ==='event'" :lead="lead" :formResponses="formResponses" />
 
-                                            <v-timeline v-if="view ==='timeline'" reverse dense>
-                                                <v-timeline-item v-for="formResponse in timeline" :key="formResponse.id" :icon="getIcon(formResponse.form)" right dense>
-                                                    <v-card class="elevation-2">
-                                                        <v-card-title>
-                                                            <div v-if="isTask(formResponse.form)" class="headline">{{formResponse.authorName}} {{$t('exoplatform.LeadCapture.task.statusChanged','changed lead status to ')}} {{formResponse.newStatus}}</div>
-                                                            <div v-else class="headline">{{$t(`exoplatform.LeadCapture.leadManagement.${formResponse.form}`,formResponse.form)}}</div>
-                                                            <v-spacer></v-spacer>
-                                                            <div class="response_date">{{formResponse.createdDate}}</div>
-                                                        </v-card-title>
-                                                        <v-card-text v-if="formResponse.fields.length>0">
-                                                            <v-row class="fields-text" v-for="field in formResponse.fields" :key="field">
+                                        </v-container>
 
-                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="4" md="3"><strong>{{$t(`exoplatform.LeadCapture.leadManagement.${field}`,field)}}:</strong>
-                                                                </v-col>
-                                                                <v-col v-if="field!=='createdDate'" cols="12" sm="8" md="9"> {{formResponse[field]}} </v-col>
+                                    </v-card-text>
 
-                                                            </v-row>
-                                                        </v-card-text>
-                                                    </v-card>
-                                                </v-timeline-item>
-                                            </v-timeline>
+                                    <div style="flex: 1 1 auto;"></div>
 
-                                        </v-tab-item>
+                                </v-card>
+                            </v-form>
+                        </v-tab-item>
+                    </v-tabs-items>
+                </template>
 
-                                        <v-tab-item class="tabContent" eager id="projectInfo" value="projectInfo">
-                                            <v-form>
-                                                <v-card elevation="0">
-                                                    <v-card-text>
-
-                                                        <v-container>
-
-                                                            <v-row>
-                                                                <v-col cols="12" sm="12" md="12">
-                                                                    <v-text-field v-model="lead.goal" :label="$t('exoplatform.LeadCapture.leadManagement.goal','Goal')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.usersNumber" :label="$t('exoplatform.LeadCapture.leadManagement.usersNumber','Users number')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.howHear" :label="$t('exoplatform.LeadCapture.leadManagement.howDidYouHear','How did you hear about us')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.currentSolution" :label="$t('exoplatform.LeadCapture.leadManagement.currentSolution','Current solution')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.solutionType" :label="$t('exoplatform.LeadCapture.leadManagement.solutionType','Solution type')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.shortlistVendors" :label="$t('exoplatform.LeadCapture.leadManagement.shortlistVendors','Shortlist vendors')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.companyWebsite" :label="$t('exoplatform.LeadCapture.leadManagement.companyWebsite','Company website')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.employeesNumber" :label="$t('exoplatform.LeadCapture.leadManagement.numberOfEmployees','Number of employees')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="6">
-                                                                    <v-text-field v-model="lead.industry" :label="$t('exoplatform.LeadCapture.leadManagement.industry','Industry')"></v-text-field>
-                                                                </v-col>
-                                                                <v-col cols="12" sm="12" md="12" class="editor">
-                                                                    <div v-on:dblclick="showFck1()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.solutionRequirements','Solution requirements')}}</div>
-                                                                    <div v-show="!showEditor1" class="textContent" v-on:dblclick="showFck1()" v-html="lead.solutionRequirements"></div>
-                                                                    <div v-show="showEditor1">
-                                                                        <ck-editor ref="ck1" :content="content" />
-                                                                    </div>
-                                                                </v-col>
-
-                                                                <v-col cols="12" sm="12" md="12" class="editor">
-                                                                    <div v-on:dblclick="showFck()" class="itemTitle v-label theme--light">{{$t('exoplatform.LeadCapture.leadManagement.interactionSummary','Interaction summary')}}</div>
-                                                                    <div v-show="!showEditor" class="textContent" v-on:dblclick="showFck()" v-html="lead.interactionSummary"></div>
-                                                                    <div v-show="showEditor">
-                                                                        <ck-editor ref="ck" :content="content" />
-                                                                    </div>
-                                                                </v-col>
-                                                            </v-row>
-                                                            <div class="uiAction">
-                                                                <button :disabled="!valid" @click="saveLead()" class="btn btn-primary" type="button">{{$t('exoplatform.LeadCapture.leadManagement.save','Save')}}
-                                                                </button>
-                                                            </div>
-
-                                                        </v-container>
-
-                                                    </v-card-text>
-
-                                                    <div style="flex: 1 1 auto;"></div>
-
-                                                </v-card>
-                                            </v-form>
-                                        </v-tab-item>
-                                    </v-tabs-items>
-                                </v-flex>
-                            </v-layout>
-                        </div>
-                    </form>
-
-                </div>
             </v-col>
         </v-row>
-    </div>
-    <!-- <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" /> -->
-    <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
-        <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
-    </v-navigation-drawer>
-    <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
-        <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
-    </v-navigation-drawer>
-</v-flex>
+        <!-- <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" /> -->
+        <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
+            <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
+        </v-navigation-drawer>
+        <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
+            <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
+        </v-navigation-drawer>
+        <edit-lead-drawer ref="editLeadDrawer" :lead="lead" v-on:save="saveLead" />
+    </v-card-text>
+</v-card>
 </template>
 
 <script>
 import Vue from 'vue';
 import notesDrawer from './NotesDrawer.vue';
 import toDoDrawer from './ToDoDrawer.vue';
+import editLeadDrawer from './EditLeadDrawer.vue';
 import FormResponses from './FormResponses.vue';
 import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
-         notesDrawer,
+        notesDrawer,
         toDoDrawer,
+        editLeadDrawer,
         FormResponses,
         ckEditor
     },
@@ -453,7 +379,6 @@ export default {
         edited1: false,
         toDodrawer: null,
         fab: false,
-        editLead: false,
         content: "",
         rules: {
             required: value => !!value || 'Required.',
@@ -485,20 +410,23 @@ export default {
     },
 
     methods: {
-/*         openTaskDrawer() {
-            this.drawer = true;
-            document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
+        /*         openTaskDrawer() {
+                    this.drawer = true;
+                    document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
+                },
+                updateTask(){
+                    console.log("update")
+                },
+                onCloseDrawer: function(drawer){
+                    this.drawer = drawer;
+                    document.body.style.overflow = 'auto';
+                }, */
+        openEditDrawer() {
+            this.$refs.editLeadDrawer.open()
         },
-        updateTask(){
-            console.log("update")
-        },
-        onCloseDrawer: function(drawer){
-            this.drawer = drawer;
-            document.body.style.overflow = 'auto';
-        }, */
         toggleDrawer() {
             this.drawer = !this.drawer;
-        },    
+        },
         toggleToDoDrawer() {
             this.toDodrawer = !this.toDodrawer;
         },
@@ -517,7 +445,6 @@ export default {
             this.$emit('changeStatus', this.lead);
         },
         saveLead() {
-            this.editLead = false
             if (this.edited) {
                 this.lead.interactionSummary = this.$refs.ck.getContent()
             }
@@ -585,6 +512,15 @@ export default {
 <style>
 body {
     background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+}
+
+.leadDetails {
+    background: none !important;
+    padding: 0 !important;
+}
+
+.tabContainer {
+    padding-top: 20px;
 }
 
 b {
