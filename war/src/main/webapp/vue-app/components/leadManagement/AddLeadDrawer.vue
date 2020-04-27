@@ -115,6 +115,7 @@ export default {
             this.$refs.addLeadDrawer.close()
         },
         open() {
+            this.editedLead=this.defaultItem
             this.$refs.addLeadDrawer.open()
         },
 
