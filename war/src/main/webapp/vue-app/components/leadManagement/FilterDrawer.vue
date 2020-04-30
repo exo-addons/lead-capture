@@ -104,10 +104,10 @@
                     </v-menu>
                 </v-row>
                 <v-row>
-                    <v-label for="userNumberMine">
+                    <v-label for="userNumberMin">
                         {{ $t('exoplatform.LeadCapture.leadManagement.userNumberMin','Min Users number') }}
                     </v-label>
-                    <input ref="userNumberMine" v-model="userNumberMine" type="text" name="userNumberMine" class="input-block-level ignore-vuetify-classes my-3" />
+                    <input ref="userNumberMin" v-model="userNumberMin" type="text" name="userNumberMin" class="input-block-level ignore-vuetify-classes my-3" />
                 </v-row>
                 <v-row>
                     <v-label for="userNumberMax">
@@ -232,6 +232,10 @@ export default {
                 {
                     text: this.$t('exoplatform.LeadCapture.method.reward-form'),
                     value: 'reward-form'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.method.manually_created'),
+                    value: 'manually_created'
                 }
             ]
         }

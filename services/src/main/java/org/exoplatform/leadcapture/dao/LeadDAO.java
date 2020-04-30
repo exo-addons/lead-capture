@@ -38,13 +38,16 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     try {
       String queryString = "SELECT lead FROM LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
-          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)  || StringUtils.isNotEmpty(zone) || notassigned) {
+          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)
+          || StringUtils.isNotEmpty(zone) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
           queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search
               + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
-              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
+              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%' or lower(lead.company) LIKE '%' || '"
+              + search + "' || '%'";
+
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
@@ -71,12 +74,12 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString + " and ";
         }
 
-        if (min>0) {
+        if (min > 0) {
           queryString = queryString + " lead.usersNumber >= '" + min + "'";
           queryString = queryString + " and ";
         }
 
-        if (max>0) {
+        if (max > 0) {
           queryString = queryString + " lead.usersNumber <= '" + max + "'";
           queryString = queryString + " and ";
         }
@@ -146,13 +149,15 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     try {
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
-              || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)  || StringUtils.isNotEmpty(zone)  || notassigned) {
+          || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)
+          || StringUtils.isNotEmpty(zone) || notassigned) {
         queryString = queryString + " where ";
         if (StringUtils.isNotEmpty(search)) {
           search = search.toLowerCase();
           queryString = queryString + " lower(lead.firstName) LIKE '%' || '" + search
-                  + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
-                  + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%'";
+              + "'|| '%' or lower(lead.lastName) LIKE '%' || '" + search + "' || '%' or lower(lead.mail) LIKE '%' || '" + search
+              + "' || '%' or lower(lead.country) LIKE '%' || '" + search + "' || '%' or lower(lead.company) LIKE '%' || '"
+              + search + "' || '%'";
           queryString = queryString + " and ";
         }
         if (StringUtils.isNotEmpty(status)) {
@@ -174,23 +179,20 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString + " and ";
         }
 
-
         if (StringUtils.isNotEmpty(zone)) {
           queryString = queryString + " lead.geographiqueZone = '" + zone + "'";
           queryString = queryString + " and ";
         }
 
-
-        if (min>0) {
+        if (min > 0) {
           queryString = queryString + " lead.usersNumber >= '" + min + "'";
           queryString = queryString + " and ";
         }
 
-        if (max>0) {
+        if (max > 0) {
           queryString = queryString + " lead.usersNumber <= '" + max + "'";
           queryString = queryString + " and ";
         }
-
 
         if (StringUtils.isNotEmpty(from)) {
           try {

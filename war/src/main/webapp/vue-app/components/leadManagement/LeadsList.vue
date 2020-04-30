@@ -59,7 +59,7 @@
 
             <template v-slot:item.captureMethod="{ item }">
 
-                {{$t(`exoplatform.LeadCapture.leadManagement.${item.captureMethod}`,item.captureMethod)}}
+                {{$t(`exoplatform.LeadCapture.method.${item.captureMethod}`,item.captureMethod)}}
             </template>
 
             <template v-slot:item.assignee="{ item }">
@@ -249,72 +249,6 @@ export default {
 
     },
     computed: {
-        filterStatusList() {
-            return [{
-                    text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
-                    value: 'All'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Raw'),
-                    value: 'Raw'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Open'),
-                    value: 'Open'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Attempted'),
-                    value: 'Attempted'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Contacted'),
-                    value: 'Contacted'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Qualified'),
-                    value: 'Qualified'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Recycled'),
-                    value: 'Recycled'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Accepted'),
-                    value: 'Accepted'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Bad_Data'),
-                    value: 'Bad_Data'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.status.Duplicate'),
-                    value: 'Duplicate'
-                }
-            ]
-        },
-        methodList() {
-            return [{
-                    text: this.$t('exoplatform.LeadCapture.leadManagement.All'),
-                    value: 'All'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.method.contact-us'),
-                    value: 'contact-us'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.method.demo-request'),
-                    value: 'demo-request'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.method.resource-download'),
-                    value: 'resource-download'
-                },
-                {
-                    text: this.$t('exoplatform.LeadCapture.method.reward-form'),
-                    value: 'reward-form'
-                }
-            ]
-        },
         headers() {
             return [{
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.fullName`, ""),
@@ -345,6 +279,12 @@ export default {
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
+                },                
+                {
+                    text: this.$t(`exoplatform.LeadCapture.leadManagement.company`, ""),
+                    align: 'center',
+                    sortable: true,
+                    value: 'company',
                 },
                 {
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.country`, ""),
