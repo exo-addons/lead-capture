@@ -10,7 +10,7 @@
                     <v-label for="status">
                         {{ $t('exoplatform.LeadCapture.leadManagement.status','Status') }}
                     </v-label>
-                    <select v-model="selectedStatus" name="status"  class="input-block-level ignore-vuetify-classes my-3">
+                    <select v-model="selectedStatus" name="status" class="input-block-level ignore-vuetify-classes my-3">
                         <option v-for="item in filterStatusList" :key="item.value" :value="item.value">
                             {{ item.text}}
                         </option>
@@ -34,7 +34,7 @@
                     </v-label>
                     <select v-model="selectedGeoZone" name="geoZone" class="input-block-level ignore-vuetify-classes my-3">
                         <option v-for="item in gZoneList" :key="item" :value="item">
-                            {{ item}}
+                            {{$t(`exoplatform.LeadCapture.leadManagement.${item}`,item)}}
                         </option>
                     </select>
                 </v-row>
@@ -107,13 +107,20 @@
                     <v-label for="userNumberMin">
                         {{ $t('exoplatform.LeadCapture.leadManagement.userNumberMin','Min Users number') }}
                     </v-label>
-                    <input ref="userNumberMin" v-model="userNumberMin" type="text" name="userNumberMin" class="input-block-level ignore-vuetify-classes my-3" />
-                </v-row>
-                <v-row>
-                    <v-label for="userNumberMax">
-                        {{$t('exoplatform.LeadCapture.leadManagement.userNumberMax','Max Users number') }}
-                    </v-label>
-                    <input ref="userNumberMax" v-model="userNumberMax" type="text" name="userNumberMax" class="input-block-level ignore-vuetify-classes my-3" />
+                    <v-col class="d-flex" cols="12" sm="12">
+                        <v-slider v-model="userNumberMin" class="align-center" label="Min" min="0" max="5000" thumb-label>
+                            <template v-slot:append>
+                                <v-text-field v-model="userNumberMin" class="sliderValue mt-0 pt-0" hide-details single-line type="number"></v-text-field>
+                            </template>
+                        </v-slider>
+                    </v-col>
+                    <v-col class="d-flex" cols="12" sm="12">
+                        <v-slider v-model="userNumberMax" class="align-center" label="Max" min="0" max="5000" thumb-label>
+                            <template v-slot:append style="width: 60px">
+                                <v-text-field v-model="userNumberMax" class="sliderValue mt-0 pt-0" hide-details single-line type="number"></v-text-field>
+                            </template>
+                        </v-slider>
+                    </v-col>
                 </v-row>
             </form>
         </div>
@@ -148,16 +155,16 @@ export default {
     data: () => ({
         fromDate: "",
         toDate: "",
-        menu1:null,
-        menu2:null,
+        menu1: null,
+        menu2: null,
         selectedStatus: "active",
-        selectedMethod: "",
+        selectedMethod: "All",
         selectedOwner: "",
         notassigned: false,
         myLeads: false,
-        selectedGeoZone: "",
-        userNumberMax: "",
-        userNumberMin: "",
+        selectedGeoZone: "All",
+        userNumberMax: 0,
+        userNumberMin: 0,
         gZoneList: ["All", "US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
     }),
 
@@ -244,19 +251,17 @@ export default {
     methods: {
         reset() {
             this.selectedStatus = "active"
-            this.selectedMethod = ""
+            this.selectedMethod = "All"
             this.selectedOwner = ""
             this.notassigned = false
             this.myLeads = false
             this.fromDate = ""
             this.toDate = ""
-            this.selectedGeoZone = ""
-            this.userNumberMax = ""
-            this.userNumberMin = ""
+            this.selectedGeoZone = "All"
+            this.userNumberMax = 0
+            this.userNumberMin = 0
         },
         aplyFilter() {
-            console.log(this.fromDate)
-            console.log(this.toDate)
             const filter_ = {
                 selectedStatus: this.selectedStatus,
                 selectedMethod: this.selectedMethod,
@@ -288,5 +293,9 @@ export default {
 <style>
 .drawerContent {
     padding: 15px 27px;
+}
+
+.sliderValue .v-text-field__slot {
+    max-width: 50px;
 }
 </style>

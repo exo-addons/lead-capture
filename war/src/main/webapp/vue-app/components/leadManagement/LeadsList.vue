@@ -1,95 +1,94 @@
 <template>
- <div>
-         <div :class="alert_type" class="alert" id v-if="alert">
+<div>
+    <div :class="alert_type" class="alert" id v-if="alert">
         <i :class="alertIcon"></i>
         {{message}}
     </div>
-<v-card elevation="0"   v-show="showTable">
-   <v-card-text>
-    <v-layout>
-        <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
-            <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
-                <v-icon x-large>mdi-settings</v-icon> <br>
-                <div>{{$t('exoplatform.LeadCapture.leadManagement.configrationWarning','The lead capture feature should be configured')}}</div>
-            </v-btn>
-            <div v-else class="ConfWarning">
-                <v-icon x-large>mdi-alert</v-icon> <br>
-                {{$t('exoplatform.LeadCapture.leadManagement.configrationWarningMassage',"The lead capture feature is not configured, please contact your system administrator")}}
+    <v-card elevation="0" v-show="showTable">
+        <v-card-text>
+            <v-layout>
+                <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
+                    <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
+                        <v-icon x-large>mdi-settings</v-icon> <br>
+                        <div>{{$t('exoplatform.LeadCapture.leadManagement.configrationWarning','The lead capture feature should be configured')}}</div>
+                    </v-btn>
+                    <div v-else class="ConfWarning">
+                        <v-icon x-large>mdi-alert</v-icon> <br>
+                        {{$t('exoplatform.LeadCapture.leadManagement.configrationWarningMassage',"The lead capture feature is not configured, please contact your system administrator")}}
 
-            </div>
+                    </div>
 
-        </v-overlay>
-        <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads" :loading="loading"  elevation="0" >
-            <template v-slot:top>
-                <v-toolbar color="white" flat>
-                        <template>
- 
-                            <button class="btn btn-primary pull-left" type="button" @click="openAddLeadDrawer">
-          <i class="uiIconSocSimplePlus uiIconSocWhite"></i> {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
-        </button>
-                       
+                </v-overlay>
+                <v-data-table :headers="headers" :items="leadList" :options.sync="options" :server-items-length="totalLeads" :loading="loading" elevation="0">
+                    <template v-slot:top>
+                        <v-toolbar color="white" flat>
+                            <template>
 
+                                <button class="btn btn-primary pull-left" type="button" @click="openAddLeadDrawer">
+                                    <i class="uiIconSocSimplePlus uiIconSocWhite"></i> {{$t('exoplatform.LeadCapture.leadManagement.addLead',"Add Lead")}}
+                                </button>
 
-                     <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
-                            <button class="btn btn-export" type="button">
-          <i class="uiIconExport"></i> {{$t('exoplatform.LeadCapture.leadManagement.export',"Export")}}
-        </button>                    </download-excel>
-                     
+                                <download-excel :fetch="exportData" :fields="json_fields" name="leads.xls">
+                                    <button class="btn btn-export" type="button">
+                                        <i class="uiIconExport"></i> {{$t('exoplatform.LeadCapture.leadManagement.export',"Export")}}
+                                    </button> </download-excel>
 
-                    <v-spacer />
-                    <v-col cols="12" md="3" sm="6">
-                        <v-text-field placeholder="Look for leads" prepend-inner-icon="mdi-filter" single-line label="" v-model="search"></v-text-field>
-                    </v-col>
+                                <v-spacer />
+                                <v-col cols="12" md="3" sm="6">
+                                    <v-text-field placeholder="Look for leads" prepend-inner-icon="mdi-filter" single-line label="" v-model="search"></v-text-field>
+                                </v-col>
 
-                   <a class="caption primary--text drawersBtn" @click="toggleFilterDrawer"> <v-icon color="primary" left>mdi-tune</v-icon> Filter </a>
+                                <a class="caption primary--text drawersBtn" @click="toggleFilterDrawer">
+                                    <v-icon color="primary" left>mdi-tune</v-icon> Filter
+                                </a>
+
+                            </template>
+                        </v-toolbar>
+                    </template>
+                    <template v-slot:item.name="{ item }">
+                        <a @click="edit(item)">
+                            <b>{{item.firstName}} {{item.lastName}}</b>
+                        </a>
+                    </template>
+                    <template v-slot:item.mail="{ item }">
+                        <a @click="edit(item)">
+                            {{item.mail}}
+                        </a>
+                    </template>
+
+                    <template v-slot:item.captureMethod="{ item }">
+
+                        {{$t(`exoplatform.LeadCapture.method.${item.captureMethod}`,item.captureMethod)}}
+                    </template>
+
+                    <template v-slot:item.assignee="{ item }">
+                        <select v-model="item.assignee" @change="onAssign(item)">
+                            <option :value="null">{{$t('exoplatform.LeadCapture.leadManagement.notAssigned','Not assigned')}}
+                            </option>
+                            <option :key="option.userName" v-bind:value="option.userName" v-for="option in assignees">
+                                {{option.fullName}}
+                            </option>
+                        </select>
 
                     </template>
-                </v-toolbar>
-            </template>
-            <template v-slot:item.name="{ item }">
-                <a @click="edit(item)">
-                    <b>{{item.firstName}} {{item.lastName}}</b>
-                </a>
-            </template>
-            <template v-slot:item.mail="{ item }">
-                <a @click="edit(item)">
-                    {{item.mail}}
-                </a>
-            </template>
+                    <template v-slot:item.status="{ item }">
+                        <select v-model="item.status" @change="changeStatus(item)">
 
-            <template v-slot:item.captureMethod="{ item }">
+                            <option :key="option" v-bind:value="option" v-for="option in statusList">
+                                {{$t(`exoplatform.LeadCapture.status.${option}`,option)}}
+                            </option>
+                        </select>
 
-                {{$t(`exoplatform.LeadCapture.method.${item.captureMethod}`,item.captureMethod)}}
-            </template>
+                    </template>
 
-            <template v-slot:item.assignee="{ item }">
-                <select v-model="item.assignee" @change="onAssign(item)">
-                    <option :value="null">{{$t('exoplatform.LeadCapture.leadManagement.notAssigned','Not assigned')}}
-                    </option>
-                    <option :key="option.userName" v-bind:value="option.userName" v-for="option in assignees">
-                        {{option.fullName}}
-                    </option>
-                </select>
+                    <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
+                </v-data-table>
+            </v-layout>
 
-            </template>
-            <template v-slot:item.status="{ item }">
-                <select v-model="item.status" @change="changeStatus(item)">
-
-                    <option :key="option" v-bind:value="option" v-for="option in statusList">
-                        {{$t(`exoplatform.LeadCapture.status.${option}`,option)}}
-                    </option>
-                </select>
-
-            </template>
-
-            <template v-slot:no-data>{{$t('exoplatform.LeadCapture.leadManagement.noLeads','No Leads')}}</template>
-        </v-data-table>
-    </v-layout>
-
-    </v-card-text>
-</v-card>
-        <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter"/>
-         <add-lead-drawer ref="addLeadDrawer"  v-on:save="save"/>
+        </v-card-text>
+    </v-card>
+    <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" />
+    <add-lead-drawer ref="addLeadDrawer" v-on:save="save" />
 
     <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
@@ -157,8 +156,8 @@ export default {
         selectedMethod: "",
         selectedOwner: "",
         selectedGeoZone: "",
-        userNumberMax:0,
-        userNumberMin:0,
+        userNumberMax: 0,
+        userNumberMin: 0,
         fromDate: "",
         toDate: "",
         valid: true,
@@ -166,11 +165,7 @@ export default {
         myLeads: false,
         currentUser: 'test1',
         assignees: [],
-        assigneesFilter: [{
-            "fullName": "All",
-            "userName": "",
-            "email": ""
-        }],
+        assigneesFilter: [],
         showTable: false,
         showDetails: false,
         search: '',
@@ -213,6 +208,11 @@ export default {
             .then((resp) => resp.json())
             .then((resp) => {
                 this.assignees = resp;
+                        this.assigneesFilter.push({
+            "fullName": this.$t('exoplatform.LeadCapture.leadManagement.All'),
+            "userName": "",
+            "email": ""
+        })
                 this.assigneesFilter.push(...this.assignees);
             });
     },
@@ -279,7 +279,7 @@ export default {
                     align: 'center',
                     sortable: true,
                     value: 'assignee',
-                },                
+                },
                 {
                     text: this.$t(`exoplatform.LeadCapture.leadManagement.company`, ""),
                     align: 'center',
@@ -306,7 +306,7 @@ export default {
                 },
             ]
         },
-        filtered(){
+        filtered() {
             if (this.selectedStatus !== "" || this.selectedMethod !== "" || this.selectedOwner !== "" || this.fromDate !== "" || this.toDate !== "" || this.selectedGeoZone !== "" || this.notassigned || this.myLeads) {
                 return "uiIconBlue"
             }
@@ -316,16 +316,38 @@ export default {
     },
     methods: {
         addFilter(val) {
-            this.selectedStatus = val.selectedStatus
-            this.selectedMethod = val.selectedMethod
             this.selectedOwner = val.selectedOwner
             this.notassigned = val.notassigned
             this.fromDate = val.fromDate
             this.toDate = val.toDate
-            if(val.selectedGeoZone!=="All"){this.selectedGeoZone = val.selectedGeoZone}
             this.myLeads = val.myLeads
-            if(val.userNumberMax!==""){this.userNumberMax = val.userNumberMax}
-            if(val.userNumberMin!==""){this.userNumberMin = val.userNumberMin}
+            if (val.selectedStatus === "All") {
+                this.selectedStatus = ""
+            }else{
+                 this.selectedStatus = val.selectedStatus
+            } 
+            if (val.selectedMethod === "All") {
+                this.selectedMethod = ""
+            }else{
+                this.selectedMethod = val.selectedMethod
+            } 
+            if (val.selectedGeoZone === "All") {
+                this.selectedGeoZone = ""
+            }else{
+                this.selectedGeoZone = val.selectedGeoZone
+            }            
+            if (val.userNumberMax === "") {
+                this.userNumberMax = 0
+            } else {
+                this.userNumberMax = val.userNumberMax
+            }
+
+            if (val.userNumberMin === "") {
+                this.userNumberMin = 0
+            } else {
+                this.userNumberMin = val.userNumberMin
+            }
+
             this.getLeads().then(data => {
                 this.leadList = data.items
                 this.totalLeads = data.total
@@ -337,8 +359,6 @@ export default {
         openAddLeadDrawer() {
             this.$refs.addLeadDrawer.open()
         },
-
-        
 
         initialize() {
             const leadId = this.getUrlParameterByName("leadid");
@@ -402,8 +422,8 @@ export default {
                 })
                 .then((resp) => resp.json())
                 .then((resp) => {
-                    this.timeline = resp.sort((a, b) => b.time - a.time);; 
-                });    
+                    this.timeline = resp.sort((a, b) => b.time - a.time);;
+                });
 
             fetch(`/portal/rest/leadcapture/leadsmanagement/ptask/` + item.id, {
                     credentials: 'include',
@@ -527,9 +547,8 @@ export default {
 
         assignLead(item) {
             this.assigne(item);
-            this.selectedLead.assignee = item.assignee           
+            this.selectedLead.assignee = item.assignee
         },
-
 
         changeStatus(item) {
             const lead = {
@@ -614,16 +633,6 @@ export default {
             }
         },
 
-        getUrlParameterByName(name) {
-            const url = window.location.href;
-            name = name.replace(/[\[\]]/g, "\\$&")
-            const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
-            const results = regex.exec(url)
-            if (!results) {return null}
-            if (!results[2]) {return null}
-            return decodeURIComponent(results[2].replace(/\+/g, " "))
-        },    
-
         getLeads(all) {
             this.loading = true
             return new Promise((resolve, reject) => {
@@ -641,12 +650,6 @@ export default {
                 if (all) {
                     page_ = 1
                     itemsPerPage_ = -1
-                }
-                if (this.selectedStatus === "All") {
-                    this.selectedStatus = ""
-                }
-                if (this.selectedMethod === "All") {
-                    this.selectedMethod = ""
                 }
                 if (this.myLeads) {
                     owner = this.context.currentUser
@@ -693,8 +696,18 @@ export default {
             console.log(response);
             return response.items;
         },
-    },
 
+        
+        getUrlParameterByName(name) {
+            const url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&")
+            const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
+            const results = regex.exec(url)
+            if (!results) {return null}
+            if (!results[2]) {return null}
+            return decodeURIComponent(results[2].replace(/\+/g, " "))
+        },    
+    },
 };
 </script>
 
@@ -738,6 +751,4 @@ export default {
     border-style: solid !important;
     margin-left: 10px;
 }
-
-
 </style>
