@@ -105,7 +105,7 @@
                 </v-row>
                 <v-row>
                     <v-label for="userNumberMin">
-                        {{ $t('exoplatform.LeadCapture.leadManagement.userNumberMin','Min Users number') }}
+                        {{ $t('exoplatform.LeadCapture.leadManagement.userNumber','Users number') }}
                     </v-label>
                     <v-col class="d-flex" cols="12" sm="12">
                         <v-slider v-model="userNumberMin" class="align-center" label="Min" min="0" max="5000" thumb-label>

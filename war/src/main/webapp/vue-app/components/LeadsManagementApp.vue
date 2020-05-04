@@ -56,6 +56,9 @@ select {
     color: #4d5466;
 }
 
+#leadsManagementApp .drawerContent .v-label{
+    font-weight: 700!important;;
+}
 
 #leadsManagementApp .v-badge__badge {
     height: 10px !important;

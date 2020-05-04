@@ -193,12 +193,23 @@
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
                         </a>
                         <!-- <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on"> -->
-                        <a class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
+                        <a v-if="lead.taskId!=null && lead.taskId!=0" class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                         </a>
+                        <v-menu v-else offset-y>
+                            <template v-slot:activator="{ on }">
+                                <a class="caption  headerBtn" v-on="on">
+                                    <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
+                                </a>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="(item, index) in statusList" :key="index" @click="changeStatus(item)">
+                                    <v-list-item-title>{{ item.text }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
                     </v-toolbar>
                 </template>
-
                 <v-dialog max-width="290" v-model="confirmDialog">
                     <v-card>
                         <v-card-title class="headline">Confirmation</v-card-title>
@@ -338,10 +349,10 @@
 
             </v-col>
         </v-row>
-        <!-- <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" /> -->
-        <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
+        <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" />
+        <!--         <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
             <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
-        </v-navigation-drawer>
+        </v-navigation-drawer> -->
         <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
             <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
         </v-navigation-drawer>
@@ -360,13 +371,13 @@ import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
-        notesDrawer,
+        /* notesDrawer, */
         toDoDrawer,
         editLeadDrawer,
         FormResponses,
         ckEditor
     },
-    props: ['lead', 'formResponses', 'timeline', 'comments', 'context', 'assignees', 'tasks'],
+    props: ['lead', 'formResponses', 'timeline', 'task', 'context', 'assignees', 'tasks'],
     data: () => ({
         view: 'timeline',
         valid: true,
@@ -406,21 +417,56 @@ export default {
                 return !item.completed
             });
             return undone.length
-        }
+        },
+        statusList() {
+            return [{
+                    text: this.$t('exoplatform.LeadCapture.status.Open'),
+                    value: 'Open'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Attempted'),
+                    value: 'Attempted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Contacted'),
+                    value: 'Contacted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Qualified'),
+                    value: 'Qualified'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Recycled'),
+                    value: 'Recycled'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Accepted'),
+                    value: 'Accepted'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Bad_Data'),
+                    value: 'Bad_Data'
+                },
+                {
+                    text: this.$t('exoplatform.LeadCapture.status.Duplicate'),
+                    value: 'Duplicate'
+                }
+            ]
+        },
     },
 
     methods: {
-        /*         openTaskDrawer() {
-                    this.drawer = true;
-                    document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
-                },
-                updateTask(){
-                    console.log("update")
-                },
-                onCloseDrawer: function(drawer){
-                    this.drawer = drawer;
-                    document.body.style.overflow = 'auto';
-                }, */
+        openTaskDrawer() {
+            this.drawer = true;
+            document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
+        },
+        updateTask() {
+            console.log("update")
+        },
+        onCloseDrawer: function (drawer) {
+            this.drawer = drawer;
+            document.body.style.overflow = 'auto';
+        },
         openEditDrawer() {
             this.$refs.editLeadDrawer.open()
         },

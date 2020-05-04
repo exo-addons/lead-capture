@@ -90,7 +90,7 @@
     <filter-drawer ref="filterDrawer" :assigneesFilter="assigneesFilter" v-on:addFilter="addFilter" />
     <add-lead-drawer ref="addLeadDrawer" v-on:save="save" />
 
-    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :comments="comments" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
+    <lead-details :lead="selectedLead" :formResponses="formResponses" :timeline="timeline" :task="task" :tasks="tasks" :context="context" :assignees="assignees" v-on:backToList="backToList" v-on:remove="delete_" v-on:changeStatus="changeStatus" v-on:saveLead="editItem" v-on:assigne="assignLead" v-show="showDetails" />
 
 </div>
 </template>
@@ -187,7 +187,7 @@ export default {
         },
         formResponses: [],
         timeline: [],
-        comments: [],
+        task: null,
         tasks: [],
         selectedLead: {},
     }),
@@ -433,13 +433,13 @@ export default {
                     this.tasks = resp;
                 });
 
-            if (item.taskId != null) {
-                fetch(`/portal/rest/leadcapture/leadsmanagement/comments/` + item.taskId, {
+            if (item.taskId != null && item.taskId !== 0) {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/task/` + item.taskId, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())
                     .then((resp) => {
-                        this.comments = resp;;
+                        this.task = resp;;
                     });
 
             }
