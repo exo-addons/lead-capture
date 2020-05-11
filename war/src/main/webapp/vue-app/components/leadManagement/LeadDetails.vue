@@ -72,6 +72,12 @@
                                     </v-row>
                                     <v-row>
 
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.position','Position')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.position}} </v-col>
+
+                                    </v-row>
+                                    <v-row>
+
                                         <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.country','Country')}}:</strong></v-col>
                                         <v-col cols="12" sm="6" md="7"> {{lead.inferredCountry}} </v-col>
 
@@ -556,9 +562,6 @@ export default {
 </script>
 
 <style>
-body {
-    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
-}
 
 .leadDetails {
     background: none !important;

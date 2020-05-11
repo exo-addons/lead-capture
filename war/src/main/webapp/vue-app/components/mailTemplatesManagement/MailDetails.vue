@@ -124,9 +124,3 @@ export default {
     },
 };
 </script>
-
-<style>
-body {
-    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
-}
-</style>
