@@ -145,7 +145,10 @@ export default {
             'shortlistVendors': 'shortlistVendors',
             'Landing page info': 'landingPageInfo',
             'Company Website': 'companyWebsite',
-            'Current solution': 'currentSolution',
+            'Opened': 'openedDate',
+            'Qualified': 'qualifiedDate',
+            'Accepted': 'acceptedDate',
+            'Recycled': 'recycledDate',
         },
         //filtered: "grey-color",
         totalLeads: 0,
@@ -633,7 +636,7 @@ export default {
             }
         },
 
-        getLeads(all) {
+        getLeads(toExport) {
             this.loading = true
             return new Promise((resolve, reject) => {
                 const {
@@ -647,7 +650,7 @@ export default {
                 let owner = ""
                 let page_ = page
                 let itemsPerPage_ = itemsPerPage
-                if (all) {
+                if (toExport) {
                     page_ = 1
                     itemsPerPage_ = -1
                 }
@@ -668,7 +671,7 @@ export default {
                         desc = sortDesc[0]
                     }
                 }
-                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&zone=${this.selectedGeoZone}&min=${this.userNumberMin}&max=${this.userNumberMax}&sortby=${sort}&sortdesc=${desc}&page=${page_}&limit=${itemsPerPage_}`, {
+                fetch(`/portal/rest/leadcapture/leadsmanagement/leads?search=${this.search}&status=${this.selectedStatus}&method=${this.selectedMethod}&owner=${owner}&notassigned=${this.notassigned}&from=${this.fromDate}&to=${this.toDate}&zone=${this.selectedGeoZone}&min=${this.userNumberMin}&max=${this.userNumberMax}&sortby=${sort}&sortdesc=${desc}&page=${page_}&limit=${itemsPerPage_}&export=${toExport}`, {
                         credentials: 'include',
                     })
                     .then((resp) => resp.json())

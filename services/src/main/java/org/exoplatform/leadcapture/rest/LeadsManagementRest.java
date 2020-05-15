@@ -84,14 +84,15 @@ public class LeadsManagementRest implements ResourceContainer {
                            @QueryParam("sortby") String sortBy,
                            @QueryParam("sortdesc") Boolean sortDesc,
                            @QueryParam("page") int page,
-                           @QueryParam("limit") int limit) throws Exception {
+                           @QueryParam("limit") int limit,
+                           @QueryParam("export") Boolean export) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
 
-      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned, sortBy, sortDesc, page, limit)).build();
+      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned, sortBy, sortDesc, page, limit, export)).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

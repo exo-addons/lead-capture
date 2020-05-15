@@ -132,43 +132,7 @@
                                         <v-col cols="12" sm="6" md="7">{{lead.marketingSuspendedCause}}</v-col>
 
                                     </v-row>
-                                    <v-divider></v-divider>
-                                    <v-row>
 
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.personSource','Person Source')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.${lead.personSource}`,lead.personSource)}}</v-col>
-
-                                    </v-row>
-                                    <v-row>
-
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.method.${lead.captureMethod}`,lead.captureMethod)}}</v-col>
-
-                                    </v-row>
-                                    <v-row>
-
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{lead.captureType}}</v-col>
-
-                                    </v-row>
-                                    <v-row>
-
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{$t(`exoplatform.LeadCapture.detail.${lead.captureSourceInfo}`,lead.captureSourceInfo)}}</v-col>
-
-                                    </v-row>
-                                    <v-row>
-
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.originalReferrer','Original Referrer')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{lead.originalReferrer}}</v-col>
-
-                                    </v-row>
-                                    <v-row v-if="lead.blogSubscription==true">
-
-                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.blogSubscriptionDate','formattedBlogSubscriptionDate')}}:</strong></v-col>
-                                        <v-col cols="12" sm="6" md="7">{{lead.formattedBlogSubscriptionDate}}</v-col>
-
-                                    </v-row>
                                 </v-container>
                             </v-card-text>
 
@@ -237,31 +201,14 @@
 
                     <v-tabs class="tabContainer" grow v-model="selectedTab">
                         <v-tabs-slider color="primary" />
+                        <v-tab href="#timeline" key="timeline">{{$t('exoplatform.LeadCapture.leadManagement.timeline','Timeline')}}</v-tab>
                         <v-tab href="#projectInfo" key="projectInfo">{{$t('exoplatform.LeadCapture.leadManagement.projectInfo','Project Info')}}</v-tab>
                         <v-tab href="#captureInfo" key="captureInfo">{{$t('exoplatform.LeadCapture.leadManagement.captureInfo','Capture Info')}}</v-tab>
                     </v-tabs>
 
                     <v-tabs-items class="infoContent" v-model="selectedTab">
-                        <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
-                            <div class="text-right">
-                                <v-btn-toggle v-model="view">
-                                    <v-btn value="event">
-
-                                        <span class="hidden-sm-and-down">Event</span>
-                                        <v-icon right>mdi-calendar-check</v-icon>
-                                    </v-btn>
-
-                                    <v-btn value="timeline">
-
-                                        <span class="hidden-sm-and-down">Timeline</span>
-                                        <v-icon right>mdi-clock-outline</v-icon>
-                                    </v-btn>
-
-                                </v-btn-toggle>
-                            </div>
-                            <form-responses v-if="view ==='event'" :lead="lead" :formResponses="formResponses" />
-
-                            <v-timeline v-if="view ==='timeline'" reverse dense>
+                        <v-tab-item class="tabContent" eager id="timeline" value="timeline">
+                            <v-timeline dense>
                                 <v-timeline-item v-for="formResponse in timeline" :key="formResponse.id" :icon="getIcon(formResponse.form)" right dense>
                                     <v-card class="elevation-2">
                                         <v-card-title>
@@ -350,6 +297,47 @@
                                 </v-card>
                             </v-form>
                         </v-tab-item>
+
+                        <v-tab-item class="tabContent" eager id="captureInfo" value="captureInfo">
+                            <v-row>
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.personSource','Person Source')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="9">{{$t(`exoplatform.LeadCapture.${lead.personSource}`,lead.personSource)}}</v-col>
+
+                            </v-row>
+                            <v-row>
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureMethod','Capture Method')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="9">{{$t(`exoplatform.LeadCapture.method.${lead.captureMethod}`,lead.captureMethod)}}</v-col>
+
+                            </v-row>
+                            <v-row>
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureType','Capture Type')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="8">{{lead.captureType}}</v-col>
+
+                            </v-row>
+                            <v-row>
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.captureDetail','Capture Detail')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="9">{{$t(`exoplatform.LeadCapture.detail.${lead.captureSourceInfo}`,lead.captureSourceInfo)}}</v-col>
+
+                            </v-row>
+                            <v-row>
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.originalReferrer','Original Referrer')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="9">{{lead.originalReferrer}}</v-col>
+
+                            </v-row>
+                            <v-row v-if="lead.blogSubscription==true">
+
+                                <v-col cols="12" sm="4" md="3"><strong>{{$t('exoplatform.LeadCapture.leadManagement.blogSubscriptionDate','formattedBlogSubscriptionDate')}}:</strong></v-col>
+                                <v-col cols="12" sm="8" md="9">{{lead.formattedBlogSubscriptionDate}}</v-col>
+
+                            </v-row>
+                            <form-responses :lead="lead" :formResponses="formResponses" />
+                        </v-tab-item>
+
                     </v-tabs-items>
                 </template>
 
@@ -388,7 +376,7 @@ export default {
         view: 'timeline',
         valid: true,
         confirmDialog: false,
-        selectedTab: 'projectInfo',
+        selectedTab: 'timeline',
         drawer: null,
         showEditor: false,
         showEditor1: false,
@@ -562,7 +550,6 @@ export default {
 </script>
 
 <style>
-
 .leadDetails {
     background: none !important;
     padding: 0 !important;

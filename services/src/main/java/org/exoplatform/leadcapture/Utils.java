@@ -292,7 +292,6 @@ public class Utils {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     String botName = settings.getUserExperienceBotUserName();
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-    ActivityStorage activityStorage = CommonsUtils.getService(ActivityStorage.class);
     FieldDAO fieldDAO = CommonsUtils.getService(FieldDAO.class);
     ExoSocialActivity activity = activityManager.getActivity(activityId);
     if (activity == null) {
@@ -310,14 +309,17 @@ public class Utils {
         commentText = commentText.concat(fieldEntity.getName() + " : " + fieldEntity.getValue() + "<br/>");
       }
     }
-    ExoSocialActivity comment = new ExoSocialActivityImpl();
-    comment.setTitle(commentText);
-    comment.setUserId(posterIdentity.getId());
-    comment.setPosterId(posterIdentity.getId());
-    activityStorage.saveComment(activity, comment);
-
+    saveComment(activity, commentText, posterIdentity.getId(), posterIdentity.getId());
   }
 
+  public static void saveComment(ExoSocialActivity activity, String commentText, String userId, String posterId) {
+    ActivityStorage activityStorage = CommonsUtils.getService(ActivityStorage.class);
+    ExoSocialActivity comment = new ExoSocialActivityImpl();
+    comment.setTitle(commentText);
+    comment.setUserId(userId);
+    comment.setPosterId(posterId);
+    activityStorage.saveComment(activity, comment);
+  }
   public static Project getTaskProject(String groupId, String taskProject) {
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
     List<Project> projects = ProjectUtil.getProjectTree(groupId, projectService);

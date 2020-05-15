@@ -104,4 +104,12 @@ public class LeadDTO implements Serializable {
 
   private Long  tasksLabelId;
 
+  private String  openedDate;
+
+  private String  qualifiedDate;
+
+  private String  acceptedDate;
+
+  private String  recycledDate;
+
 }

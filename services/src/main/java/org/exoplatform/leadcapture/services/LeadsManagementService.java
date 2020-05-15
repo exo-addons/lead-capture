@@ -278,7 +278,8 @@ public class LeadsManagementService {
                                   String sortBy,
                                   Boolean sortDesc,
                                   int page,
-                                  int limit) {
+                                  int limit,
+                                  Boolean export) {
     int offset = (page - 1) * limit;
     List<LeadDTO> leadsList = new ArrayList<>();
     List<LeadEntity> leadsEntities = leadDAO.getLeads(search,
@@ -297,9 +298,42 @@ public class LeadsManagementService {
                                                       sortDesc);
     Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned);
     if (leadsEntities != null) {
+      if (export!=null && export) {
       for (LeadEntity leadEntity : leadsEntities) {
         if (leadEntity != null) {
-          leadsList.add(toLeadDto(leadEntity));
+          LeadDTO leadDTO = toLeadDto(leadEntity);
+          if (leadDTO.getTaskId() != null && leadDTO.getTaskId() != 0) {
+            try {
+              Task task = taskService.getTask(leadDTO.getTaskId());
+              ListAccess<ChangeLog> logs = taskService.getTaskLogs(leadDTO.getTaskId());
+              leadDTO.setOpenedDate(formatter.format(task.getCreatedTime()));
+              for (ChangeLog log : logs.load(0, logs.getSize())) {
+                if (log.getActionName().equals("edit_status")) {
+                  switch (log.getTarget()) {
+                    case "Qualified":
+                      leadDTO.setQualifiedDate(formatter.format(log.getCreatedTime()));
+                      break;
+                    case "Accepted":
+                      leadDTO.setAcceptedDate(formatter.format(log.getCreatedTime()));
+                      break;
+                    case "Recycled":
+                      leadDTO.setRecycledDate(formatter.format(log.getCreatedTime()));
+                      break;
+                  }
+                }
+              }
+            } catch (Exception e) {
+              LOG.error("Cannot get Task log for lead {}", leadDTO.getId(), e);
+            }
+          }
+          leadsList.add(leadDTO);
+          }
+        }
+      }else{
+        for (LeadEntity leadEntity : leadsEntities) {
+          if (leadEntity != null) {
+            leadsList.add(toLeadDto(leadEntity));
+          }
         }
       }
     }
