@@ -239,7 +239,7 @@ export default {
         search: function (val) {
             if (!this.awaitingSearch) {
                 setTimeout(() => {
-                    this.getLeads().then(data => {
+                    this.getLeads(false,true).then(data => {
                         this.leadList = data.items
                         this.totalLeads = data.total
                     })
@@ -351,7 +351,7 @@ export default {
                 this.userNumberMin = val.userNumberMin
             }
 
-            this.getLeads().then(data => {
+            this.getLeads(false,true).then(data => {
                 this.leadList = data.items
                 this.totalLeads = data.total
             })
@@ -368,7 +368,7 @@ export default {
             if (leadId != null) {
                 const lead = this.getLeadById(leadId)
                 if (this.lead === null) {
-                    this.getLeads()
+                    this.getLeads(false,false)
                         .then(data => {
                             this.leadList = data.items
                             this.totalLeads = data.total
@@ -636,7 +636,7 @@ export default {
             }
         },
 
-        getLeads(toExport) {
+        getLeads(toExport,init) {
             this.loading = true
             return new Promise((resolve, reject) => {
                 const {
@@ -650,9 +650,12 @@ export default {
                 let owner = ""
                 let page_ = page
                 let itemsPerPage_ = itemsPerPage
-                if (toExport) {
+                if (init) {
                     page_ = 1
                     itemsPerPage_ = -1
+                }
+                if (toExport) {
+                    page_ = 1
                 }
                 if (this.myLeads) {
                     owner = this.context.currentUser
@@ -695,7 +698,7 @@ export default {
         },
 
         async exportData() {
-            const response = await this.getLeads(true);
+            const response = await this.getLeads(true,false);
             console.log(response);
             return response.items;
         },
