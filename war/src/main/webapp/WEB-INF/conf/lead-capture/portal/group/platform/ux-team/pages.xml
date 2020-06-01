@@ -83,4 +83,19 @@
             <show-info-bar>false</show-info-bar>
         </portlet-application>
     </page>
+    <page>
+        <name>compaigns_management</name>
+        <title>Compaigns Management</title>
+        <access-permissions>manager:/platform/ux-team</access-permissions>
+        <edit-permission>manager:/platform/administrators</edit-permission>
+        <portlet-application>
+            <portlet>
+                <application-ref>lead-capture</application-ref>
+                <portlet-ref>compaignsManagement</portlet-ref>
+            </portlet>
+            <title>Compaigns management Portlet</title>
+            <access-permissions>manager:/platform/ux-team</access-permissions>
+            <show-info-bar>false</show-info-bar>
+        </portlet-application>
+    </page>
 </page-set>

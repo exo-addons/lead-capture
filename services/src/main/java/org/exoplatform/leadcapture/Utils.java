@@ -2,9 +2,7 @@ package org.exoplatform.leadcapture;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -451,6 +449,10 @@ public class Utils {
       }
     }
     return false;
+  }
+
+  public static float calculateNumberOfDays(long from, long to){
+    return (int) ((from- to) / (24 * 60 * 60 * 1000));
   }
 
 }

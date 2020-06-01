@@ -522,6 +522,9 @@ public class LeadsManagementService {
   public LeadEntity getLeadByTask(Long taslId) {
     return leadDAO.getLeadByTask(taslId);
   }
+  public List<LeadEntity>  getLeadsByStatus(String status) {
+    return leadDAO.getLeadsByStatus(status);
+  }
 
   public JSONArray getTaskComments(long taskId) {
     return Utils.getCommentsJson(taskService.getComments(taskId));

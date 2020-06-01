@@ -66,6 +66,26 @@
     </portlet>
 
     <portlet>
+        <portlet-name>compaignsManagement</portlet-name>
+        <display-name xml:lang="EN">Compaigns Management Portlet</display-name>
+        <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>
+        <init-param>
+            <name>portlet-view-dispatched-file-path</name>
+            <value>/compaignsManagement.html</value>
+        </init-param>
+        <expiration-cache>-1</expiration-cache>
+        <cache-scope>PUBLIC</cache-scope>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <portlet-info>
+            <title>Compaigns management</title>
+            <keywords>lead-capture</keywords>
+        </portlet-info>
+    </portlet>
+
+    <portlet>
         <portlet-name>leadCaptureSettings</portlet-name>
         <display-name xml:lang="EN">Lead Capture Settings Portlet</display-name>
         <portlet-class>org.exoplatform.commons.api.portlet.GenericDispatchedViewPortlet</portlet-class>

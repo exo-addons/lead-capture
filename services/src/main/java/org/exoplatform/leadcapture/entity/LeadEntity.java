@@ -16,6 +16,7 @@ import lombok.Data;
 @NamedQueries({
     @NamedQuery(name = "LeadEntity.countLeads", query = "SELECT count(lead.id) FROM  LeadEntity lead"),
     @NamedQuery(name = "LeadEntity.getLeadByMail", query = "SELECT lead FROM LeadEntity lead where lead.mail = :mail "),
+    @NamedQuery(name = "LeadEntity.getLeadsByStatus", query = "SELECT lead FROM LeadEntity lead where lead.status = :status "),
     @NamedQuery(name = "LeadEntity.getLeadByTask", query = "SELECT lead FROM LeadEntity lead where lead.taskId = :taskId ") })
 
 

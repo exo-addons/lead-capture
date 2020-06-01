@@ -243,6 +243,40 @@
                         newDataType="INT"
                         tableName="ADDONS_LC_LEAD"/>
     </changeSet>
-</databaseChangeLog>
+
+    <changeSet author="exo-lead-capture" id="1.0.0-">
+        <createTable tableName="ADDONS_LC_COMPAIGN">
+
+            <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_COMPAIGN"/>
+            </column>
+            <column name="NAME" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIELD" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="NVARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INSTANTLY" type="BOOLEAN">
+            </column>
+            <column name="AFTER" type="INT">
+            </column>
+            <column name="LC_MAIL_TEMPLATE_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_LC_COMPAIGN_MAIL_TEMPLATE"
+                             references="ADDONS_LC_MAIL_TEMPLATE(ID)"/>
+            </column>
+        </createTable>
+        <createSequence sequenceName="SEQ_ADDONS_LC_COMPAIGN_ID" startValue="1"/>
+
+        <modifySql dbms="mysql">
+            <append value=" ENGINE=INNODB CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci"/>
+
+        </modifySql>
+
+    </changeSet>
+
+        </databaseChangeLog>
 
 

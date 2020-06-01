@@ -27,6 +27,12 @@
                 <label>Resources management</label>
                 <page-reference>group::/platform/ux-team::resources_management</page-reference>
             </node>
+            <node>
+                <uri>compaigns_management</uri>
+                <name>compaigns_management</name>
+                <label>Compaigns management</label>
+                <page-reference>group::/platform/ux-team::compaigns_management</page-reference>
+            </node>
                 <node>
                     <uri>lead_capture_settings</uri>
                     <name>lead_capture_settings</name>

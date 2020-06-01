@@ -2,6 +2,7 @@ package org.exoplatform.leadcapture.dao;
 
 import static org.exoplatform.leadcapture.Utils.*;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -245,6 +247,20 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
     } catch (Exception e) {
       LOG.error("Error occurred when trying to get lead by email {}", mail, e);
       return null;
+    }
+  }
+  public List<LeadEntity> getLeadsByStatus(String status) {
+
+    TypedQuery<LeadEntity> query = getEntityManager().createNamedQuery("LeadEntity.getLeadsByStatus", LeadEntity.class)
+                                                     .setParameter("status", status);
+
+    try {
+      return query.getResultList();
+    } catch (NoResultException e) {
+      return new ArrayList<LeadEntity>();
+    } catch (Exception e) {
+      LOG.error("Error occurred when trying to get list of leads by status {}", status, e);
+      return new ArrayList<LeadEntity>();
     }
   }
 

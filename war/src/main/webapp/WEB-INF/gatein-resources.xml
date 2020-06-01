@@ -60,6 +60,14 @@
             </depends>
         </module>
     </portlet>
+    <portlet>
+        <name>compaignsManagement</name>
+        <module>
+            <depends>
+                <module>compaignsManagementjs</module>
+            </depends>
+        </module>
+    </portlet>
 
     <module>
         <name>leadsManagementjs</name>
@@ -126,6 +134,23 @@
         <script>
             <minify>false</minify>
             <path>/js/resourcesManagement.bundle.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>$</as>
+        </depends>
+        <depends>
+            <module>vuetify</module>
+        </depends>
+        <depends>
+            <module>eXoVueI18n</module>
+        </depends>
+    </module>
+    <module>
+        <name>compaignsManagementjs</name>
+        <script>
+            <minify>false</minify>
+            <path>/js/compaignsManagement.bundle.js</path>
         </script>
         <depends>
             <module>jquery</module>

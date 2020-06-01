@@ -77,6 +77,10 @@ export default {
             {
                 title: 'New Community Registration',
                 value: 'newCommunityRegistration'
+            },
+            {
+                title: 'Compaign',
+                value: 'compaign'
             }
         ],
         confirmDialog: false,

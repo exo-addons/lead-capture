@@ -34,6 +34,10 @@
     </component>
 
     <component>
+        <type>org.exoplatform.leadcapture.dao.CompaignDAO</type>
+    </component>
+
+    <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
     <component>
@@ -49,6 +53,9 @@
         <type>org.exoplatform.leadcapture.services.ResourcesManagementService</type>
     </component>
     <component>
+        <type>org.exoplatform.leadcapture.services.CompaignManagementService</type>
+    </component>
+    <component>
         <type>org.exoplatform.leadcapture.rest.LeadsManagementRest</type>
     </component>
     <component>
@@ -59,6 +66,9 @@
     </component>
     <component>
         <type>org.exoplatform.leadcapture.rest.ResoucesManagementRest</type>
+    </component>
+    <component>
+        <type>org.exoplatform.leadcapture.rest.CompaignsManagementRest</type>
     </component>
 
 <!--
@@ -104,6 +114,27 @@
             <name>exo.task.taskUpdate</name>
             <set-method>addListener</set-method>
             <type>org.exoplatform.leadcapture.listeners.TaskUpdateListener</type>
+        </component-plugin>
+    </external-component-plugins>
+
+    <external-component-plugins>
+        <target-component>org.exoplatform.services.scheduler.JobSchedulerService</target-component>
+        <component-plugin>
+            <name>AddCronJob</name>
+            <set-method>addCronJob</set-method>
+            <type>org.exoplatform.services.scheduler.CronJob</type>
+            <description>add Notifications job to the JobSchedulerService</description>
+            <init-params>
+                <properties-param>
+                    <name>cronjob.info</name>
+                    <description>Configuration for Compaigns mailing job</description>
+                    <property name="jobName" value="NotificationsJob"/>
+                    <property name="groupName" value="group"/>
+                    <property name="job" value="org.exoplatform.leadcapture.jobs.CompaignsJob"/>
+                    <!--<property name="expression" value="0 30 2 ? * * *"/>-->
+                    <property name="expression" value="0 */2 * ? * *"/>
+                </properties-param>
+            </init-params>
         </component-plugin>
     </external-component-plugins>
 
