@@ -30,8 +30,8 @@ public class CompaignEntity implements Serializable {
   @Column(name = "VALUE", nullable = false)
   protected String value;
 
-  @Column(name = "INSTANTLY")
-  protected Boolean instantly;
+  @Column(name = "ENABLED")
+  protected Boolean enabled;
 
   @Column(name = "AFTER")
   protected int after;
@@ -43,11 +43,11 @@ public class CompaignEntity implements Serializable {
   public CompaignEntity() {
   }
 
-  public CompaignEntity(String name, String field, String value, Boolean instantly, int after, MailTemplateEntity mailTemplateEntity) {
+  public CompaignEntity(String name, String field, String value, Boolean enabled, int after, MailTemplateEntity mailTemplateEntity) {
     this.name = name;
     this.field = field;
     this.value = value;
-    this.instantly = instantly;
+    this.enabled = enabled;
     this.after = after;
     this.mailTemplateEntity = mailTemplateEntity;
   }

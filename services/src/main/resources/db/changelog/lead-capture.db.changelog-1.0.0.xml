@@ -259,7 +259,7 @@
             <column name="VALUE" type="NVARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="INSTANTLY" type="BOOLEAN">
+            <column name="ENABLED" type="BOOLEAN">
             </column>
             <column name="AFTER" type="INT">
             </column>

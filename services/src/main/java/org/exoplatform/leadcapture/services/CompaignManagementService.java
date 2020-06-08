@@ -68,7 +68,7 @@ public class CompaignManagementService {
     compaignDTO.setName(compaignEntity.getName());
     compaignDTO.setValue(compaignEntity.getValue());
     compaignDTO.setField(compaignEntity.getField());
-    compaignDTO.setInstantly(compaignEntity.getInstantly());
+    compaignDTO.setEnabled(compaignEntity.getEnabled());
     compaignDTO.setAfter(compaignEntity.getAfter());
     if (compaignEntity.getMailTemplateEntity() != null) {
       compaignDTO.setMailTemplateDTO(mailTemplatesManagementService.toMailTemplateDTO(compaignEntity.getMailTemplateEntity() ));
@@ -82,7 +82,7 @@ public class CompaignManagementService {
     compaignEntity.setName(compaignDTO.getName());
     compaignEntity.setField(compaignDTO.getField());
     compaignEntity.setValue(compaignDTO.getValue());
-    compaignEntity.setInstantly(compaignDTO.getInstantly());
+    compaignEntity.setEnabled(compaignDTO.getEnabled());
     compaignEntity.setAfter(compaignDTO.getAfter());
     if (compaignDTO.getMailTemplateDTO() != null) {
       compaignEntity.setMailTemplateEntity(mailTemplatesManagementService.toMailTemplateEntity(compaignDTO.getMailTemplateDTO() ));

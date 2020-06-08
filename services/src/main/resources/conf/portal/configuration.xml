@@ -131,8 +131,8 @@
                     <property name="jobName" value="NotificationsJob"/>
                     <property name="groupName" value="group"/>
                     <property name="job" value="org.exoplatform.leadcapture.jobs.CompaignsJob"/>
-                    <!--<property name="expression" value="0 30 2 ? * * *"/>-->
-                    <property name="expression" value="0 */2 * ? * *"/>
+                    <property name="expression" value="0 00 1 ? * * *"/>
+                    <!--<property name="expression" value="0 */2 * ? * *"/>-->
                 </properties-param>
             </init-params>
         </component-plugin>
@@ -147,7 +147,7 @@
             <init-params>
                 <values-param>
                     <name>changelogs</name>
-                    <description>Change logs of GitHub Connector</description>
+                    <description>Change logs of Lead Capture addon</description>
                     <value>db/changelog/lead-capture.db.changelog-1.0.0.xml</value>
                 </values-param>
             </init-params>

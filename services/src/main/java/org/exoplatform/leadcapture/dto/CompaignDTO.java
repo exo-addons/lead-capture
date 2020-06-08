@@ -14,7 +14,7 @@ public class CompaignDTO implements Serializable {
 
   private String value;
 
-  private Boolean instantly;
+  private Boolean enabled;
 
   private int after;
 

@@ -652,10 +652,11 @@ export default {
                 let itemsPerPage_ = itemsPerPage
                 if (init) {
                     page_ = 1
-                    itemsPerPage_ = -1
+                    this.options.page = 1
                 }
                 if (toExport) {
                     page_ = 1
+                    itemsPerPage_ = -1
                 }
                 if (this.myLeads) {
                     owner = this.context.currentUser
