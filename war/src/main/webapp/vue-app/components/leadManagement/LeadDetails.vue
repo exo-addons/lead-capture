@@ -343,7 +343,7 @@
 
             </v-col>
         </v-row>
-        <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTaskList="updateTask()" @closeDrawer="onCloseDrawer" />
+        <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTask="updateTask" @closeDrawer="onCloseDrawer" />
         <!--         <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
             <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
         </v-navigation-drawer> -->
@@ -454,8 +454,15 @@ export default {
             this.drawer = true;
             document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
         },
-        updateTask() {
-            console.log("update")
+        updateTask(item) {
+            this.lead.status = item.status.name
+             fetch(`/portal/rest/leadcapture/leadsmanagement/timeline/` + this.lead.id, {
+                    credentials: 'include',
+                })
+                .then((resp) => resp.json())
+                .then((resp) => {
+                    this.timeline = resp.sort((a, b) => b.time - a.time);;
+                });
         },
         onCloseDrawer: function (drawer) {
             this.drawer = drawer;

@@ -54,12 +54,17 @@
                     </v-label>
                     <input ref="language" v-model="editedLead.language" type="text" name="language" class="input-block-level ignore-vuetify-classes my-3" />
                 </v-row>
-                <v-row>
-                <v-label for="geographiqueZone">
-                        {{ $t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique zone') }}
+                 
+                 <v-row>
+                    <v-label for="geoZone">
+                         {{ $t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique zone') }}
                     </v-label>
-                    <input ref="geographiqueZone" v-model="editedLead.geographiqueZone" type="text" name="geographiqueZone" class="input-block-level ignore-vuetify-classes my-3" />
-                </v-row>               
+                    <select v-model="editedLead.geographiqueZone" name="geoZone" class="input-block-level ignore-vuetify-classes my-3">
+                        <option v-for="item in gZoneList" :key="item" :value="item">
+                            {{$t(`exoplatform.LeadCapture.leadManagement.${item}`,item)}}
+                        </option>
+                    </select>
+                </v-row>              
                 <v-row>
                         <div class="d-flex flex-wrap pt-2">
                             <label for="marketingSuspended" class="v-label theme--light my-auto float-left">
@@ -101,7 +106,8 @@ export default {
 
     props: ['lead'],
     data: () => ({
-        editedLead: {}
+        editedLead: {},
+        gZoneList: ["US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
     }),
     computed: {
         editedLead: function () {
