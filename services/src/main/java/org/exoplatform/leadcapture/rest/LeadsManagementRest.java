@@ -593,5 +593,24 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }
   }
+  @POST
+  @RolesAllowed("administrators")
+  @Path("mergezone")
+  public Response mergeZone(@Context UriInfo uriInfo) throws Exception {
+
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    try {
+      leadsManagementService.mergezone();
+      return Response.status(Response.Status.OK).entity("leads geo zone updated").build();
+
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to update geo zone of leads",  e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
 
 }

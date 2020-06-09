@@ -107,7 +107,7 @@ export default {
     props: ['lead'],
     data: () => ({
         editedLead: {},
-        gZoneList: ["US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
+        gZoneList: ["US-Canada", "Europe", "LatAm", "APAC", "MEA"]
     }),
     computed: {
         editedLead: function () {

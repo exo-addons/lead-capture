@@ -165,7 +165,7 @@ export default {
         selectedGeoZone: "All",
         userNumberMax: 0,
         userNumberMin: 0,
-        gZoneList: ["All", "US-Canada", "Western Europe", "Eastern Europe", "LatAm", "APAC", "MEA"]
+        gZoneList: ["All", "US-Canada", "Europe", "LatAm", "APAC", "MEA"]
     }),
 
     computed: {

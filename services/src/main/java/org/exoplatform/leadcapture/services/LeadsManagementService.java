@@ -920,4 +920,20 @@ public class LeadsManagementService {
       throw (e);
     }
   }
+  public boolean mergezone() throws Exception {
+    try {
+      List<LeadEntity> leadsEntities = leadDAO.findAll();
+      List<LeadEntity> leadsEntitiestoUpdate = new ArrayList<>();
+      for (LeadEntity lead : leadsEntities) {
+        if (lead.getGeographiqueZone() != null && (lead.getGeographiqueZone().equals(LC_G_ZONE_WESTERN_EUROPE_NAME) ||lead.getGeographiqueZone().equals(LC_G_ZONE_ESTERN_EUROPE_NAME))) {
+              lead.setGeographiqueZone(LC_G_ZONE_EUROPE_NAME);
+              leadsEntitiestoUpdate.add(lead);
+          }
+        }
+      leadDAO.updateAll(leadsEntitiestoUpdate);
+      return true;
+    } catch (Exception e) {
+      throw (e);
+    }
+  }
 }

@@ -456,13 +456,6 @@ export default {
         },
         updateTask(item) {
             this.lead.status = item.status.name
-             fetch(`/portal/rest/leadcapture/leadsmanagement/timeline/` + this.lead.id, {
-                    credentials: 'include',
-                })
-                .then((resp) => resp.json())
-                .then((resp) => {
-                    this.timeline = resp.sort((a, b) => b.time - a.time);;
-                });
         },
         onCloseDrawer: function (drawer) {
             this.drawer = drawer;

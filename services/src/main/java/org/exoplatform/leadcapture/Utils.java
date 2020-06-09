@@ -125,24 +125,25 @@ public class Utils {
 
   public static final String           LC_G_ZONE_ESTERN_EUROPE_NAME         = "Eastern Europe";
 
+  public static final String           LC_G_ZONE_EUROPE_NAME         = "Europe";
+
   public static final String           LC_G_ZONE_LAT_AM_NAME                = "LatAm";
 
   public static final String           LC_G_ZONE_APAC_NAME                  = "APAC";
 
   public static final String           LC_G_ZONE_MEA_NAME                   = "MEA";
 
-  public static final String[]         LC_G_ZONE_WESTERN_EUROPE             = { "Belgium", "Belgique", "BE", "Netherlands", "NL",
+  public static final String[]         LC_G_ZONE_EUROPE             = { "Belgium", "Belgique", "BE", "Netherlands", "NL",
       "Luxembourg", "LU", "Denmark", "DK", "Finland", "FI", "Åland Islands", "Aland Islands", "Iceland", "IS", "Norway", "NO",
       "Sweden", "SE", "France", "French", "FR", "Germany", "DEIreland", "IE", "Italy", "IT", "Liechtenstein", "LI", "Monaco",
       "MC", "Portugal", "PT", "Spain", "SP", "Switzerland", "Suisse", "CH", "United Kingdom", "UK", "GB", "Guernsey",
-      "Holy See (Vatican City State)", "Isle of Man", "Jersey", "Spain", "ES", "Greece", "GR", "Austria", "AT" };
+      "Holy See (Vatican City State)", "Isle of Man", "Jersey", "Spain", "ES", "Greece", "GR", "Austria", "AT", "Albania", "AL", "Armenia", "Belarus", "BY",
+          "Bosnia", "Bosnia and Herzegovina", "Bosnia & Herzegovina", "BA", "Bulgaria", "BG", "Croatia", "HR", "Cyprus",
+          "Czech Republic", "CZ", "Estonia", "EE", "Hungary", "HU", "Lithuania", "LT", "Macedonia", "Malta", "MT", "Moldova", "MD",
+          "Poland", "PL", "Romania", "RO", "Russia", "RU", "Slovakia", "SK", "Slovenia", "Ukraine", "UA", "Yugoslavia", "Andorra",
+          "AD", "Gibraltar", "Greenland", "Bosnia and Herzegovina", "Georgia", "Azerbaijan", "Latvia", "Moldova, Republic of",
+          "Serbia", "Azerbaijan", "Faroe Islands", "Montenegro", "San Marino", "Montenegro", "ME", "Georgia", "GE" };
 
-  public static final String[]         LC_G_ZONE_ESTERN_EUROPE              = { "Albania", "AL", "Armenia", "Belarus", "BY",
-      "Bosnia", "Bosnia and Herzegovina", "Bosnia & Herzegovina", "BA", "Bulgaria", "BG", "Croatia", "HR", "Cyprus",
-      "Czech Republic", "CZ", "Estonia", "EE", "Hungary", "HU", "Lithuania", "LT", "Macedonia", "Malta", "MT", "Moldova", "MD",
-      "Poland", "PL", "Romania", "RO", "Russia", "RU", "Slovakia", "SK", "Slovenia", "Ukraine", "UA", "Yugoslavia", "Andorra",
-      "AD", "Gibraltar", "Greenland", "Bosnia and Herzegovina", "Georgia", "Azerbaijan", "Latvia", "Moldova, Republic of",
-      "Serbia", "Azerbaijan", "Faroe Islands", "Montenegro", "San Marino", "Montenegro", "ME", "Georgia", "GE" };
 
   public static final String[]         LC_G_ZONE_APAC                       = { "Australia", "AU", "Bangladesh", "BD", "Brunei",
       "Cambodia", "KH", "China", "CN", "Comoros", "KM", "Guam", "GU", "Hong Kong", "HK", "India", "IN", "Indonesia", "ID",
@@ -414,10 +415,8 @@ public class Utils {
     if (StringUtils.isNoneEmpty(country)) {
       if (isInList(country, LC_G_ZONE_US_CANADA))
         return LC_G_ZONE_US_CANADA_NAME;
-      if (isInList(country, LC_G_ZONE_WESTERN_EUROPE))
-        return LC_G_ZONE_WESTERN_EUROPE_NAME;
-      if (isInList(country, LC_G_ZONE_ESTERN_EUROPE))
-        return LC_G_ZONE_ESTERN_EUROPE_NAME;
+      if (isInList(country, LC_G_ZONE_EUROPE))
+        return LC_G_ZONE_EUROPE_NAME;
       if (isInList(country, LC_G_ZONE_LAT_AM))
         return LC_G_ZONE_LAT_AM_NAME;
       if (isInList(country, LC_G_ZONE_APAC))
