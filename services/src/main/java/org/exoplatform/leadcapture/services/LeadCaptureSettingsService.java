@@ -31,8 +31,8 @@ import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.domain.Project;
 import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
 
 public class LeadCaptureSettingsService {
 

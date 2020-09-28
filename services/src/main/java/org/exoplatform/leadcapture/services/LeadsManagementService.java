@@ -36,9 +36,9 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.service.ProjectService;
-import org.exoplatform.task.service.StatusService;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
 public class LeadsManagementService {

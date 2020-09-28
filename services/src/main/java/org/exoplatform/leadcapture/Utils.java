@@ -39,7 +39,7 @@ import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.storage.api.ActivityStorage;
 import org.exoplatform.task.domain.Comment;
 import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.ws.frameworks.json.JsonGenerator;
 import org.exoplatform.ws.frameworks.json.JsonParser;

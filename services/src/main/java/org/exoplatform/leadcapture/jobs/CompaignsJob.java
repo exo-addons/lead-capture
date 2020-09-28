@@ -23,7 +23,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.ChangeLog;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskService;
 
 public class CompaignsJob implements Job {
   private static final Log          LOG                       = ExoLogger.getLogger(CompaignsJob.class);

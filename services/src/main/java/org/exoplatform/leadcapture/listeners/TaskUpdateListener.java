@@ -18,8 +18,8 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.service.TaskPayload;
-import org.exoplatform.task.service.TaskService;
+import org.exoplatform.task.legacy.service.TaskPayload;
+import org.exoplatform.task.legacy.service.TaskService;
 
 public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
   private static final Log  LOG = ExoLogger.getLogger(TaskUpdateListener.class);
