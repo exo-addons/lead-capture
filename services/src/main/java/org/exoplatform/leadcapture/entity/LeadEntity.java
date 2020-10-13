@@ -1,6 +1,8 @@
 package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -157,5 +159,8 @@ public class LeadEntity implements Serializable {
 
   @Column(name = "TASKS_LABEL_ID")
   protected Long  tasksLabelId;
+
+  @OneToMany(mappedBy = "leadEntity", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Collection<ResponseEntity> responses = new ArrayList<ResponseEntity>();
 
 }

@@ -1,15 +1,10 @@
 <template>
-<v-container class="">
-
-    <v-row class="mx-0 drawerHeader">
-        <v-list-item>
-            <v-list-item-content>
-                <span class="drawerTitle">
-                    {{$t('exoplatform.LeadCapture.leadManagement.task','Lead Task')}}
-                </span>
-            </v-list-item-content>
-            <v-list-item-action class="drawerIcons">
-                <v-menu offset-y>
+<exo-drawer ref="todoDrawer" right class="">
+    <template slot="title">
+        {{$t('exoplatform.LeadCapture.leadManagement.task','Lead Task')}}
+    </template>
+    <template slot="titleIcons">
+ <v-menu offset-y>
                     <template v-slot:activator="{ on }">
                         <v-btn class="text-uppercase caption primary--text tasksBtn" outlined v-on="on">
                             {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
@@ -29,13 +24,11 @@
                     <v-icon>mdi-open-in-new</v-icon>
                 </v-btn>
                 <i class="actionIcon  uiCloseIcon" @click="toggleDrawer()"></i>
-            </v-list-item-action>
-        </v-list-item>
-    </v-row>
 
-    <v-divider></v-divider>
-    <div class="drawerContent">
-        <v-card v-show="dialog">
+    </template>
+    <template slot="content">
+        <div>
+          <v-card v-show="dialog">
             <v-card-text>
                 <ck-editor ref="ck" :content="content" />
             </v-card-text>
@@ -68,8 +61,10 @@
 
             </v-list-item>
         </v-list>
-    </div>
-</v-container>
+        </div>
+    </template>
+
+</exo-drawer>
 </template>
 
 <script>
@@ -133,11 +128,22 @@ export default {
             this.dialog = true
         },
         close() {
+            this.$refs.filterDrawer.close();
             this.newNote = {}
             this.dialog = false
         },
         changeStatus(item) {
             this.$emit('changeStatus', item);
+        },
+         cancel() {
+              this.newNote = {}
+            this.dialog = false
+            this.$refs.todoDrawer.close();
+        },
+        open() {
+
+            this.$refs.todoDrawer.open();
+
         },
         saveNote() {
             if (this.$refs.ck !== undefined) {

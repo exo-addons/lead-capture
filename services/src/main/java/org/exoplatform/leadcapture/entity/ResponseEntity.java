@@ -1,14 +1,17 @@
 package org.exoplatform.leadcapture.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.*;
 
 import org.exoplatform.commons.api.persistence.ExoEntity;
 
 import lombok.Data;
+import org.exoplatform.task.domain.Comment;
 
 @Entity(name = "ResponseEntity")
 @ExoEntity
@@ -29,17 +32,17 @@ public class ResponseEntity implements Serializable {
   @Column(name = "CREATED_DATE")
   protected Date createdDate;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "LC_FORM_ID", nullable = false)
   private FormEntity              formEntity;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "LC_LEAD_ID", nullable = false)
   private LeadEntity              leadEntity;
 
-  @OneToMany(orphanRemoval = true)
-  @JoinColumn(name = "ID")
-  private Collection<FieldEntity> filelds;
+
+  @OneToMany(mappedBy = "responseEntity", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Collection<FieldEntity> filelds = new ArrayList<FieldEntity>();
 
   public ResponseEntity() {
   }

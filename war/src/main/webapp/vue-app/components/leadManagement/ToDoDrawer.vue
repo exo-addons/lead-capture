@@ -1,15 +1,10 @@
 <template>
-<v-container class="">
-
-    <v-row class="mx-0 drawerHeader">
-        <v-list-item>
-            <v-list-item-content>
-                <span class="drawerTitle">
-                    {{$t('exoplatform.LeadCapture.leadManagement.toDoList','Todo list')}}
-                </span>
-            </v-list-item-content>
-            <v-list-item-action class="drawerIcons">
-                <v-switch v-model="showAll" :label="$t('exoplatform.LeadCapture.status.All','All')"></v-switch>
+<exo-drawer ref="todoDrawer" right class="">
+    <template slot="title">
+        {{$t('exoplatform.LeadCapture.leadManagement.toDoList','Todo list')}}
+    </template>
+    <template slot="titleIcons">
+<v-switch v-model="showAll" :label="$t('exoplatform.LeadCapture.status.All','All')"></v-switch>
                 <v-btn text small @click="addNote()">
                     <v-icon>mdi-plus</v-icon>
                     {{$t('exoplatform.LeadCapture.leadManagement.addItem','Add Item')}}
@@ -17,13 +12,11 @@
                 <v-btn small icon @click="navigateTo(`tasks`)">
                      <v-icon>mdi-open-in-new</v-icon>
                 </v-btn>
-                <i class="actionIcon  uiCloseIcon" @click="toggleDrawer()"></i>
-            </v-list-item-action>
-        </v-list-item>
-    </v-row>
-    <v-divider :inset="inset" class="my-0 headerBorder" />
-    <div class="drawerContent">
-        <v-card v-show="dialog">
+
+    </template>
+    <template slot="content">
+        <div>
+          <v-card v-show="dialog">
             <v-menu ref="datePicker" v-model="datePicker" :close-on-content-click="false" :return-value.sync="date" transition="scale-transition" offset-y min-width="290px">
                 <template v-slot:activator="{ on }">
                     <v-text-field v-model="date" :label="$t('exoplatform.LeadCapture.dueDate','Due Date')" prepend-icon="event" readonly v-on="on"></v-text-field>
@@ -58,8 +51,10 @@
                 </v-list-item-content>
             </v-list-item>
         </v-list>
-    </div>
-</v-container>
+        </div>
+    </template>
+
+</exo-drawer>
 </template>
 
 <script>
@@ -107,9 +102,17 @@ export default {
         addNote() {
             this.dialog = true
         },
+         cancel() {
+            this.$refs.todoDrawer.close()
+        },
+        open() {
+            this.$refs.todoDrawer.open()
+            
+        },
         close() {
             this.newNote = {}
             this.dialog = false
+            this.$refs.todoDrawer.close()
         },
         saveTask() {
             this.newItem.lead = this.lead

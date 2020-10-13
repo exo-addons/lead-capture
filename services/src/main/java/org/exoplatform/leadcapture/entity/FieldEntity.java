@@ -29,7 +29,7 @@ public class FieldEntity implements Serializable {
   @Column(name = "VALUE")
   protected String       value;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "LC_RESPONSE_ID")
   private ResponseEntity responseEntity;
 

@@ -204,6 +204,34 @@ public class LeadsManagementRest implements ResourceContainer {
     }
   }
 
+  @DELETE
+  @Path("leads/bulkdelete")
+  @Produces(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  public Response deleteLeads(@Context UriInfo uriInfo,  List<Long> ids) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+   try {
+          List<LeadEntity> leadEntityList = new ArrayList<>();
+          LeadEntity lead = null;
+          for (long id : ids) {
+            lead = leadsManagementService.getLeadbyId(id);
+            if (lead == null) {
+              LOG.warn("Lead {} Not found", id);
+            } else {
+              leadEntityList.add(lead);
+            }
+          }
+          leadsManagementService.deleteAllLeads(leadEntityList);
+          return Response.status(Response.Status.OK).entity("leads deleted").build();
+      } catch (Exception e) {
+      LOG.error("An error occured when trying to delete leads ", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
   @PUT
   @Path("leads/{id}")
   @Consumes(MediaType.APPLICATION_JSON)

@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.task.domain.*;
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +30,12 @@ import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.exoplatform.task.legacy.service.ProjectService;
 import org.exoplatform.task.legacy.service.StatusService;
@@ -157,21 +158,30 @@ public class LeadsManagementService {
     return leadDAO.create(toLeadEntity(lead));
   }
 
+  @ExoTransactional
   public void deleteLead(LeadEntity lead) throws Exception {
     try {
-      List<ResponseEntity> responseEntities = responseDAO.getResponsesByLead(lead.getId());
-      for (ResponseEntity responseEntity : responseEntities) {
-        fieldDAO.deleteAll(fieldDAO.getFieldsByResponse(responseEntity.getId()));
-      }
-      responseDAO.deleteAll(responseEntities);
-      if (lead.getTaskId() != null && lead.getTaskId() != 0) {
-        taskService.removeTask(lead.getTaskId());
-      }
       leadDAO.delete(lead);
     } catch (Exception e) {
       LOG.error(e);
       throw e;
     }
+  }
+
+  public void deleteAllLeads(List<LeadEntity> leadEntityList) throws Exception {
+    LOG.info("=============== Start Deleting of {} leads ===============",leadEntityList.size());
+    for (LeadEntity lead : leadEntityList) {
+    try {
+        if (lead.getTaskId() != null && lead.getTaskId() != 0) {
+          taskService.removeTask(lead.getTaskId());
+        }
+        leadDAO.delete(lead);
+      LOG.info("-- Lead {} deleted successfully --", lead.getId());
+    } catch (Exception e) {
+      LOG.error("cannot delete leads", e);
+    }
+    }
+    LOG.info("=============== Leads deleted successfully ===============");
   }
 
   public void updateLead(LeadDTO lead) throws Exception {
@@ -298,18 +308,18 @@ public class LeadsManagementService {
                                                       sortDesc);
     Long leadsTotalNumber = leadDAO.countLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned);
     if (leadsEntities != null) {
-      if (export!=null && export) {
-      for (LeadEntity leadEntity : leadsEntities) {
-        if (leadEntity != null) {
-          LeadDTO leadDTO = toLeadDto(leadEntity);
-          if (leadDTO.getTaskId() != null && leadDTO.getTaskId() != 0) {
-            try {
-              Task task = taskService.getTask(leadDTO.getTaskId());
-              ListAccess<ChangeLog> logs = taskService.getTaskLogs(leadDTO.getTaskId());
-              leadDTO.setOpenedDate(formatter.format(task.getCreatedTime()));
-              for (ChangeLog log : logs.load(0, logs.getSize())) {
-                if (log.getActionName().equals("edit_status")) {
-                  switch (log.getTarget()) {
+      if (export != null && export) {
+        for (LeadEntity leadEntity : leadsEntities) {
+          if (leadEntity != null) {
+            LeadDTO leadDTO = toLeadDto(leadEntity);
+            if (leadDTO.getTaskId() != null && leadDTO.getTaskId() != 0) {
+              try {
+                Task task = taskService.getTask(leadDTO.getTaskId());
+                ListAccess<ChangeLog> logs = taskService.getTaskLogs(leadDTO.getTaskId());
+                leadDTO.setOpenedDate(formatter.format(task.getCreatedTime()));
+                for (ChangeLog log : logs.load(0, logs.getSize())) {
+                  if (log.getActionName().equals("edit_status")) {
+                    switch (log.getTarget()) {
                     case "Qualified":
                       leadDTO.setQualifiedDate(formatter.format(log.getCreatedTime()));
                       break;
@@ -319,17 +329,17 @@ public class LeadsManagementService {
                     case "Recycled":
                       leadDTO.setRecycledDate(formatter.format(log.getCreatedTime()));
                       break;
+                    }
                   }
                 }
+              } catch (Exception e) {
+                LOG.error("Cannot get Task log for lead {}", leadDTO.getId(), e);
               }
-            } catch (Exception e) {
-              LOG.error("Cannot get Task log for lead {}", leadDTO.getId(), e);
             }
-          }
-          leadsList.add(leadDTO);
+            leadsList.add(leadDTO);
           }
         }
-      }else{
+      } else {
         for (LeadEntity leadEntity : leadsEntities) {
           if (leadEntity != null) {
             leadsList.add(toLeadDto(leadEntity));
@@ -375,26 +385,26 @@ public class LeadsManagementService {
     try {
       LeadEntity lead = getLeadbyId(leadId);
       if (lead != null) {
-        if (lead.getCommunityRegistration()!=null&&lead.getCommunityRegistration().booleanValue()) {
+        if (lead.getCommunityRegistration() != null && lead.getCommunityRegistration().booleanValue()) {
           JSONObject obj = new JSONObject();
-          obj.put("form","communityRegistration");
-          obj.put("communityUserName",lead.getCommunityUserName());
-          obj.put("communityRegistrationMethod",lead.getCommunityRegistrationMethod());
+          obj.put("form", "communityRegistration");
+          obj.put("communityUserName", lead.getCommunityUserName());
+          obj.put("communityRegistrationMethod", lead.getCommunityRegistrationMethod());
           obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getCommunityRegistrationDate()));
           obj.put("time", lead.getCommunityRegistrationDate().getTime());
           JSONArray fields = new JSONArray();
           fields.put("communityUserName");
           fields.put("communityRegistrationMethod");
-          obj.put("fields",fields);
+          obj.put("fields", fields);
           responsesList.put(obj);
         }
 
-        if (lead.getBlogSubscription()!=null&&lead.getBlogSubscription().booleanValue()) {
+        if (lead.getBlogSubscription() != null && lead.getBlogSubscription().booleanValue()) {
           JSONObject obj = new JSONObject();
-          obj.put("form","blogRegistration");
+          obj.put("form", "blogRegistration");
           obj.put(CREATION_DATE_FIELD_NAME, formatter.format(lead.getBlogSubscriptionDate()));
           obj.put("time", lead.getBlogSubscriptionDate().getTime());
-          obj.put("fields",new JSONArray());
+          obj.put("fields", new JSONArray());
           responsesList.put(obj);
         }
 
@@ -415,22 +425,22 @@ public class LeadsManagementService {
         if (lead.getTaskId() != null && lead.getTaskId() > 0) {
           IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
           ListAccess<ChangeLog> logs = taskService.getTaskLogs(lead.getTaskId());
-          for(ChangeLog log : logs.load(0,logs.getSize())){
-            if(log.getActionName().equals("edit_status")){
-            JSONObject obj = new JSONObject();
-            obj.put("form","task");
-            obj.put("author",log.getAuthor());
-            obj.put("newStatus",log.getTarget());
-            Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, log.getAuthor());
-            if(identity!=null){
-              obj.put("authorName",identity.getProfile().getFullName());
-            }else {
-              obj.put("authorName",log.getAuthor());
-            }
-            obj.put(CREATION_DATE_FIELD_NAME, formatter.format(log.getCreatedTime()));
-            obj.put("time", log.getCreatedTime());
-            obj.put("fields",new JSONArray());
-            responsesList.put(obj);
+          for (ChangeLog log : logs.load(0, logs.getSize())) {
+            if (log.getActionName().equals("edit_status")) {
+              JSONObject obj = new JSONObject();
+              obj.put("form", "task");
+              obj.put("author", log.getAuthor());
+              obj.put("newStatus", log.getTarget());
+              Identity identity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, log.getAuthor());
+              if (identity != null) {
+                obj.put("authorName", identity.getProfile().getFullName());
+              } else {
+                obj.put("authorName", log.getAuthor());
+              }
+              obj.put(CREATION_DATE_FIELD_NAME, formatter.format(log.getCreatedTime()));
+              obj.put("time", log.getCreatedTime());
+              obj.put("fields", new JSONArray());
+              responsesList.put(obj);
             }
           }
 
@@ -522,7 +532,8 @@ public class LeadsManagementService {
   public LeadEntity getLeadByTask(Long taslId) {
     return leadDAO.getLeadByTask(taslId);
   }
-  public List<LeadEntity>  getLeadsByStatus(String status) {
+
+  public List<LeadEntity> getLeadsByStatus(String status) {
     return leadDAO.getLeadsByStatus(status);
   }
 
@@ -530,7 +541,7 @@ public class LeadsManagementService {
     return Utils.getCommentsJson(taskService.getComments(taskId));
   }
 
-  public Task getTask(long taskId) throws Exception{
+  public Task getTask(long taskId) throws Exception {
     try {
       return taskService.getTask(taskId);
     } catch (EntityNotFoundException e) {
@@ -920,16 +931,18 @@ public class LeadsManagementService {
       throw (e);
     }
   }
+
   public boolean mergezone() throws Exception {
     try {
       List<LeadEntity> leadsEntities = leadDAO.findAll();
       List<LeadEntity> leadsEntitiestoUpdate = new ArrayList<>();
       for (LeadEntity lead : leadsEntities) {
-        if (lead.getGeographiqueZone() != null && (lead.getGeographiqueZone().equals(LC_G_ZONE_WESTERN_EUROPE_NAME) ||lead.getGeographiqueZone().equals(LC_G_ZONE_ESTERN_EUROPE_NAME))) {
-              lead.setGeographiqueZone(LC_G_ZONE_EUROPE_NAME);
-              leadsEntitiestoUpdate.add(lead);
-          }
+        if (lead.getGeographiqueZone() != null && (lead.getGeographiqueZone().equals(LC_G_ZONE_WESTERN_EUROPE_NAME)
+            || lead.getGeographiqueZone().equals(LC_G_ZONE_ESTERN_EUROPE_NAME))) {
+          lead.setGeographiqueZone(LC_G_ZONE_EUROPE_NAME);
+          leadsEntitiestoUpdate.add(lead);
         }
+      }
       leadDAO.updateAll(leadsEntitiestoUpdate);
       return true;
     } catch (Exception e) {

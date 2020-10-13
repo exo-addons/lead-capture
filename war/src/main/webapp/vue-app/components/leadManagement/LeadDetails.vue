@@ -157,7 +157,7 @@
                         </v-toolbar-title>
 
                         <v-spacer></v-spacer>
-                        <a class="caption  headerBtn" @click.stop="toDodrawer = !toDodrawer" v-on="on">
+                        <a class="caption  headerBtn" @click.stop="toggleToDoDrawer">
                             <v-badge :value="badge > 0" :content="badge" flat color="red" left overlap>
                                 <v-icon left>mdi-clipboard-text</v-icon>
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
@@ -347,9 +347,8 @@
         <!--         <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
             <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
         </v-navigation-drawer> -->
-        <v-navigation-drawer absolute floating right temporary v-model="toDodrawer" width="30%">
-            <to-do-drawer :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
-        </v-navigation-drawer>
+            <to-do-drawer ref="todoDrawer" :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
+
         <edit-lead-drawer ref="editLeadDrawer" :lead="lead" v-on:save="saveLead" />
     </v-card-text>
 </v-card>
@@ -382,7 +381,6 @@ export default {
         showEditor1: false,
         edited: false,
         edited1: false,
-        toDodrawer: null,
         fab: false,
         content: "",
         rules: {
@@ -468,7 +466,7 @@ export default {
             this.drawer = !this.drawer;
         },
         toggleToDoDrawer() {
-            this.toDodrawer = !this.toDodrawer;
+             this.$refs.todoDrawer.open()
         },
         backToList() {
             this.$emit('backToList');
