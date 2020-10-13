@@ -356,7 +356,6 @@
 
 <script>
 import Vue from 'vue';
-import notesDrawer from './NotesDrawer.vue';
 import toDoDrawer from './ToDoDrawer.vue';
 import editLeadDrawer from './EditLeadDrawer.vue';
 import FormResponses from './FormResponses.vue';
@@ -364,7 +363,6 @@ import ckEditor from '../commons/ckEditor.vue';
 
 export default {
     components: {
-        /* notesDrawer, */
         toDoDrawer,
         editLeadDrawer,
         FormResponses,
