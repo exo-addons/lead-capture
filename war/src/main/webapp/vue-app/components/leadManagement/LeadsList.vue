@@ -190,7 +190,7 @@ export default {
         },
         formResponses: [],
         timeline: [],
-        task: null,
+        task: {},
         tasks: [],
         selectedLead: {},
     }),

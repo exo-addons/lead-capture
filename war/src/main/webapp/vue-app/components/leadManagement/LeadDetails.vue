@@ -163,7 +163,7 @@
                             </v-badge> {{$t('exoplatform.LeadCapture.leadManagement.todos','Todos')}}
                         </a>
                         <!-- <a class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on"> -->
-                        <a v-if="lead.taskId!=null && lead.taskId!=0" class="caption  headerBtn" @click.stop="drawer = !drawer" v-on="on">
+                        <a v-if="lead.taskId!=null && lead.taskId!=0" class="caption  headerBtn" @click.stop="openTaskDrawer" v-on="on">
                             <v-icon left>mdi-camera-iris</v-icon> {{$t(`exoplatform.LeadCapture.status.${lead.status}`,lead.status)}}
                         </a>
                         <v-menu v-else offset-y>
@@ -343,12 +343,8 @@
 
             </v-col>
         </v-row>
-        <task-drawer v-if="drawer" :drawer="drawer" :task="task" @updateTask="updateTask" @closeDrawer="onCloseDrawer" />
-        <!--         <v-navigation-drawer absolute floating right temporary v-model="drawer" width="30%">
-            <notes-drawer :lead="lead" :comments="comments" v-on:toggleDrawer="toggleDrawer" v-on:changeStatus="changeStatus" />
-        </v-navigation-drawer> -->
-            <to-do-drawer ref="todoDrawer" :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
-
+        <task-drawer ref="taskDrawer"  :task="task" @updateTask="updateTask" @closeDrawer="onCloseDrawer" />
+        <to-do-drawer ref="todoDrawer" :lead="lead" :tasks="tasks" v-on:toggleToDoDrawer="toggleToDoDrawer" />
         <edit-lead-drawer ref="editLeadDrawer" :lead="lead" v-on:save="saveLead" />
     </v-card-text>
 </v-card>
@@ -374,7 +370,6 @@ export default {
         valid: true,
         confirmDialog: false,
         selectedTab: 'timeline',
-        drawer: null,
         showEditor: false,
         showEditor1: false,
         edited: false,
@@ -447,21 +442,16 @@ export default {
 
     methods: {
         openTaskDrawer() {
-            this.drawer = true;
-            document.body.style.overflow = this.drawer ? 'hidden' : 'auto';
+            this.$refs.taskDrawer.open(this.task);
         },
         updateTask(item) {
             this.lead.status = item.status.name
         },
         onCloseDrawer: function (drawer) {
-            this.drawer = drawer;
-            document.body.style.overflow = 'auto';
+            this.$refs.taskDrawer.close();
         },
         openEditDrawer() {
             this.$refs.editLeadDrawer.open()
-        },
-        toggleDrawer() {
-            this.drawer = !this.drawer;
         },
         toggleToDoDrawer() {
              this.$refs.todoDrawer.open()
