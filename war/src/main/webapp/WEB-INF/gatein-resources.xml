@@ -3,7 +3,7 @@
                   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
     <portal-skin>
-        <skin-name>${exo.skin.name}</skin-name>
+        <skin-name>Enterprise</skin-name>
         <skin-module>lead-capture</skin-module>
         <css-path>/css/platform.css</css-path>
         <css-priority>10</css-priority>
@@ -11,7 +11,7 @@
 
 
     <portal-skin>
-        <skin-name>${exo.skin.name}</skin-name>
+        <skin-name>Enterprise</skin-name>
         <skin-module>customModuleVuetify</skin-module>
         <css-path>/../EnterpriseSkin/skin/css/vuetify/vuetify-all.css</css-path>
         <css-priority>10</css-priority>
@@ -19,11 +19,20 @@
 
 
     <portal-skin>
-        <skin-name>${exo.skin.name}</skin-name>
+        <skin-name>Enterprise</skin-name>
+        <skin-module>customModuleTaks</skin-module>
+        <css-path>/../task-management/skin/css/tasks.css</css-path>
+        <css-priority>10</css-priority>
+    </portal-skin>
+
+
+    <portal-skin>
+        <skin-name>Enterprise</skin-name>
         <skin-module>customModuleLeadCapture</skin-module>
         <css-path>/css/leadsManagement.css</css-path>
         <css-priority>11</css-priority>
     </portal-skin>
+
 
     <portlet>
         <name>leadsManagement</name>
