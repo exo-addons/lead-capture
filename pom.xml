@@ -19,8 +19,7 @@
     02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>addons-parent-pom</artifactId>
@@ -29,7 +28,7 @@
     </parent>
     <groupId>org.exoplatform.addons.lead-capture</groupId>
     <artifactId>lead-capture</artifactId>
-    <version>1.0.x-SNAPSHOT</version>
+    <version>1.0.0-M21</version>
     <packaging>pom</packaging>
     <name>eXo Lead Capture Addon</name>
     <description>eXo Addon for Lead Capture and management</description>
@@ -41,7 +40,7 @@
     <scm>
         <connection>scm:git:git://github.com/exo-addons/lead-capture.git</connection>
         <developerConnection>scm:git:git@github.com:exo-addons/lead-capture.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>1.0.0-M21</tag>
         <url>https://github.com/exo-addons/lead-capture</url>
     </scm>
     <properties>
