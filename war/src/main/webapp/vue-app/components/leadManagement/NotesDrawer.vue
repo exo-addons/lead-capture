@@ -43,13 +43,13 @@
                 <div class="commentItem ">
 
                     <div class="commmentLeft pull-left">
-                        <a class="avatarXSmall" :href="`/portal/intranet/profile/${item.author}`">
+                        <a class="avatarXSmall" :href="`/portal/dw/profile/${item.author}`">
                             <img :src="`/rest/v1/social/users/${item.author}/avatar`" :alt="item.authorName">
                         </a>
                     </div>
                     <div class="commentRight">
                         <div class="author">
-                            <a :href="`/portal/intranet/profile/${item.author}`">{{item.authorName}}</a>
+                            <a :href="`/portal/dw/profile/${item.author}`">{{item.authorName}}</a>
                             <span class="date"> {{item.createdDate}} </span>
                         </div>
                         <span class="contentComment clearfix">
