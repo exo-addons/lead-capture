@@ -29,10 +29,10 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.domain.Status;
-import org.exoplatform.task.legacy.service.ProjectService;
-import org.exoplatform.task.legacy.service.StatusService;
+import org.exoplatform.task.dto.ProjectDto;
+import org.exoplatform.task.dto.StatusDto;
+import org.exoplatform.task.service.ProjectService;
+import org.exoplatform.task.service.StatusService;
 
 public class LeadCaptureSettingsService {
 
@@ -101,12 +101,12 @@ public class LeadCaptureSettingsService {
     StatusService statusService = CommonsUtils.getService(StatusService.class);
     Space uxSpace = spaceService.getSpaceByPrettyName(userExperienceSpace);
     if (uxSpace != null) {
-      Project project = Utils.getTaskProject(uxSpace.getGroupId(), leadTaskProject);
+      ProjectDto project = Utils.getTaskProject(uxSpace.getGroupId(), leadTaskProject);
       if (project != null) {
         try {
           project = CommonsUtils.getService(ProjectService.class).getProject(project.getId());
-          Status intStatus = statusService.createStatus(project, "intStatus");
-          for (Status status : statusService.getStatuses(project.getId())) {
+          StatusDto intStatus = statusService.createStatus(project, "intStatus");
+          for (StatusDto status : statusService.getStatuses(project.getId())) {
             if (!"intStatus".equals(status.getName()))
               statusService.removeStatus(status.getId());
           }

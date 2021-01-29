@@ -2,10 +2,7 @@ package org.exoplatform.leadcapture.listeners;
 
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.Utils;
-import org.exoplatform.leadcapture.dao.FieldDAO;
-import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
@@ -18,8 +15,9 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.ActivityManager;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.TaskPayload;
-import org.exoplatform.task.legacy.service.TaskService;
+import org.exoplatform.task.dto.TaskDto;
+import org.exoplatform.task.service.TaskPayload;
+import org.exoplatform.task.service.TaskService;
 
 public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
   private static final Log  LOG = ExoLogger.getLogger(TaskUpdateListener.class);
@@ -33,8 +31,8 @@ public class TaskUpdateListener extends Listener<TaskService, TaskPayload> {
   @Override
   public void onEvent(Event<TaskService, TaskPayload> event) throws Exception {
     TaskPayload data = event.getData();
-    Task before = data.before();
-    Task after = data.after();
+    TaskDto before = data.before();
+      TaskDto after = data.after();
      LeadEntity leadEntity = leadsManagementService.getLeadByTask(before.getId());
      if(leadEntity!=null){
          if (before != null && after != null) {

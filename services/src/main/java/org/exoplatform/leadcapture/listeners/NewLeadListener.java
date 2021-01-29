@@ -26,6 +26,7 @@ import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
 import org.exoplatform.task.domain.Task;
+import org.exoplatform.task.dto.TaskDto;
 import org.exoplatform.task.util.TaskUtil;
 
 import static org.exoplatform.leadcapture.Utils.*;
@@ -83,7 +84,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
         lead.setActivityId(activity.getId());
       }
       if (lead.getStatus().equals(LEAD_OPEN_STATUS)) {
-        Task task = leadsManagementService.createTask(lead);
+        TaskDto task = leadsManagementService.createTask(lead);
         if (task != null) {
           lead.setTaskId(task.getId());
           lead.setTaskUrl(TaskUtil.buildTaskURL(task));

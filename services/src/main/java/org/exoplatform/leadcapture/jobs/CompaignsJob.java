@@ -5,6 +5,8 @@ import static org.exoplatform.leadcapture.Utils.calculateNumberOfDays;
 import java.util.Date;
 import java.util.List;
 
+import org.exoplatform.task.dto.ChangeLogEntry;
+import org.exoplatform.task.dto.TaskDto;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -22,8 +24,8 @@ import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.task.domain.ChangeLog;
-import org.exoplatform.task.domain.Task;
-import org.exoplatform.task.legacy.service.TaskService;
+
+import org.exoplatform.task.service.TaskService;
 
 public class CompaignsJob implements Job {
   private static final Log          LOG                       = ExoLogger.getLogger(CompaignsJob.class);
@@ -48,9 +50,9 @@ public class CompaignsJob implements Job {
           if (leadEntity != null) {
             if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
               try {
-                Task task = taskService.getTask(leadEntity.getTaskId());
-                ListAccess<ChangeLog> logs = taskService.getTaskLogs(leadEntity.getTaskId());
-                for (ChangeLog log : logs.load(0, logs.getSize())) {
+                TaskDto task = taskService.getTask(leadEntity.getTaskId());
+                List<ChangeLogEntry> logs = taskService.getTaskLogs(leadEntity.getTaskId(),0,-1);
+                for (ChangeLogEntry log : logs) {
                   if (log.getActionName().equals("edit_status") && log.getTarget().equals(compaignDTO.getValue())) {
                     if (calculateNumberOfDays(new Date().getTime(), log.getCreatedTime()) + 1 == compaignDTO.getAfter()) {
                       MailContentDTO content = null;
