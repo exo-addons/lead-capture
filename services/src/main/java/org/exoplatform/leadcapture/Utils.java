@@ -6,6 +6,8 @@ import java.util.*;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.ProjectDto;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,9 +39,7 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.storage.api.ActivityStorage;
-import org.exoplatform.task.domain.Comment;
-import org.exoplatform.task.domain.Project;
-import org.exoplatform.task.legacy.service.ProjectService;
+import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.ws.frameworks.json.JsonGenerator;
 import org.exoplatform.ws.frameworks.json.JsonParser;
@@ -319,11 +319,11 @@ public class Utils {
     comment.setPosterId(posterId);
     activityStorage.saveComment(activity, comment);
   }
-  public static Project getTaskProject(String groupId, String taskProject) {
+  public static ProjectDto getTaskProject(String groupId, String taskProject) {
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
-    List<Project> projects = ProjectUtil.getProjectTree(groupId, projectService);
+    List<ProjectDto> projects = ProjectUtil.getProjectTree(groupId, projectService);
     if (taskProject != null) {
-      for (Project project : projects) {
+      for (ProjectDto project : projects) {
         if (project.getName().equals(taskProject)) {
           return project;
         }
@@ -332,11 +332,11 @@ public class Utils {
     return projects.get(0);
   }
 
-  public static JSONArray getCommentsJson(ListAccess<Comment> comments) {
+  public static JSONArray getCommentsJson(List<CommentDto> comments) {
     try {
       JSONArray commentsList = new JSONArray();
       OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
-      for (Comment comment : comments.load(0, comments.getSize())) {
+      for (CommentDto comment : comments) {
         commentsList.put(commentToJson(comment,
                                        comment.getAuthor(),
                                        organizationService.getUserHandler()
@@ -350,7 +350,7 @@ public class Utils {
     return null;
   }
 
-  public static JSONObject commentToJson(Comment comment, String author, String authorName) {
+  public static JSONObject commentToJson(CommentDto comment, String author, String authorName) {
     try {
       JSONObject commentJson = new JSONObject();
       commentJson.put("comment", comment.getComment());

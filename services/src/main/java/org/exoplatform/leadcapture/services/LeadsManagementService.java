@@ -10,12 +10,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.task.dto.*;
+import org.exoplatform.task.service.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dao.FormDAO;
@@ -35,11 +36,7 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.task.domain.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
-import org.exoplatform.task.legacy.service.ProjectService;
-import org.exoplatform.task.legacy.service.StatusService;
-import org.exoplatform.task.legacy.service.TaskService;
 import org.exoplatform.task.util.TaskUtil;
 
 public class LeadsManagementService {
@@ -62,6 +59,10 @@ public class LeadsManagementService {
 
   private ProjectService             projectService;
 
+  private CommentService             commentService;
+
+  private LabelService               labelService;
+
   private LeadCaptureSettingsService leadCaptureSettingsService;
 
   public LeadsManagementService(LeadDAO leadDAO,
@@ -71,6 +72,8 @@ public class LeadsManagementService {
                                 TaskService taskService,
                                 StatusService statusService,
                                 ProjectService projectService,
+                                LabelService labelService,
+                                CommentService commentService,
                                 LeadCaptureSettingsService leadCaptureSettingsService,
                                 ListenerService listenerService) {
     this.leadDAO = leadDAO;
@@ -81,6 +84,8 @@ public class LeadsManagementService {
     this.taskService = taskService;
     this.statusService = statusService;
     this.projectService = projectService;
+    this.labelService = labelService;
+    this.commentService = commentService;
     this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
@@ -134,7 +139,7 @@ public class LeadsManagementService {
           if (leadEntity.getStatus().equals(LEAD_DEFAULT_STATUS) && settings.getAutoOpeningForms() != null
               && leadInfo.getResponse() != null
               && settings.getAutoOpeningForms().contains(leadInfo.getResponse().getFormName())) {
-            Task task_ = createTask(leadEntity);
+            TaskDto task_ = createTask(leadEntity);
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
               leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
@@ -201,7 +206,7 @@ public class LeadsManagementService {
       leadEntity.setAssignee(assignee);
       leadDAO.update(leadEntity);
       if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
-        Task task = taskService.getTask(leadEntity.getTaskId());
+        TaskDto task = taskService.getTask(leadEntity.getTaskId());
         task.setAssignee(assignee);
         taskService.updateTask(task);
       }
@@ -236,7 +241,7 @@ public class LeadsManagementService {
       boolean isBadStatus = Arrays.stream(LEAD_BAD_STATUSES).anyMatch(status::equals);
       if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
         if (!isBadStatus) {
-          Task task_ = createTask(leadEntity);
+          TaskDto task_ = createTask(leadEntity);
           if (task_ != null) {
             leadEntity.setTaskId(task_.getId());
             leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
@@ -314,10 +319,10 @@ public class LeadsManagementService {
             LeadDTO leadDTO = toLeadDto(leadEntity);
             if (leadDTO.getTaskId() != null && leadDTO.getTaskId() != 0) {
               try {
-                Task task = taskService.getTask(leadDTO.getTaskId());
-                ListAccess<ChangeLog> logs = taskService.getTaskLogs(leadDTO.getTaskId());
+                TaskDto task = taskService.getTask(leadDTO.getTaskId());
+                List<ChangeLogEntry> logs = taskService.getTaskLogs(leadDTO.getTaskId(),0,-1);
                 leadDTO.setOpenedDate(formatter.format(task.getCreatedTime()));
-                for (ChangeLog log : logs.load(0, logs.getSize())) {
+                for (ChangeLogEntry log : logs) {
                   if (log.getActionName().equals("edit_status")) {
                     switch (log.getTarget()) {
                     case "Qualified":
@@ -424,8 +429,8 @@ public class LeadsManagementService {
 
         if (lead.getTaskId() != null && lead.getTaskId() > 0) {
           IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
-          ListAccess<ChangeLog> logs = taskService.getTaskLogs(lead.getTaskId());
-          for (ChangeLog log : logs.load(0, logs.getSize())) {
+          List<ChangeLogEntry> logs = taskService.getTaskLogs(lead.getTaskId(),0,-1);
+          for (ChangeLogEntry log : logs) {
             if (log.getActionName().equals("edit_status")) {
               JSONObject obj = new JSONObject();
               obj.put("form", "task");
@@ -538,10 +543,10 @@ public class LeadsManagementService {
   }
 
   public JSONArray getTaskComments(long taskId) {
-    return Utils.getCommentsJson(taskService.getComments(taskId));
+    return Utils.getCommentsJson(commentService.getComments(taskId,0,-1));
   }
 
-  public Task getTask(long taskId) throws Exception {
+  public TaskDto getTask(long taskId) throws Exception {
     try {
       return taskService.getTask(taskId);
     } catch (EntityNotFoundException e) {
@@ -552,7 +557,7 @@ public class LeadsManagementService {
 
   public JSONObject addTaskComment(long taskId, String username, String comment) throws Exception {
     try {
-      Comment comment_ = taskService.addComment(taskId, username, comment);
+      CommentDto comment_ = commentService.addComment(taskService.getTask(taskId), username, comment);
       OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
       return Utils.commentToJson(comment_,
                                  comment_.getAuthor(),
@@ -569,13 +574,13 @@ public class LeadsManagementService {
   public void updateTaskStatus(Long taskId, String status) throws Exception {
     try {
       LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-      Task task = taskService.getTask(taskId);
+      TaskDto task = taskService.getTask(taskId);
       SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
       Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
-      List<Status> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
+      List<StatusDto> statuses = statusService.getStatuses(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
                                                              .getId());
-      Status newStatus = null;
-      for (Status status_ : statuses) {
+      StatusDto newStatus = null;
+      for (StatusDto status_ : statuses) {
         if (status_.getName().equals(status)) {
           newStatus = status_;
         }
@@ -590,14 +595,14 @@ public class LeadsManagementService {
     }
   }
 
-  public Task createTask(LeadEntity lead) throws Exception {
+  public TaskDto createTask(LeadEntity lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     SpaceService spaceService = CommonsUtils.getService(SpaceService.class);
     Space uxSpace = spaceService.getSpaceByPrettyName(settings.getUserExperienceSpace());
     if (uxSpace != null) {
-      Status status = statusService.getDefaultStatus(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
+      StatusDto status = statusService.getDefaultStatus(Utils.getTaskProject(uxSpace.getGroupId(), settings.getLeadTaskProject())
                                                           .getId());
-      Task task = new Task();
+      TaskDto task = new TaskDto();
       task.setTitle(lead.getMail());
       if (StringUtils.isNoneEmpty(lead.getFirstName()) && StringUtils.isNoneEmpty(lead.getLastName())) {
         task.setTitle(lead.getFirstName() + " " + lead.getLastName());
@@ -614,12 +619,12 @@ public class LeadsManagementService {
   }
 
   public void removeTask(Long id) throws Exception {
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     taskService.removeTask(task.getId());
   }
 
   public void completeTask(Long id) throws Exception {
-    Task task = taskService.getTask(id);
+    TaskDto task = taskService.getTask(id);
     task.setCompleted(true);
     taskService.updateTask(task);
   }
@@ -629,8 +634,8 @@ public class LeadsManagementService {
       LeadEntity leadEntity = getLeadbyId(id);
       List<PersonalTask> pTasks = new ArrayList<>();
       if (leadEntity.getTasksLabelId() != null && leadEntity.getTasksLabelId() > 0) {
-        ListAccess<Task> tasks = taskService.findTasksByLabel(leadEntity.getTasksLabelId(), null, userId, null);
-        for (Task task : tasks.load(0, tasks.getSize())) {
+        List<TaskDto> tasks = taskService.findTasksByLabel(labelService.getLabel(leadEntity.getTasksLabelId()), null, userId, null,0,-1);
+        for (TaskDto task : tasks) {
           PersonalTask pTask =
                              new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
           pTasks.add(pTask);
@@ -644,7 +649,7 @@ public class LeadsManagementService {
   }
 
   public PersonalTask createPersonalTask(PersonalTask personalTask) throws Exception {
-    Task task = new Task();
+    TaskDto task = new TaskDto();
     LeadDTO lead = personalTask.getLead();
     String title = personalTask.getTitle();
     String userId = personalTask.getUserId();
@@ -658,13 +663,13 @@ public class LeadsManagementService {
     task.setAssignee(userId);
     task.setDueDate(dueDate);
     task = taskService.createTask(task);
-    Label label = null;
+    LabelDto label = null;
     if (lead.getTasksLabelId() != null) {
-      label = taskService.getLabel(lead.getTasksLabelId());
+      label = labelService.getLabel(lead.getTasksLabelId());
     }
     if (label == null) {
-      ListAccess<Label> labels = taskService.findLabelsByUser(userId);
-      for (Label label_ : labels.load(0, labels.getSize())) {
+      List<LabelDto> labels = labelService.findLabelsByUser(userId,0,-1);
+      for (LabelDto label_ : labels) {
         if (label_.getName().equals(lead.getFirstName() + " " + lead.getLastName())) {
           label = label_;
           break;
@@ -672,16 +677,19 @@ public class LeadsManagementService {
       }
     }
     if (label == null) {
-      label = taskService.createLabel(new Label(lead.getFirstName() + " " + lead.getLastName(), userId));
+      label = new LabelDto();
+      label.setName(lead.getFirstName() + " " + lead.getLastName());
+      label.setUsername(userId);
+      label = labelService.createLabel(label);
       lead.setTasksLabelId(label.getId());
       updateLead(lead);
     }
-    taskService.addTaskToLabel(task.getId(), label.getId());
+    labelService.addTaskToLabel(task, label.getId());
     return new PersonalTask(task.getId(), null, userId, task.getTitle(), task.getDueDate(), task.isCompleted());
   }
 
-  public Task updatePersonalTask(PersonalTask pTask) throws Exception {
-    Task task = taskService.getTask(pTask.getId());
+  public TaskDto updatePersonalTask(PersonalTask pTask) throws Exception {
+    TaskDto task = taskService.getTask(pTask.getId());
     if (task != null) {
       task.setCompleted(pTask.isCompleted());
       taskService.updateTask(task);

@@ -27,6 +27,15 @@
     <component>
         <type>org.exoplatform.leadcapture.services.LeadsManagementService</type>
     </component>
+    <component>
+        <key>org.exoplatform.services.organization.OrganizationService</key>
+        <type>org.exoplatform.leadcapture.test.mock.MockOrgService</type>
+    </component>
+    <component>
+        <key>org.exoplatform.social.core.manager.IdentityManager</key>
+        <type>org.exoplatform.leadcapture.test.mock.MockIdentityManager</type>
+    </component>
+
 
     <component>
         <key>org.exoplatform.commons.api.persistence.DataInitializer</key>
