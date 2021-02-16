@@ -17,6 +17,9 @@
                         <v-text-field v-model="setting.resourcesIdentifier" :label="$t('exoplatform.LeadCapture.leadSettings.resourcesIdentifiers','Resources identifiers')"></v-text-field>
                         <v-text-field v-model="setting.autoOpeningForms" :label="$t('exoplatform.LeadCapture.leadSettings.autoOpeningForms','Auto opening forms')"></v-text-field>
                         <v-text-field v-model="setting.mailsBlackList" :label="$t('exoplatform.LeadCapture.leadSettings.mailsBlackList','Mails Black List')"></v-text-field>
+                        <v-text-field v-model="setting.firstNamesBlackList" :label="$t('exoplatform.LeadCapture.leadSettings.firstNamesBlackList','First names Black List')"></v-text-field>
+                        <v-text-field v-model="setting.laslNamesBlackList" :label="$t('exoplatform.LeadCapture.leadSettings.laslNamesBlackList','Last names Black List')"></v-text-field>
+                        <v-text-field v-model="setting.companiesBlackList" :label="$t('exoplatform.LeadCapture.leadSettings.companiesBlackList','companies Black List')"></v-text-field>
                         <v-text-field v-model="setting.allowedCaptureSourceDomain" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.allowedLeadSourceDomain','Allowed lead Source Domain')" required></v-text-field>
                         <v-text-field v-model="setting.captureToken" :rules="[rules.required]" :label="$t('exoplatform.LeadCapture.leadSettings.leadCaptureSecurityToken','Lead capture security token')" required></v-text-field>
                         <v-text-field v-model="setting.unsubscribeUrl" :label="$t('exoplatform.LeadCapture.leadSettings.unsubscribeUrl','Unsubscribe Url')"></v-text-field>

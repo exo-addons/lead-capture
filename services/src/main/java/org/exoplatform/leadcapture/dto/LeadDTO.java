@@ -112,4 +112,10 @@ public class LeadDTO implements Serializable {
 
   private String  recycledDate;
 
+  private String  department;
+
+  private String  companySize;
+
+  private Boolean  customer;
+
 }

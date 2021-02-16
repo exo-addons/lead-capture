@@ -146,10 +146,10 @@ public class LeadsManagementRest implements ResourceContainer {
       LOG.warn("Lead not captured, mail needed");
       return Response.status(Response.Status.BAD_REQUEST).entity("Lead mail needed").build();
     }
-    if (isBlacklisted(lead.getLead().getMail())) {
-      LOG.warn("Cannot capture lead {}, lead mail blacklisted",
-               lead.getLead().getFirstName() + " " + lead.getLead().getLastName());
-      return Response.status(Response.Status.UNAUTHORIZED).entity("lead mail blacklisted").build();
+    if (isBlacklisted(lead.getLead())) {
+      LOG.warn("Cannot capture lead {} with mail  {}, lead  blacklisted",
+               lead.getLead().getFirstName() + " " + lead.getLead().getLastName(), lead.getLead().getMail());
+      return Response.status(Response.Status.UNAUTHORIZED).entity("lead blacklisted").build();
     }
 
     if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
@@ -472,12 +472,36 @@ public class LeadsManagementRest implements ResourceContainer {
     }
   }
 
-  public boolean isBlacklisted(String leadMail) {
+  public boolean isBlacklisted(LeadDTO lead) {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-    String blackList = settings.getMailsBlackList();
-    if (StringUtils.isNotEmpty(blackList)) {
-      for (String mail_ : blackList.split(FIELDS_DELIMITER)) {
-        if (leadMail.contains(mail_)) {
+    String mailBlackList = settings.getMailsBlackList();
+    String firstNameBlackList = settings.getFirstNamesBlackList();
+    String lastNameBlackList = settings.getLaslNamesBlackList();
+    String companyBlackList = settings.getCompaniesBlackList();
+    if (StringUtils.isNotEmpty(mailBlackList)) {
+      for (String mail_ : mailBlackList.split(FIELDS_DELIMITER)) {
+        if (lead.getMail().contains(mail_)) {
+          return true;
+        }
+      }
+    }
+    if (StringUtils.isNotEmpty(firstNameBlackList)) {
+      for (String fName : firstNameBlackList.split(FIELDS_DELIMITER)) {
+        if (lead.getFirstName().equals(fName)) {
+          return true;
+        }
+      }
+    }
+    if (StringUtils.isNotEmpty(lastNameBlackList)) {
+      for (String lName : lastNameBlackList.split(FIELDS_DELIMITER)) {
+        if (lead.getLastName().equals(lName)) {
+          return true;
+        }
+      }
+    }
+    if (StringUtils.isNotEmpty(companyBlackList)) {
+      for (String company : companyBlackList.split(FIELDS_DELIMITER)) {
+        if (lead.getCompany().equals(company)) {
           return true;
         }
       }
@@ -506,9 +530,9 @@ public class LeadsManagementRest implements ResourceContainer {
           LOG.warn("Lead not captured, mail needed");
           continue;
         }
-        if (isBlacklisted(lead.getLead().getMail())) {
-          LOG.warn("Cannot capture lead {}, lead mail blacklisted",
-                   lead.getLead().getFirstName() + " " + lead.getLead().getLastName());
+        if (isBlacklisted(lead.getLead())) {
+          LOG.warn("Cannot capture lead {} with mail  {}, lead  blacklisted",
+                  lead.getLead().getFirstName() + " " + lead.getLead().getLastName(), lead.getLead().getMail());
           continue;
         }
         LOG.info("start adding lead {}", lead.getLead().getFirstName() + " " + lead.getLead().getFirstName());

@@ -68,6 +68,15 @@
                 <v-row>
                         <div class="d-flex flex-wrap pt-2">
                             <label for="marketingSuspended" class="v-label theme--light my-auto float-left">
+                                {{$t('exoplatform.LeadCapture.leadManagement.customer','Customer') }}
+                            </label>
+                            <v-switch ref="customer" v-model="editedLead.customer" class="float-left my-0 ml-4" />
+                        </div>
+
+                </v-row>              
+                <v-row>
+                        <div class="d-flex flex-wrap pt-2">
+                            <label for="marketingSuspended" class="v-label theme--light my-auto float-left">
                                 {{$t('exoplatform.LeadCapture.leadManagement.marketingSuspended','Marketing Suspended') }}
                             </label>
                             <v-switch ref="marketingSuspended" v-model="editedLead.marketingSuspended" class="float-left my-0 ml-4" />

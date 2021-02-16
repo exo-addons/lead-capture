@@ -707,6 +707,10 @@ public class LeadsManagementService {
       leadEntity.setCompany(leadDTO.getCompany());
     if (!StringUtils.isEmpty(leadDTO.getPosition()))
       leadEntity.setPosition(leadDTO.getPosition());
+    if (!StringUtils.isEmpty(leadDTO.getDepartment()))
+      leadEntity.setDepartment(leadDTO.getDepartment());
+    if (!StringUtils.isEmpty(leadDTO.getCompanySize()))
+      leadEntity.setCompanySize(leadDTO.getCompanySize());
 
     if (!StringUtils.isEmpty(leadDTO.getInferredCountry())) {
       if (StringUtils.isEmpty(leadEntity.getGeographiqueZone())
@@ -806,6 +810,9 @@ public class LeadsManagementService {
     leadDTO.setEmployeesNumber(leadEntity.getEmployeesNumber());
     leadDTO.setIndustry(leadEntity.getIndustry());
     leadDTO.setTasksLabelId(leadEntity.getTasksLabelId());
+    leadDTO.setDepartment(leadEntity.getDepartment());
+    leadDTO.setCompanySize(leadEntity.getCompanySize());
+    leadDTO.setCustomer(leadEntity.getCustomer()!=null&&leadEntity.getCustomer()?true:false);
     return leadDTO;
   }
 
@@ -855,6 +862,9 @@ public class LeadsManagementService {
     leadEntity.setEmployeesNumber(leadDTO.getEmployeesNumber());
     leadEntity.setIndustry(leadDTO.getIndustry());
     leadEntity.setTasksLabelId(leadDTO.getTasksLabelId());
+    leadEntity.setDepartment(leadDTO.getDepartment());
+    leadEntity.setCompanySize(leadDTO.getCompanySize());
+    leadEntity.setCustomer(leadDTO.getCustomer());
     return leadEntity;
   }
 

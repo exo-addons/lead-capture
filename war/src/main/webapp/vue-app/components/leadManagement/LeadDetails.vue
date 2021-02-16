@@ -72,8 +72,20 @@
                                     </v-row>
                                     <v-row>
 
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.companySize','Company Size')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.companySize}} </v-col>
+
+                                    </v-row>
+                                    <v-row>
+
                                         <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.position','Position')}}:</strong></v-col>
                                         <v-col cols="12" sm="6" md="7"> {{lead.position}} </v-col>
+
+                                    </v-row>
+                                    <v-row>
+
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.departement','Department')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7"> {{lead.department}} </v-col>
 
                                     </v-row>
                                     <v-row>
@@ -116,6 +128,14 @@
 
                                         <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.geographiqueZone','Geographique Zone')}}:</strong></v-col>
                                         <v-col cols="12" sm="6" md="7">{{lead.geographiqueZone}}</v-col>
+
+                                    </v-row>
+                                    <v-row>
+
+                                        <v-col cols="12" sm="6" md="5"><strong>{{$t('exoplatform.LeadCapture.leadManagement.customer','Customer')}}:</strong></v-col>
+                                        <v-col cols="12" sm="6" md="7">
+                                            <v-switch disabled v-model="lead.customer"></v-switch>
+                                        </v-col>
 
                                     </v-row>
                                     <v-row>

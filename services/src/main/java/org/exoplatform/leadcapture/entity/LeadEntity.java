@@ -163,4 +163,13 @@ public class LeadEntity implements Serializable {
   @OneToMany(mappedBy = "leadEntity", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Collection<ResponseEntity> responses = new ArrayList<ResponseEntity>();
 
+  @Column(name = "DEPARTMENT")
+  protected String department;
+
+  @Column(name = "COMPANY_SIZE")
+  protected String  companySize ;
+
+  @Column(name = "CUSTOMER")
+  protected Boolean  customer ;
+
 }
