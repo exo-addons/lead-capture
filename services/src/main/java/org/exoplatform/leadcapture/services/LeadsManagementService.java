@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.commons.api.persistence.ExoTransactional;
+import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.service.*;
 import org.json.JSONArray;
@@ -210,6 +211,18 @@ public class LeadsManagementService {
         task.setAssignee(assignee);
         taskService.updateTask(task);
       }
+    } catch (Exception e) {
+      LOG.error(e);
+      throw e;
+    }
+  }
+  public void resetTask(Long leadId) throws Exception {
+    try {
+      LeadEntity leadEntity = leadDAO.find(leadId);
+      leadEntity.setTaskId(null);
+      leadEntity.setTaskUrl("");
+      leadEntity.setStatus("Raw");
+      leadDAO.update(leadEntity);
     } catch (Exception e) {
       LOG.error(e);
       throw e;
@@ -610,6 +623,7 @@ public class LeadsManagementService {
       task.setDescription("<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
           + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>");
       task.setStatus(status);
+      task.setPriority(Priority.NORMAL);
       task.setCreatedBy(settings.getUserExperienceBotUserName());
       task.setCreatedTime(new Date());
       task = taskService.createTask(task);

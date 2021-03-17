@@ -313,6 +313,29 @@ public class LeadsManagementRest implements ResourceContainer {
     }
   }
 
+  @PATCH
+  @Path("reset/task/{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("ux-team")
+  public Response resetTask(@Context UriInfo uriInfo, @PathParam("id") Long id) throws Exception {
+    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
+    if (sourceIdentity == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    try {
+      LeadEntity leadEntity = leadsManagementService.getLeadbyId(id);
+      if(leadEntity == null){
+        return Response.status(Response.Status.BAD_REQUEST).entity("lead not found").build();
+      }
+      leadsManagementService.resetTask(id);
+      LOG.info("Lead {} task reset by {}",  leadEntity.getTaskId(), sourceIdentity.getRemoteId());
+      return Response.status(Response.Status.OK).entity(leadsManagementService.toLeadDto(leadEntity)).build();
+    } catch (Exception e) {
+      LOG.error("An error occured when trying to reset Task", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+    }
+  }
+
   @GET
   @Path("responses/{id}")
   @Produces(MediaType.APPLICATION_JSON)
