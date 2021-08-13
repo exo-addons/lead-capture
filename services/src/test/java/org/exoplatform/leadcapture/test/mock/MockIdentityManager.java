@@ -75,7 +75,7 @@ public class MockIdentityManager implements IdentityManager {
   }
 
   @Override
-  public void updateProfile(Profile profile) throws MessageException {
+  public void updateProfile(Profile profile) {
 
   }
 
@@ -195,7 +195,7 @@ public class MockIdentityManager implements IdentityManager {
   }
 
   @Override
-  public void updateAvatar(Profile profile) throws MessageException {
+  public void updateAvatar(Profile profile) {
 
   }
 
