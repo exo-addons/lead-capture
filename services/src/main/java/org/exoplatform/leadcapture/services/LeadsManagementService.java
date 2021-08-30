@@ -180,6 +180,7 @@ public class LeadsManagementService {
     try {
         if (lead.getTaskId() != null && lead.getTaskId() != 0) {
           taskService.removeTask(lead.getTaskId());
+          LOG.info("Task {} related to lead {} removed", lead.getTaskId(), lead.getId());
         }
         leadDAO.delete(lead);
       LOG.info("-- Lead {} deleted successfully --", lead.getId());
@@ -246,7 +247,7 @@ public class LeadsManagementService {
     }
   }
 
-  public LeadEntity updateStatus(Long leadId, String status) throws Exception {
+  public LeadEntity updateStatus(Long leadId, String status, String userName) throws Exception {
     try {
       LeadEntity leadEntity = leadDAO.find(leadId);
       leadEntity.setUpdatedDate(new Date());
@@ -265,6 +266,7 @@ public class LeadsManagementService {
           removeTask(leadEntity.getTaskId());
           leadEntity.setTaskId(null);
           leadEntity.setTaskUrl(null);
+          LOG.info("Task {} related to lead {} removed by {} because of bad status", leadEntity.getTaskId(), leadEntity.getId(), userName);
         } else if (status.equals(LEAD_COMPLET_STATUS)) {
           completeTask(leadEntity.getTaskId());
         }

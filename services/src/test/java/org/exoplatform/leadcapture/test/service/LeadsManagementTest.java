@@ -105,7 +105,7 @@ public class LeadsManagementTest extends BaseLeadManagementTest {
     LeadEntity leadEntity = newLead();
     assertEquals(status, leadEntity.getStatus());
     try {
-      leadsManagementService.updateStatus(leadEntity.getId(), "Raw");
+      leadsManagementService.updateStatus(leadEntity.getId(), "Raw", "test");
     } catch (Exception e) {
       fail();
     }

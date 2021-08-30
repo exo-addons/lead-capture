@@ -304,7 +304,7 @@ public class LeadsManagementRest implements ResourceContainer {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     try {
-      LeadEntity leadEntity = leadsManagementService.updateStatus(lead.getId(), lead.getStatus());
+      LeadEntity leadEntity = leadsManagementService.updateStatus(lead.getId(), lead.getStatus(), sourceIdentity.getRemoteId());
       LOG.info("Lead {} status updated to {} by {}", lead.getId(), lead.getStatus(), sourceIdentity.getRemoteId());
       return Response.status(Response.Status.OK).entity(leadsManagementService.toLeadDto(leadEntity)).build();
     } catch (Exception e) {
