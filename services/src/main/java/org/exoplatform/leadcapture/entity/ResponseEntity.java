@@ -24,7 +24,7 @@ import org.exoplatform.task.domain.Comment;
 public class ResponseEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_RESPONSE_ID", sequenceName = "SEQ_ADDONS_LC_RESPONSE_ID")
+  @SequenceGenerator(name = "SEQ_ADDONS_LC_RESPONSE_ID", sequenceName = "SEQ_ADDONS_LC_RESPONSE_ID", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_RESPONSE_ID")
   @Column(name = "ID")
   protected Long                  id;

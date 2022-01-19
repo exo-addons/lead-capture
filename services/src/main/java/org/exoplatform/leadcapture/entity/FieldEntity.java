@@ -18,7 +18,7 @@ import lombok.Data;
 public class FieldEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_FORM_FIELD_ID", sequenceName = "SEQ_ADDONS_LC_FORM_FIELD_ID")
+  @SequenceGenerator(name = "SEQ_ADDONS_LC_FORM_FIELD_ID", sequenceName = "SEQ_ADDONS_LC_FORM_FIELD_ID", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_FORM_FIELD_ID")
   @Column(name = "ID")
   protected Long         id;

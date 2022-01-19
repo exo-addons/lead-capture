@@ -288,6 +288,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="exo-lead-capture" id="1.0.0-9" dbms="hsqldb">
+        <createSequence sequenceName="SEQ_ADDONS_LC_LEAD_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_RESPONSE_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_FORM_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_FORM_FIELD_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_TEMPLATE_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
+        <createSequence sequenceName="SEQ_ADDONS_LC_RESOURCE_ID" startValue="1"/>
+    </changeSet>
+
         </databaseChangeLog>
 
 

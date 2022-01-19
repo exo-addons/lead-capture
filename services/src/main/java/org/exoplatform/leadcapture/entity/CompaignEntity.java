@@ -16,7 +16,7 @@ import lombok.Data;
 public class CompaignEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_COMPAIGN_ID", sequenceName = "SEQ_ADDONS_LC_COMPAIGN_ID")
+  @SequenceGenerator(name = "SEQ_ADDONS_LC_COMPAIGN_ID", sequenceName = "SEQ_ADDONS_LC_COMPAIGN_ID", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_COMPAIGN_ID")
   @Column(name = "ID")
   protected Long   id;
