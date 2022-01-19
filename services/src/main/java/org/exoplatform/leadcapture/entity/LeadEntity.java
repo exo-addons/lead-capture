@@ -26,7 +26,7 @@ import lombok.Data;
 public class LeadEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_LEAD_ID", sequenceName = "SEQ_ADDONS_LC_LEAD_ID")
+  @SequenceGenerator(name = "SEQ_ADDONS_LC_LEAD_ID", sequenceName = "SEQ_ADDONS_LC_LEAD_ID", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_LEAD_ID")
   @Column(name = "ID")
   protected Long    id;
