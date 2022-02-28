@@ -2,19 +2,46 @@
                   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
                   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
 
-    <portal-skin>
-        <skin-name>Enterprise</skin-name>
-        <skin-module>lead-capture</skin-module>
-        <css-path>/css/platform.css</css-path>
-        <css-priority>10</css-priority>
-    </portal-skin>
 
-    <portal-skin>
+    <portlet-skin>
+        <application-name>leadsManagement</application-name>
+        <portlet-name>leadsManagement</portlet-name>
         <skin-name>Enterprise</skin-name>
-        <skin-module>customModuleLeadCapture</skin-module>
         <css-path>/css/leadsManagement.css</css-path>
         <css-priority>11</css-priority>
-    </portal-skin>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>mailTemplatesManagement</application-name>
+        <portlet-name>mailTemplatesManagement</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/mailTemplatesManagement.css</css-path>
+        <css-priority>11</css-priority>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>leadCaptureSettings</application-name>
+        <portlet-name>leadCaptureSettings</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/leadCaptureSettings.css</css-path>
+        <css-priority>11</css-priority>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>resourcesManagement</application-name>
+        <portlet-name>resourcesManagement</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/resourcesManagement.css</css-path>
+        <css-priority>11</css-priority>
+    </portlet-skin>
+
+    <portlet-skin>
+        <application-name>compaignsManagement</application-name>
+        <portlet-name>compaignsManagement</portlet-name>
+        <skin-name>Enterprise</skin-name>
+        <css-path>/css/compaignsManagement.css</css-path>
+        <css-priority>11</css-priority>
+    </portlet-skin>
 
 
     <portlet>
