@@ -310,7 +310,7 @@
         padding-left: 10px ~'!important; /** orientation=rt */ ';
         padding-left: 5px ~'!important; /** orientation=lt */ ';
         padding-right: 5px ~'!important; /** orientation=rt */ ';
-        border: none;
+        border: none!important;
         box-shadow: none;
         &::placeholder {
           font-size: 16px!important;
@@ -325,6 +325,12 @@
         margin-right: -2px ~'; /** orientation=rt */ ';
         &:before {
           content: "\ebf3";
+        }
+      }
+      .v-picker__actions.v-card__actions {
+        margin-top: 4px;
+        .dateFooter {
+          width: 100%;
         }
       }
     }
@@ -452,6 +458,32 @@
     }
   }
   .taskDescription {
+    position: relative;
+
+    .activityCharsCount{
+      position: absolute;
+      bottom: 47px;
+      font-size: 15px;
+      right: 5px ~'; /** orientation=lt */ ';
+      left: 5px ~'; /** orientation=rt */ ';
+      color: #adadad;
+
+      .uiIconMessageLength {
+        font-size: 14px;
+        color: #2eb58c;
+        &:before {
+          content: "\e910";
+        }
+      }
+    }
+
+    .tooManyChars {
+      color: #bc4343!important;
+    }
+    .tooManyChars .uiIconMessageLength {
+      color: #bc4343!important;
+    }
+
     ul li {
       list-style-position: inside;
       list-style-type: disc;
@@ -478,19 +510,12 @@
       border-left: none ~'; /** orientation=rt */ ';
     }
 
-    .activityCharsCount.tooManyChars {
-      display: none;
-      /*position: absolute;
-      bottom: 8px;
-      right: 10px;
-      color: @greyColorLighten1;*/
-    }
     .cke_bottom.cke_reset_all {
       background-color: transparent;
       height: 30px!important;
     }
     .cke_bottom .cke_button_icon {
-      filter: opacity(0.2);
+      filter: opacity(0.4);
     }
     .uiIconMessageLength {
       font-size: 14px;
@@ -508,254 +533,95 @@
       display: block;
     }
   }
-  .taskCommentsAndChanges {
-    .taskComments {
-      .addCommentBtn {
-        .uiIconTaskAddComment {
-          position: relative;
-          cursor: pointer;
-          margin-top: 2px;
-          &:before {
-            content: '\e620';
-            font-family: "PLF-FONT-ICONS";
-            font-size: 16px;
-          }
-        }
-      }
-      .lastCommentLabel {
-        font-size: 16px;
-      }
-      .ViewAllCommentLabel {
-        font-size: 16px;
-        text-decoration: underline;
-        cursor: pointer;
-      }
-      .comment{
-        position: relative;
-      }
-      .commentItem {
-        width: 100%;
-        .commentHeader {
-          width: 100%;
-          .removeCommentBtn {
-            margin-left: auto ~'; /** orientation=lt */ ';
-            margin-right: auto ~'; /** orientation=rt */ ';
-            margin-top: -4px;
-          }
-          .externalTagClass {
-            font-weight: normal;
-          }
-        }
-        .commentBody {
-          display: inline-block;
-          .taskContentComment {
-            padding: 10px;
-            border-radius: 10px;
-            word-break: break-word;
-            p {
-              margin-bottom: 0!important;
-            }
-            .externalTagClass {
-              font-weight: normal;
-            }
-          }
-        }
-      }
-      .TaskSubComments{
-        margin-left: -20px ~'!important; /** orientation=lt */ ';
-        margin-right: -20px ~'!important; /** orientation=rt */ ';
-        .TaskSubCommentItem {
-          padding-left: 60px ~'; /** orientation=lt */ ';
-          padding-right: 60px ~'; /** orientation=rt */ ';
-        }
-      }
-      .taskCommentEmpty {
-        .uiIconComment{
-          display: block;
-          margin-bottom: 10px;
-          &:before {
-            font-family: "PLF-FONT-ICONS" !important;
-            content: '\e9c1';
-            font-style: normal;
-            font-size: 34px;
-          }
-        }
-        .noCommentLabel {
-          display: block;
-          font-size: 16px;
-        }
-        .ViewAllCommentText {
-          display: block;
-          text-decoration: underline;
-          font-size: 14px;
-          cursor: pointer;
-        }
-      }
+}
+
+@-webkit-keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slideInRight {
+  from {
+    -webkit-transform: translate3d(100%, 0, 0);
+    transform: translate3d(100%, 0, 0);
+    visibility: visible;
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+.showTaskCommentDrawer {
+  position: fixed;
+  top: 0;
+  right: 0 ~'; /** orientation=lt */ ';
+  left: 0 ~'; /** orientation=rt */ ';
+  width: 420px;
+  background: white;
+  height: 100%;
+  z-index: 1035;
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
+
+.showTaskChangesDrawer {
+  position: fixed;
+  top: 0;
+  right: 0 ~'; /** orientation=lt */ ';
+  left: 0 ~'; /** orientation=rt */ ';
+  width: 420px;
+  background: white;
+  height: 100%;
+  z-index: 1035;
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation-name: slideInRight;
+  animation-name: slideInRight;
+}
+
+
+@media (max-width: 420px) {
+  .taskDrawer {
+    .text-header-title {
+      font-size: 16px !important;
     }
-    .commentBtn {
-      letter-spacing: 0!important;
+    .taskDrawer .drawerHeader .drawerTitle #taskActionMenu .uiThreeDotsIcon:before {
+      font-size: 22px!important;
+    }
+    .drawerTitle .taskProjectName .projectName {
+      max-width: 173px!important;
+    }
+    .icon-ArrowRight:before {
       font-size: 14px!important;
-      text-transform: capitalize;
     }
-  }
-}
-
-.taskCommentDrawer {
-  .addCommentBtn {
-    .uiIconTaskAddComment {
-      position: relative;
-      cursor: pointer;
-      top: 0px;
-      &:before {
-        content: '\e620';
-        font-family: "PLF-FONT-ICONS";
-        font-size: 18px;
-      }
+    .mdi-close {
+      font-size: 22px!important;
+      width: 22px!important;
+      height: 23px!important;
     }
-  }
-  .drawerTitle > * {
-    flex: 0 0 auto!important;
-  }
-  .uiArrowBAckIcon {
-    cursor: pointer;
-    margin-left: -4px ~'; /** orientation=lt */ ';
-    margin-right: -4px ~'; /** orientation=rt */ ';
-    &:before {
-      content: "\e913";
-      font-family: "PLF-FONT-ICONS" !important;
-      font-style: normal;
-      font-size: 22px;
+    .drawerTitleAndProject {
+      max-width: 90%!important;
     }
-  }
-  .drawerContent {
-    padding: 16px;
-    .dateTime.caption {
-      text-align: start;
-      padding-left: 10px ~'; /** orientation=lt */ ';
-      padding-right: 10px ~'; /** orientation=rt */ ';
-    }
-    .changeItem {
-      margin-top: -16px;
-      padding-left: 37px ~'!important; /** orientation=lt */ ';
-      padding-right: 37px ~'!important; /** orientation=rt */ ';
-    }
-    .TaskCommentContent {
-      .commentItem {
-        width: 100%;
-        .commentHeader {
-          width: 100%;
-          .removeCommentBtn {
-            margin-left: auto ~'; /** orientation=lt */ ';
-            margin-right: auto ~'; /** orientation=rt */ ';
-            .uiIconTrashMini {
-              font-size: 12px;
-            }
-          }
-          .externalTagClass {
-            font-weight: normal;
-          }
+    .taskAssignItem {
+      .assigneeName {
+        p.text-truncate {
+          max-width: 70px!important;
         }
-        .commentBody {
-          display: inline-block;
-          .taskContentComment {
-            padding: 10px;
-            border-radius: 10px;
-            word-break: break-word;
-            p {
-              margin-bottom: 0!important;
-            }
-            .externalTagClass {
-              font-weight: normal;
-            }
-          }
-        }    
-      }
-      .TaskSubComments{
-        margin-left: -20px ~'!important; /** orientation=lt */ ';
-        margin-right: -20px ~'!important; /** orientation=rt */ ';
-        .TaskSubCommentItem {
-          padding-left: 60px ~'; /** orientation=lt */ ';
-          padding-right: 60px ~'; /** orientation=rt */ ';
-        }
-      }
-      .commentEditorContainer {
-        padding-left: 40px ~'; /** orientation=lt */ ';
-        padding-right: 40px ~'; /** orientation=rt */ ';
-      }
-      .newCommentEditor {
-        padding-left: 0 ~'; /** orientation=lt */ ';
-        padding-right: 0 ~'; /** orientation=rt */ ';
-      }
-    }
-    .editorContent {
-      .inactiveEditor {
-        display: none !important;
-      }
-      .comment {
-        position: relative;
-        .editorContainer {
-          width: 100%;
-        }
-      }
-      .tooManyChars {
-        color: #bc4343!important;
-      }
-      .tooManyChars .uiIconMessageLength {
-        color: #bc4343!important;
-      }
-      .activityCharsCount{
-        position: absolute;
-        bottom: 46px;
-        font-size: 12px;
-        right: 3px ~'; /** orientation=lt */ ';
-        .uiIconMessageLength {
-          font-size: 14px;
-          color: #2eb58c;
-          &:before {
-            content: "\e910";
-          }
-        }
-      }
-      .cke_bottom.cke_reset_all {
-        background-color: transparent;
-        height: 30px!important;
-      }
-      .cke_toolbar {
-        border-right: none ~'!important; /** orientation=lt */ ';
-        border-left: none ~'!important; /** orientation=rt */ ';
-      }
-      .cke_bottom .cke_button_icon {
-        filter: opacity(0.2);
-      }
-      .tooManyChars {
-        color: #bc4343!important;
-      }
-      .tooManyChars .uiIconMessageLength {
-        color: #bc4343!important;
-      }
-    }
-    .changeUserAvatar {
-      .pull-left.ml-2.d-flex.flex-column {
-        align-self: flex-start;
-        margin-top: -5px;
-        p {
-          font-weight: bold;
-        }
-      }
-    }
-    .changesText {
-      max-width: 270px;
-      .assignDiv {
-        margin-top: -1px;
       }
     }
   }
 }
-
-
-
-
-
-
-
-

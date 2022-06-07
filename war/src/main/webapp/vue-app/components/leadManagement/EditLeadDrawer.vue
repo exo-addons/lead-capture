@@ -3,8 +3,8 @@
     <template slot="title">
        {{$t('exoplatform.LeadCapture.leadManagement.editLead','Edit Lead')}}
     </template>
-    <template slot="content">
-        <div>
+    <template class="add-drawer-content" slot="content">
+        <div class="add-drawer-content" >
             <form ref="form1">
                 <v-row>
                     <v-label for="firstName">
@@ -144,7 +144,7 @@ export default {
 </script>
 
 <style>
-.drawerContent {
+.add-drawer-content {
     padding: 15px 27px;
 }
 </style>

@@ -56,6 +56,8 @@ public class Utils {
 
   public static final String[]         LEAD_BAD_STATUSES                    = { LEAD_DEFAULT_STATUS, "Bad_Data", "Duplicate" };
 
+  public static final String[]         LEAD_COMPLET_STATUSES               = { LEAD_DEFAULT_STATUS, LEAD_COMPLET_STATUS, "Bad_Data", "Duplicate" };
+
   public static final String[]         LEAD_INACTIVE_STATUSES               = { LEAD_COMPLET_STATUS, "Bad_Data", "Duplicate" };
 
   public static final String           CREATION_DATE_FIELD_NAME             = "createdDate";

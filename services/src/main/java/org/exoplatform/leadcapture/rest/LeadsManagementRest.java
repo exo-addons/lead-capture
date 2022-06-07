@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.task.exception.EntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -464,7 +465,10 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     try {
       return Response.ok(leadsManagementService.getTask(taskId)).build();
-    } catch (Exception e) {
+    } catch (EntityNotFoundException e) {
+      LOG.error("task {} not found", taskId, e);
+      return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+    }catch (Exception e) {
       LOG.error("An error occured when trying to get task {}", taskId, e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
     }

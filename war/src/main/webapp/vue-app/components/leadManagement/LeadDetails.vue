@@ -404,6 +404,13 @@ export default {
         }
     }),
 
+    watch: {
+        lead(val) {
+            this.showEditor=false;
+            this.showEditor1=false;
+        },
+    },
+
     computed: {
         leadAvatar: function () {
             if (this.lead.communityUserName === null || typeof (this.lead.communityUserName) === 'undefined') {

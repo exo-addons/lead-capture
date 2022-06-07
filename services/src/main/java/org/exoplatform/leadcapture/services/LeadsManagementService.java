@@ -253,6 +253,15 @@ public class LeadsManagementService {
       leadEntity.setUpdatedDate(new Date());
       leadEntity.setStatus(status);
       boolean isBadStatus = Arrays.stream(LEAD_BAD_STATUSES).anyMatch(status::equals);
+      boolean isCompletedStatus = Arrays.stream(LEAD_COMPLET_STATUSES).anyMatch(status::equals);
+      if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0){
+        try {
+          getTask(leadEntity.getTaskId());
+        } catch (EntityNotFoundException e) {
+          leadEntity.setTaskId(null);
+          leadEntity.setTaskUrl(null);
+        }
+      }
       if (leadEntity.getTaskId() == null || leadEntity.getTaskId() == 0) {
         if (!isBadStatus) {
           TaskDto task_ = createTask(leadEntity);
@@ -261,19 +270,13 @@ public class LeadsManagementService {
             leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
           }
         }
-      } else {
-        if (isBadStatus) {
-          removeTask(leadEntity.getTaskId());
-          leadEntity.setTaskId(null);
-          leadEntity.setTaskUrl(null);
-          LOG.info("Task {} related to lead {} removed by {} because of bad status", leadEntity.getTaskId(), leadEntity.getId(), userName);
-        } else if (status.equals(LEAD_COMPLET_STATUS)) {
-          completeTask(leadEntity.getTaskId());
-        }
       }
       leadEntity = leadDAO.update(leadEntity);
       if (leadEntity.getTaskId() != null && leadEntity.getTaskId() != 0) {
         updateTaskStatus(leadEntity.getTaskId(), status);
+        if (isCompletedStatus) {
+          completeTask(leadEntity.getTaskId());
+        }
       }
       return leadEntity;
     } catch (Exception e) {
@@ -632,11 +635,6 @@ public class LeadsManagementService {
       return task;
     }
     return null;
-  }
-
-  public void removeTask(Long id) throws Exception {
-    TaskDto task = taskService.getTask(id);
-    taskService.removeTask(task.getId());
   }
 
   public void completeTask(Long id) throws Exception {

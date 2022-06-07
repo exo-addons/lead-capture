@@ -4,7 +4,7 @@
 
 
     <portlet-skin>
-        <application-name>leadsManagement</application-name>
+        <application-name>lead-capture</application-name>
         <portlet-name>leadsManagement</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/leadsManagement.css</css-path>
@@ -12,7 +12,7 @@
     </portlet-skin>
 
     <portlet-skin>
-        <application-name>mailTemplatesManagement</application-name>
+        <application-name>lead-capture</application-name>
         <portlet-name>mailTemplatesManagement</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/mailTemplatesManagement.css</css-path>
@@ -20,7 +20,7 @@
     </portlet-skin>
 
     <portlet-skin>
-        <application-name>leadCaptureSettings</application-name>
+        <application-name>lead-capture</application-name>
         <portlet-name>leadCaptureSettings</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/leadCaptureSettings.css</css-path>
@@ -28,7 +28,7 @@
     </portlet-skin>
 
     <portlet-skin>
-        <application-name>resourcesManagement</application-name>
+        <application-name>lead-capture</application-name>
         <portlet-name>resourcesManagement</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/resourcesManagement.css</css-path>
@@ -36,7 +36,7 @@
     </portlet-skin>
 
     <portlet-skin>
-        <application-name>compaignsManagement</application-name>
+        <application-name>lead-capture</application-name>
         <portlet-name>compaignsManagement</portlet-name>
         <skin-name>Enterprise</skin-name>
         <css-path>/css/compaignsManagement.css</css-path>
@@ -106,6 +106,9 @@
         </depends>
         <depends>
             <module>taskDrawer</module>
+        </depends>
+        <depends>
+            <module>taskCommentsDrawer</module>
         </depends>
          <depends>
       <module>eXoVueI18n</module>

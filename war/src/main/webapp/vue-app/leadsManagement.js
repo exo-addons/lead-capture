@@ -12,9 +12,10 @@ const vuetify = new Vuetify({
 
 $(document).ready(() => {
   const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language;
-  const url = `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.addon.LeadCapture-${lang}.json`;
+  const urls = [`${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.addon.LeadCapture-${lang}.json`,
+  `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`];
 
-  exoi18n.loadLanguageAsync(lang, url).then(i18n => {
+    exoi18n.loadLanguageAsync(lang, urls).then(i18n => {
       const vueApp = new Vue({
           render: (h) => h(leadsManagementApp),
           i18n,

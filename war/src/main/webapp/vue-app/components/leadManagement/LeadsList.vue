@@ -322,6 +322,9 @@ export default {
 
     },
     methods: {
+        deleteTask() {
+            this.$refs.deleteTaskConfirmDialog.open();
+        },
         addFilter(val) {
             this.selectedOwner = val.selectedOwner
             this.notassigned = val.notassigned
@@ -446,9 +449,13 @@ export default {
                     })
                     .then((resp) => resp.json())
                     .then((resp) => {
-                        this.task = resp;;
-                    });
-
+                        this.task = resp;
+                    }).catch((result) => {
+                        item.taskId = 0;
+                        item.status = "None";
+                        this.task = {};;
+                     });
+  
             }
 
         },
