@@ -35,7 +35,7 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
 
-import io.swagger.jaxrs.PATCH;
+import org.exoplatform.services.rest.http.PATCH;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)
