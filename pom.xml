@@ -25,7 +25,7 @@
     <parent>
         <artifactId>addons-parent-pom</artifactId>
         <groupId>org.exoplatform.addons</groupId>
-        <version>17-exo-SNAPSHOT</version>
+        <version>16-exo-RC01</version>
     </parent>
     <groupId>org.exoplatform.addons.lead-capture</groupId>
     <artifactId>lead-capture</artifactId>
@@ -45,8 +45,8 @@
         <url>https://github.com/exo-addons/lead-capture</url>
     </scm>
     <properties>
-        <org.exoplatform.commons.version>6.5.x-SNAPSHOT</org.exoplatform.commons.version>
-        <org.exoplatform.social.version>6.5.x-SNAPSHOT</org.exoplatform.social.version>
+        <org.exoplatform.commons.version>6.5.x-exo-SNAPSHOT</org.exoplatform.commons.version>
+        <org.exoplatform.social.version>6.5.x-exo-SNAPSHOT</org.exoplatform.social.version>
         <addon.exo.tasks.version>3.5.x-exo-SNAPSHOT</addon.exo.tasks.version>
         <org.jackson.version>2.4.2</org.jackson.version>
     </properties>
