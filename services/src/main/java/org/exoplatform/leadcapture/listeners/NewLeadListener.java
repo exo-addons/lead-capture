@@ -87,7 +87,7 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
         TaskDto task = leadsManagementService.createTask(lead);
         if (task != null) {
           lead.setTaskId(task.getId());
-          lead.setTaskUrl(TaskUtil.buildTaskURL(task));
+          lead.setTaskUrl(leadsManagementService.buildTaskURL(task));
           LOG.info("new task with id = {} has been associated to the lead {}", task.getId(), lead.getId());
         }
       }

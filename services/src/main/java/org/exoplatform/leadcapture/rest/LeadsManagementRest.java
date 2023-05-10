@@ -13,12 +13,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.services.rest.http.PATCH;
 import org.exoplatform.task.exception.EntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
@@ -34,8 +33,6 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
-
-import org.exoplatform.services.rest.http.PATCH;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)

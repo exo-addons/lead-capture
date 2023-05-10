@@ -13,6 +13,7 @@ import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.task.domain.Priority;
 import org.exoplatform.task.dto.*;
 import org.exoplatform.task.service.*;
+import org.exoplatform.task.util.ResourceUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +66,7 @@ public class LeadsManagementService {
   private LabelService               labelService;
 
   private LeadCaptureSettingsService leadCaptureSettingsService;
+
 
   public LeadsManagementService(LeadDAO leadDAO,
                                 FormDAO formDAO,
@@ -143,7 +145,7 @@ public class LeadsManagementService {
             TaskDto task_ = createTask(leadEntity);
             if (task_ != null) {
               leadEntity.setTaskId(task_.getId());
-              leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
+              leadEntity.setTaskUrl(buildTaskURL(task_));
               leadEntity.setStatus(LEAD_OPEN_STATUS);
             }
           }
@@ -267,7 +269,7 @@ public class LeadsManagementService {
           TaskDto task_ = createTask(leadEntity);
           if (task_ != null) {
             leadEntity.setTaskId(task_.getId());
-            leadEntity.setTaskUrl(TaskUtil.buildTaskURL(task_));
+            leadEntity.setTaskUrl(buildTaskURL(task_));
           }
         }
       }
@@ -282,6 +284,21 @@ public class LeadsManagementService {
     } catch (Exception e) {
       LOG.error(e);
       throw e;
+    }
+  }
+
+  public static String buildTaskURL(TaskDto task) {
+    if (task == null) {
+      return "#";
+    }
+
+    StringBuilder urlBuilder = new StringBuilder(ResourceUtil.buildBaseURL());
+    if (urlBuilder.length() <= 1) {
+      return urlBuilder.toString();
+    } else {
+      return urlBuilder.append(TaskUtil.URL_TASK_DETAIL)
+              .append(task.getId())
+              .toString();
     }
   }
 

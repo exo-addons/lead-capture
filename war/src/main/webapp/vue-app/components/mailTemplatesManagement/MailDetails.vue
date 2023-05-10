@@ -65,6 +65,14 @@ export default {
             {
                 title: 'French',
                 value: 'fr'
+            },
+            {
+                title: 'German',
+                value: 'de'
+            },
+            {
+                title: 'Arabic',
+                value: 'ar'
             }
         ],
         eventList: [{
