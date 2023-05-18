@@ -23,9 +23,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>addons-parent-pom</artifactId>
+        <artifactId>addons-exo-parent-pom</artifactId>
         <groupId>org.exoplatform.addons</groupId>
-        <version>16-exo-RC01</version>
+        <version>17-M02</version>
     </parent>
     <groupId>org.exoplatform.addons.lead-capture</groupId>
     <artifactId>lead-capture</artifactId>
@@ -45,29 +45,11 @@
         <url>https://github.com/exo-addons/lead-capture</url>
     </scm>
     <properties>
-        <org.exoplatform.commons.version>6.5.x-exo-SNAPSHOT</org.exoplatform.commons.version>
-        <org.exoplatform.social.version>6.5.x-exo-SNAPSHOT</org.exoplatform.social.version>
         <addon.exo.tasks.version>3.5.x-exo-SNAPSHOT</addon.exo.tasks.version>
         <org.jackson.version>2.4.2</org.jackson.version>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!-- Import versions from platform project -->
-            <dependency>
-                <groupId>org.exoplatform.commons</groupId>
-                <artifactId>commons-component-common</artifactId>
-                <version>${org.exoplatform.commons.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.exoplatform.social</groupId>
-                <artifactId>social-component-core</artifactId>
-                <version>${org.exoplatform.social.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- Current project artifacts -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
