@@ -119,9 +119,6 @@ public class LeadsManagementRest implements ResourceContainer {
   @Path("leads")
   public Response add(@Context UriInfo uriInfo, @HeaderParam("token") String headerToken, FormInfo lead) throws Exception {
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
-
-    // String captureToken = System.getProperty(LEAD_CAPTURE_TOKEN);
-    Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     String captureToken = settings.getCaptureToken();
     if (headerToken == null) {
       LOG.warn("Security Token for Lead capture not defined");

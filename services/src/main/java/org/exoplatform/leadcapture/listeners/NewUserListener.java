@@ -16,11 +16,15 @@
  */
 package org.exoplatform.leadcapture.listeners;
 
+import static org.exoplatform.leadcapture.Utils.*;
+
 import java.util.Date;
 
 import org.exoplatform.leadcapture.dao.LeadDAO;
 import org.exoplatform.leadcapture.entity.LeadEntity;
+import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.services.listener.Asynchronous;
+import org.exoplatform.services.listener.ListenerService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
@@ -32,28 +36,61 @@ public class NewUserListener extends UserEventListener {
   private static final Log    LOG        = ExoLogger.getLogger(NewUserListener.class);
   private LeadDAO             leadDAO;
 
-  public NewUserListener(LeadDAO leadDAO) throws Exception {
+  private ListenerService listenerService;
+  private LeadCaptureSettingsService leadCaptureSettingsService;
+
+  public NewUserListener(LeadDAO leadDAO,LeadCaptureSettingsService leadCaptureSettingsService,
+                         ListenerService listenerService) throws Exception {
     this.leadDAO = leadDAO;
+    this.listenerService = listenerService;
+    this.leadCaptureSettingsService = leadCaptureSettingsService;
   }
 
   @Override
   public void postSave(User user, boolean isNew) throws Exception {
 
     try {
-      LeadEntity leadEntity = leadDAO.getLeadByMail(user.getEmail());
-      if (leadEntity != null) {
-        if (leadEntity.getCommunityRegistration()==null || !leadEntity.getCommunityRegistration()) {
-          leadEntity.setUpdatedDate(new Date());
-          leadEntity.setCommunityRegistration(true);
-          leadEntity.setCommunityRegistrationDate(user.getCreatedDate());
-          leadEntity.setCommunityUserName(user.getUserName());
-          leadDAO.update(leadEntity);
-          LOG.info("Lead {} has been associated to the community user {}",leadEntity.getId(),user.getUserName());
+      if (!leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
+        LeadEntity lead = leadDAO.getLeadByMail(user.getEmail());
+        if (lead != null) {
+          if (lead.getCommunityRegistration() == null || !lead.getCommunityRegistration()) {
+            lead.setUpdatedDate(new Date());
+            lead.setCommunityRegistration(true);
+            lead.setCommunityRegistrationDate(user.getCreatedDate());
+            lead.setCommunityUserName(user.getUserName());
+            leadDAO.update(lead);
+            LOG.info("Lead {} has been associated to the community user {}", lead.getId(), user.getUserName());
+          }
+        } else {
+          lead = new LeadEntity();
+          lead.setMail(user.getEmail());
+          lead.setFirstName(user.getFirstName());
+          lead.setLastName(user.getLastName());
+          lead.setCaptureMethod("Community registration");
+          lead.setCaptureType("Register form");
+          lead.setCaptureSourceInfo("Community registration");
+          lead.setOriginalReferrer("");
+          lead.setPersonSource("Web - Community");
+          lead.setUpdatedDate(new Date());
+          lead.setCreatedDate(new Date());
+          lead.setCommunityRegistration(true);
+          lead.setCommunityRegistrationDate(new Date());
+          lead.setCommunityUserName(user.getUserName());
+          lead.setCommunityRegistrationMethod("Register form");
+          lead.setStatus(LEAD_DEFAULT_STATUS);
+          lead.setPersonSource(getLeadSource(lead.getOriginalReferrer()));
+          lead.setGeographiqueZone(getGeoZone(lead.getCountry()));
+          leadDAO.create(lead);
+          LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{},form_name:Community registration\"",
+                  lead.getFirstName() + " " + lead.getLastName());
+          listenerService.broadcast(NEW_LEAD_EVENT, lead, "");
         }
+        LOG.info("Lead {} has been associated to the community user {}", lead.getId(), user.getUserName());
       }
-    } catch (Exception e) {
-      LOG.error("an error occured", e);
-    }
+      } catch(Exception e){
+        LOG.error("an error occured", e);
+      }
+
   }
 
   @Override
