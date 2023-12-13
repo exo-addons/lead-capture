@@ -7,7 +7,7 @@
     </div>
     <v-layout>
     <v-overlay opacity=0.7 :value="!context.leadCaptureConfigured" z-index=1000>
-        <v-btn v-if="context.isManager" outlined x-large href="/portal/g/:platform:administrators/lead_capture_settings">
+        <v-btn v-if="context.isManager" outlined x-large href="/portal/administration/home/applications/lead-capture/lead_capture_settings">
             <v-icon x-large>mdi-settings</v-icon> <br>
             <div>{{$t('exoplatform.LeadCapture.leadManagement.configrationWarning','The lead capture feature should be configured')}}</div>
         </v-btn>
