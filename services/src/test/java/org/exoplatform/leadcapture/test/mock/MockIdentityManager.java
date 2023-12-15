@@ -12,10 +12,8 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.social.core.profile.ProfileListener;
 import org.exoplatform.social.core.profile.ProfileListenerPlugin;
-import org.exoplatform.social.core.search.Sorting;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.storage.api.IdentityStorage;
-import org.exoplatform.webui.exception.MessageException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +21,6 @@ import java.util.List;
 
 
 public class MockIdentityManager implements IdentityManager {
-
-
   @Override
   public List<Identity> getLastIdentities(int i) {
     return null;
@@ -190,7 +186,47 @@ public class MockIdentityManager implements IdentityManager {
 
   }
 
-    @Override
+  @Override
+  public void addOrModifyProfileProperties(Profile profile) throws Exception {
+
+  }
+
+  @Override
+  public void updateAvatar(Profile profile) {
+
+  }
+
+  @Override
+  public void updateBasicInfo(Profile profile) throws Exception {
+
+  }
+
+  @Override
+  public void updateContactSection(Profile profile) throws Exception {
+
+  }
+
+  @Override
+  public void updateExperienceSection(Profile profile) throws Exception {
+
+  }
+
+  @Override
+  public void updateHeaderSection(Profile profile) throws Exception {
+
+  }
+
+  @Override
+  public List<Identity> getIdentities(String s) throws Exception {
+    return null;
+  }
+
+  @Override
+  public List<Identity> getIdentities(String s, boolean b) throws Exception {
+    return null;
+  }
+
+  @Override
   public List<Identity> getConnections(Identity identity) throws Exception {
     return null;
   }
