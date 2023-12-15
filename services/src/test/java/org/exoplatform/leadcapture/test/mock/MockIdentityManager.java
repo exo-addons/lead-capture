@@ -21,6 +21,8 @@ import java.util.List;
 
 
 public class MockIdentityManager implements IdentityManager {
+
+
   @Override
   public List<Identity> getLastIdentities(int i) {
     return null;
@@ -184,46 +186,6 @@ public class MockIdentityManager implements IdentityManager {
   @Override
   public void saveProfile(Profile profile) {
 
-  }
-
-  @Override
-  public void addOrModifyProfileProperties(Profile profile) throws Exception {
-
-  }
-
-  @Override
-  public void updateAvatar(Profile profile) {
-
-  }
-
-  @Override
-  public void updateBasicInfo(Profile profile) throws Exception {
-
-  }
-
-  @Override
-  public void updateContactSection(Profile profile) throws Exception {
-
-  }
-
-  @Override
-  public void updateExperienceSection(Profile profile) throws Exception {
-
-  }
-
-  @Override
-  public void updateHeaderSection(Profile profile) throws Exception {
-
-  }
-
-  @Override
-  public List<Identity> getIdentities(String s) throws Exception {
-    return null;
-  }
-
-  @Override
-  public List<Identity> getIdentities(String s, boolean b) throws Exception {
-    return null;
   }
 
   @Override
