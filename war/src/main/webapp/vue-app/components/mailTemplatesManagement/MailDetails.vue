@@ -87,6 +87,10 @@ export default {
                 value: 'newCommunityRegistration'
             },
             {
+                title: 'New Trial Registration',
+                value: 'newTrialRegistration'
+            },
+            {
                 title: 'Compaign',
                 value: 'compaign'
             }

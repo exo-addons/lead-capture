@@ -1,5 +1,7 @@
 package org.exoplatform.leadcapture.listeners;
 
+import static org.exoplatform.leadcapture.Utils.LEAD_OPEN_STATUS;
+
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.LeadDAO;
-import org.exoplatform.leadcapture.dto.FieldDTO;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
@@ -25,11 +26,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.activity.model.ExoSocialActivity;
-import org.exoplatform.task.domain.Task;
 import org.exoplatform.task.dto.TaskDto;
-import org.exoplatform.task.util.TaskUtil;
-
-import static org.exoplatform.leadcapture.Utils.*;
 
 public class NewLeadListener extends Listener<LeadEntity, String> {
 
@@ -93,7 +90,14 @@ public class NewLeadListener extends Listener<LeadEntity, String> {
       }
     }
     leadDAO.update(lead);
-    List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newLead");
+    String leadEvent = "newLead";
+    if (lead.getCaptureMethod().equals("Community registration")) {
+      leadEvent = "newCommunityRegistration";
+    }
+    if (lead.getCaptureMethod().equals("Trial registration")) {
+      leadEvent = "newTrialRegistration";
+    }
+    List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent(leadEvent);
     for (MailTemplateEntity template : templates) {
       MailContentDTO content = null;
       MailTemplateDTO mailTemplateDTO = mailTemplatesManagementService.toMailTemplateDTO(template);
