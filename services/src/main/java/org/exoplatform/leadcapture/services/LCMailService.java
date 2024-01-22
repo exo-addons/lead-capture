@@ -3,7 +3,7 @@ package org.exoplatform.leadcapture.services;
 import static org.exoplatform.leadcapture.Utils.ALLOWED_MAIL_DOMAIN;
 import static org.exoplatform.leadcapture.Utils.EMPTY_STR;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.utils.StringCommonUtils;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;

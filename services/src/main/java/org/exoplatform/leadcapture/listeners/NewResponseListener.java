@@ -2,7 +2,7 @@ package org.exoplatform.leadcapture.listeners;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;

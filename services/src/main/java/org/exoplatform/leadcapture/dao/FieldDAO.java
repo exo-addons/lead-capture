@@ -3,13 +3,13 @@ package org.exoplatform.leadcapture.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 public class FieldDAO extends GenericDAOJPAImpl<FieldEntity, Long> {
 

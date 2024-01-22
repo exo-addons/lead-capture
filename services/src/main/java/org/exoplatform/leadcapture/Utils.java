@@ -2,12 +2,12 @@ package org.exoplatform.leadcapture;
 
 import java.io.ByteArrayInputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.task.dto.CommentDto;
-import org.exoplatform.task.dto.ProjectDto;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +18,6 @@ import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.dao.FieldDAO;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
-import org.exoplatform.leadcapture.dto.LeadDTO;
 import org.exoplatform.leadcapture.dto.MailContentDTO;
 import org.exoplatform.leadcapture.dto.MailTemplateDTO;
 import org.exoplatform.leadcapture.entity.FieldEntity;
@@ -39,6 +38,8 @@ import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.social.core.storage.api.ActivityStorage;
+import org.exoplatform.task.dto.CommentDto;
+import org.exoplatform.task.dto.ProjectDto;
 import org.exoplatform.task.service.ProjectService;
 import org.exoplatform.task.util.ProjectUtil;
 import org.exoplatform.ws.frameworks.json.JsonGenerator;
@@ -275,13 +276,13 @@ public class Utils {
     String userName = "<a class=\"textBold linkTitle\"  href=\""
         + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid=" + lead.getId() + "\">"
         + lead.getFirstName() + " " + lead.getLastName() + " </a>";
-    userName = StringEscapeUtils.unescapeHtml(userName);
+    userName = StringEscapeUtils.unescapeHtml3(userName);
     // activity.setType("DEFAULT_ACTIVITY");
     String title = "<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName + "<br/>\n"
         + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
         + " <b>Company : </b>" + lead.getCompany() + "<br/>\n" + " <b>Capture methode : </b>" + lead.getCaptureMethod()
         + "<br/>\n";
-    activity.setTitle(StringEscapeUtils.unescapeHtml(title));
+    activity.setTitle(StringEscapeUtils.unescapeHtml3(title));
     activity.setUserId(posterIdentity.getId());
     return activityStorage.saveActivity(spaceIdentity, activity);
 
@@ -390,7 +391,7 @@ public class Utils {
   public static boolean isResourceRequest(String field) {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
     String identifiers = leadCaptureSettingsService.getSettings().getResourcesIdentifier();
-    if (org.apache.commons.lang.StringUtils.isNotEmpty(identifiers)) {
+    if (org.apache.commons.lang3.StringUtils.isNotEmpty(identifiers)) {
       for (String identifier : identifiers.split(FIELDS_DELIMITER)) {
         if (field.contains(identifier)) {
           return true;

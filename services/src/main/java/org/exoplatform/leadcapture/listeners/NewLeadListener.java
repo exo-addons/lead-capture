@@ -4,7 +4,7 @@ import static org.exoplatform.leadcapture.Utils.LEAD_OPEN_STATUS;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.leadcapture.Utils;
