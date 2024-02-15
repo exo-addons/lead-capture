@@ -50,7 +50,7 @@ public class NewUserListener extends UserEventListener {
   public void postSave(User user, boolean isNew) throws Exception {
 
     try {
-      if (leadCaptureSettingsService.getSettings() != null && leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
+      if (isNew && leadCaptureSettingsService.getSettings() != null && leadCaptureSettingsService.getSettings().isCaptureEnabled()) {
         LeadEntity lead = leadDAO.getLeadByMail(user.getEmail());
         if (lead != null) {
           if (lead.getCommunityRegistration() == null || !lead.getCommunityRegistration()) {
