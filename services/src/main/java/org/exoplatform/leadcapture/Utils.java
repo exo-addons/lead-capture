@@ -277,12 +277,16 @@ public class Utils {
         + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid=" + lead.getId() + "\">"
         + lead.getFirstName() + " " + lead.getLastName() + " </a>";
     userName = StringEscapeUtils.unescapeHtml3(userName);
-    // activity.setType("DEFAULT_ACTIVITY");
-    String title = "<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName + "<br/>\n"
-        + " <b>mail : </b>" + lead.getMail() + "<br/>\n" + " <b>Country : </b>" + lead.getCountry() + "<br/>\n"
-        + " <b>Company : </b>" + lead.getCompany() + "<br/>\n" + " <b>Capture methode : </b>" + lead.getCaptureMethod()
-        + "<br/>\n";
-    activity.setTitle(StringEscapeUtils.unescapeHtml3(title));
+    StringBuilder sb = new StringBuilder("<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName + "<br/>\n"
+            + " <b>mail : </b>" + lead.getMail() + "<br/>\n");
+    if (StringUtils.isNoneEmpty(lead.getCountry())){
+      sb.append(" <b>Country : </b>").append(lead.getCountry()).append("<br/>\n");
+    }
+    if (StringUtils.isNoneEmpty(lead.getCompany())) {
+      sb.append(" <b>Company : </b>").append(lead.getCompany()).append("<br/>\n");
+    }
+    sb.append(" <b>Capture methode : </b>").append(lead.getCaptureMethod()).append("<br/>\n");
+    activity.setTitle(StringEscapeUtils.unescapeHtml3(sb.toString()));
     activity.setUserId(posterIdentity.getId());
     return activityStorage.saveActivity(spaceIdentity, activity);
 

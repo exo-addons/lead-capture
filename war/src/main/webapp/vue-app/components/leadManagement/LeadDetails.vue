@@ -19,7 +19,12 @@
                     </v-row>
                     <v-card-text>
                         <div class="text-center avatar-field">
-                            <v-avatar class="avatar-pl" size="130">
+                            <a v-if="leadProfile" :href="leadProfile" target="_blank">
+                                <v-avatar class="avatar-pl" size="130">
+                                    <img :src="leadAvatar">
+                                </v-avatar>
+                            </a>
+                            <v-avatar v-else class="avatar-pl" size="130">
                                 <img :src="leadAvatar">
                             </v-avatar>
                         </div>
@@ -417,6 +422,12 @@ export default {
                 return "/eXoSkin/skin/images/system/UserAvtDefault.png"
             }
             return "/rest/v1/social/users/" + this.lead.communityUserName + "/avatar"
+        },
+        leadProfile: function () {
+            if (this.lead.communityUserName) {
+                return `/portal/dw/profile/${this.lead.communityUserName}`
+            }
+            return null
         },
         ownerAvatar: function () {
             if (this.lead.assignee === null || typeof (this.lead.assignee) === 'undefined') {
