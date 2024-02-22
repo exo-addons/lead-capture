@@ -10,7 +10,7 @@
                     <b>Tribe User Name</b>
                 </div>
                 <div class="col-md-8">
-                    <div>{{lead.communityUserName}}</div>
+                    <a :href="`/portal/dw/profile/${lead.communityUserName}`" target="_blank">{{lead.communityUserName}}</a>
                 </div>
             </div>
             <div class="row">
