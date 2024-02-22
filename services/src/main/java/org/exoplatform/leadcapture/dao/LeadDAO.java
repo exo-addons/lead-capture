@@ -7,16 +7,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.TypedQuery;
-
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.persistence.impl.GenericDAOJPAImpl;
 import org.exoplatform.leadcapture.entity.LeadEntity;
-import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
@@ -38,6 +37,9 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                                    boolean sortDesc) {
 
     try {
+      Date toDate = null;
+      Date fromDate = null;
+
       String queryString = "SELECT lead FROM LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
           || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)
@@ -88,9 +90,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
         if (StringUtils.isNotEmpty(from)) {
           try {
-            long fromDate = taskFormatter.parse(from).getTime();
-            String date = quryDateFormatter.format(fromDate);
-            queryString = queryString + " TIMESTAMP(lead.createdDate) >= '" + date + "'";
+            fromDate = taskFormatter.parse(from);
+            queryString = queryString + " lead.createdDate >= :fromDate";
             queryString = queryString + " and ";
           } catch (Exception e) {
             LOG.error("Cannot parse from date, the from date filer will not applied to get th list of leads");
@@ -98,14 +99,13 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         }
         if (StringUtils.isNotEmpty(to)) {
           try {
-            Date toDate = taskFormatter.parse(to);
+            toDate = taskFormatter.parse(to);
             Calendar cal = Calendar.getInstance();
             cal.setTime(toDate);
             cal.set(Calendar.MINUTE, 59);
             cal.set(Calendar.SECOND, 59);
             cal.set(Calendar.HOUR_OF_DAY, 23);
-            String date = quryDateFormatter.format(cal.getTime());
-            queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
+            queryString = queryString + " lead.createdDate <= :toDate";
             queryString = queryString + " and ";
           } catch (Exception e) {
             LOG.error("Cannot parse from date, the to date filer will not applied to get th list of leads");
@@ -128,6 +128,12 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         queryString = queryString + " ORDER BY lead.id DESC";
       }
       TypedQuery<LeadEntity> query = getEntityManager().createQuery(queryString, LeadEntity.class);
+      if (fromDate != null) {
+        query.setParameter("fromDate", fromDate);
+      }
+      if (toDate != null) {
+        query.setParameter("toDate", toDate);
+      }
       if (offset >= 0 && limit > 0) {
         query.setFirstResult(offset).setMaxResults(limit);
       }
@@ -149,6 +155,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
                          int max,
                          Boolean notassigned) {
     try {
+      Date toDate = null;
+      Date fromDate = null;
       String queryString = "SELECT count(lead.id) FROM  LeadEntity lead";
       if (StringUtils.isNotEmpty(search) || StringUtils.isNotEmpty(status) || StringUtils.isNotEmpty(owner)
           || StringUtils.isNotEmpty(captureMethod) || StringUtils.isNotEmpty(from) || StringUtils.isNotEmpty(to)
@@ -198,9 +206,8 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
 
         if (StringUtils.isNotEmpty(from)) {
           try {
-            long fromDate = taskFormatter.parse(from).getTime();
-            String date = quryDateFormatter.format(fromDate);
-            queryString = queryString + " TIMESTAMP(lead.createdDate) >= '" + date + "'";
+            fromDate = taskFormatter.parse(from);
+            queryString = queryString + " lead.createdDate >= :fromDate";
             queryString = queryString + " and ";
           } catch (Exception e) {
             LOG.error("Cannot parse from date, the from date filer will not applied to get th list of leads");
@@ -208,14 +215,13 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
         }
         if (StringUtils.isNotEmpty(to)) {
           try {
-            Date toDate = taskFormatter.parse(to);
+            toDate = taskFormatter.parse(to);
             Calendar cal = Calendar.getInstance();
             cal.setTime(toDate);
             cal.set(Calendar.MINUTE, 59);
             cal.set(Calendar.SECOND, 59);
             cal.set(Calendar.HOUR_OF_DAY, 23);
-            String date = quryDateFormatter.format(cal.getTime());
-            queryString = queryString + " TIMESTAMP(lead.createdDate) <= '" + date + "'";
+            queryString = queryString + " lead.createdDate <= :toDate";
             queryString = queryString + " and ";
           } catch (Exception e) {
             LOG.error("Cannot parse from date, the to date filer will not applied to get th list of leads");
@@ -228,7 +234,14 @@ public class LeadDAO extends GenericDAOJPAImpl<LeadEntity, Long> {
           queryString = queryString.substring(0, queryString.length() - 5);
         }
       }
-      return getEntityManager().createQuery(queryString, Long.class).getSingleResult();
+      TypedQuery<Long> query = getEntityManager().createQuery(queryString, Long.class);
+      if (fromDate != null) {
+        query.setParameter("fromDate", fromDate);
+      }
+      if (toDate != null) {
+        query.setParameter("toDate", toDate);
+      }
+      return query.getSingleResult();
     } catch (Exception e) {
       LOG.warn("Exception while attempting to get leads count.", e);
       throw e;
