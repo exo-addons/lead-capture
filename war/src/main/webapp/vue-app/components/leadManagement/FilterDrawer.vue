@@ -221,6 +221,10 @@ export default {
                     value: 'Community registration'
                 },
                 {
+                    text: this.$t('exoplatform.LeadCapture.leadManagement.trial-registration'),
+                    value: 'Trial registration'
+                },
+                {
                     text: this.$t('exoplatform.LeadCapture.method.Blog'),
                     value: 'Blog'
                 },
