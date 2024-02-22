@@ -45,7 +45,7 @@
         <url>https://github.com/exo-addons/lead-capture</url>
     </scm>
     <properties>
-        <addon.exo.tasks.version>3.6.x-exo-SNAPSHOT</addon.exo.tasks.version>
+        <addon.exo.tasks.version>7.0.x-exo-SNAPSHOT</addon.exo.tasks.version>
         <org.jackson.version>2.4.2</org.jackson.version>
     </properties>
     <dependencyManagement>
