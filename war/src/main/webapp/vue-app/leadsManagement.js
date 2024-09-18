@@ -10,7 +10,7 @@ const vuetify = new Vuetify({
   iconfont: 'mdi',
 });
 
-$(document).ready(() => {
+function initLeadsManagement() {
   const lang = eXo && eXo.env && eXo.env.portal && eXo.env.portal.language;
   const urls = [`${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.addon.LeadCapture-${lang}.json`,
   `${eXo.env.portal.context}/${eXo.env.portal.rest}/i18n/bundle/locale.portlet.taskManagement-${lang}.json`];
@@ -27,4 +27,10 @@ $(document).ready(() => {
           return translation !== key && translation || defaultValue;
       }
   });
-});
+}
+
+document.onreadystatechange = () => {
+  if (document.readyState === "complete") {
+    initLeadsManagement();
+  }
+};
