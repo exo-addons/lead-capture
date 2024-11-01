@@ -116,7 +116,7 @@ export default {
         },
 
         setContentByLang(lang) {
-            if (this.$refs.ck !== undefined) {
+            if (this.$refs.ck && this.selectedContent) {
                 this.selectedContent.content = this.$refs.ck.getContent();
             }
             this.selectedLanguage = lang
