@@ -23,7 +23,7 @@
                 <v-toolbar-title>{{$t('exoplatform.LeadCapture.templatesManagement.mailTemplatesList','Mail templates list')}}</v-toolbar-title>
                 <v-divider class="mx-4" inset vertical></v-divider>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" fab dark class="mb-2" @click="editItem(defaultItem)">
+                <v-btn color="primary" fab dark class="mb-2" @click="editItem()">
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
             </v-toolbar>
@@ -158,9 +158,13 @@ export default {
         },
 
         editItem(item) {
-            this.editedItem = item
-            const lang = item.contents[0].language
-            this.$refs.templateDetails.initializeContent(item.contents[0])
+            if(!item){
+                this.editedItem =  JSON.parse(JSON.stringify(this.defaultItem))
+            } else {
+                this.editedItem = item
+            }
+            const lang = this.editedItem.contents[0].language
+            this.$refs.templateDetails.initializeContent(this.editedItem.contents[0])
             this.showTable = false;
             this.showDetails = true;
         },
@@ -185,10 +189,9 @@ export default {
                 })
                 .then((response) => {
                     this.displaySusccessMessage('template updated');
-                    this.backToList()
+                    this.backToList();
                 })
                 .catch((result) => {
-                    // this.initialize();
                     result.text().then((body) => {
                         this.displayErrorMessage(body);
                     });
@@ -260,7 +263,7 @@ export default {
                     });
                 });
 
-            this.close();
+            this.backToList();
 
         },
 
