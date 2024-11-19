@@ -1,5 +1,8 @@
 package org.exoplatform.leadcapture.listeners;
 
+import static org.exoplatform.leadcapture.Utils.isResourceRequest;
+import static org.exoplatform.leadcapture.Utils.saveComment;
+
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +20,6 @@ import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-
-import static org.exoplatform.leadcapture.Utils.*;
 
 public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
 
@@ -54,7 +55,11 @@ public class NewResponseListener extends Listener<LeadEntity, ResponseEntity> {
     String resourceName = null;
     ResourceEntity resource = null;
     ResponseEntity responseEntity = event.getData();
-    if(StringUtils.isNotEmpty(lead.getActivityId()))saveComment(lead.getActivityId(), responseEntity);
+    try {
+      saveComment(lead, responseEntity);
+    } catch (Exception e) {
+      LOG.warn("Cannot add comment to the lead {} activity", lead.getMail());
+    }
     List<MailTemplateEntity> templates = mailTemplatesManagementService.getTemplatesbyEvent("newResponse");
     for (MailTemplateEntity template : templates) {
       if (StringUtils.isNotEmpty(template.getForm()) && !responseEntity.getFormEntity().getName().equals(template.getForm())) {

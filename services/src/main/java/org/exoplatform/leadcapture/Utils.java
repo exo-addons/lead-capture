@@ -24,6 +24,7 @@ import org.exoplatform.leadcapture.entity.FieldEntity;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
+import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -292,16 +293,24 @@ public class Utils {
 
   }
 
-  public static void saveComment(String activityId, ResponseEntity responseEntity) {
+  public static void saveComment(LeadEntity lead, ResponseEntity responseEntity) throws Exception {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
+    LeadsManagementService leadsManagementService = CommonsUtils.getService(LeadsManagementService.class);
     ActivityManager activityManager = CommonsUtils.getService(ActivityManager.class);
     LeadCaptureSettings settings = leadCaptureSettingsService.getSettings();
     String botName = settings.getUserExperienceBotUserName();
     IdentityManager identityManager = CommonsUtils.getService(IdentityManager.class);
     FieldDAO fieldDAO = CommonsUtils.getService(FieldDAO.class);
-    ExoSocialActivity activity = activityManager.getActivity(activityId);
+    ExoSocialActivity activity =  null;
+    if (StringUtils.isNotEmpty(lead.getActivityId())) {
+      activity = activityManager.getActivity(lead.getActivityId());
+    }
     if (activity == null) {
-      throw new IllegalStateException("Activity with id '" + activityId + "' wasn't found");
+      activity = createActivity(lead);
+      if (activity != null) {
+        lead.setActivityId(activity.getId());
+        leadsManagementService.updateLead(leadsManagementService.toLeadDto(lead));
+      }
     }
     Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
     if (posterIdentity == null) {
