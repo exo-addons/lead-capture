@@ -13,11 +13,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.services.rest.http.PATCH;
-import org.exoplatform.task.exception.EntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.FormInfo;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
@@ -30,9 +30,11 @@ import org.exoplatform.leadcapture.services.LeadsManagementService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.rest.http.PATCH;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
+import org.exoplatform.task.exception.EntityNotFoundException;
 
 @Path("/leadcapture/leadsmanagement")
 @Produces(MediaType.APPLICATION_JSON)
@@ -635,7 +637,7 @@ public class LeadsManagementRest implements ResourceContainer {
       lead.setUpdatedDate(new Date());
       lead.setStatus(LEAD_DEFAULT_STATUS);
       lead.setCaptureMethod("manually_created");
-      leadsManagementService.createLead(lead);
+      leadsManagementService.createLead(lead,sourceIdentity.getRemoteId());
       LOG.info("service=lead-capture operation=synchronize_lead parameters=\"lead_name:{}\"",
                lead.getFirstName() + " " + lead.getLastName());
 

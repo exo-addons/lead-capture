@@ -9,15 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.commons.api.persistence.ExoTransactional;
-import org.exoplatform.task.domain.Priority;
-import org.exoplatform.task.dto.*;
-import org.exoplatform.task.service.*;
-import org.exoplatform.task.util.ResourceUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.exoplatform.commons.api.persistence.ExoTransactional;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dao.FieldDAO;
@@ -38,7 +34,11 @@ import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvide
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.task.domain.Priority;
+import org.exoplatform.task.dto.*;
 import org.exoplatform.task.exception.EntityNotFoundException;
+import org.exoplatform.task.service.*;
+import org.exoplatform.task.util.ResourceUtil;
 import org.exoplatform.task.util.TaskUtil;
 
 public class LeadsManagementService {
@@ -164,6 +164,22 @@ public class LeadsManagementService {
 
   public LeadEntity createLead(LeadDTO lead) {
     return leadDAO.create(toLeadEntity(lead));
+  }
+
+  public LeadEntity createLead(LeadDTO lead, String creator) throws Exception {
+    LeadEntity leadEntity = toLeadEntity(lead);
+    leadEntity = leadDAO.create(leadEntity);
+    ResponseDTO responseDTO = new ResponseDTO();
+    responseDTO.setFormName("Created manually");
+    List<FieldDTO> fields = new ArrayList<>();
+    FieldDTO fieldDTO = new FieldDTO();
+    fieldDTO.setName("Created by");
+    fieldDTO.setValue(creator);
+    fields.add(fieldDTO);
+    responseDTO.setFields(fields);
+    addResponse(responseDTO, leadEntity);
+    listenerService.broadcast(NEW_LEAD_EVENT, leadEntity, "");
+    return leadEntity;
   }
 
   @ExoTransactional
