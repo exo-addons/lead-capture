@@ -304,12 +304,12 @@ public class Utils {
     ExoSocialActivity activity =  null;
     if (StringUtils.isNotEmpty(lead.getActivityId())) {
       activity = activityManager.getActivity(lead.getActivityId());
-    }
-    if (activity == null) {
-      activity = createActivity(lead);
-      if (activity != null) {
-        lead.setActivityId(activity.getId());
-        leadsManagementService.updateLead(leadsManagementService.toLeadDto(lead));
+      if (activity == null) {
+        activity = createActivity(lead);
+        if (activity != null) {
+          lead.setActivityId(activity.getId());
+          leadsManagementService.updateLead(leadsManagementService.toLeadDto(lead));
+        }
       }
     }
     Identity posterIdentity = identityManager.getOrCreateIdentity(OrganizationIdentityProvider.NAME, botName);
