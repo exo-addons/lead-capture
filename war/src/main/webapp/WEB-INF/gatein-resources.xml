@@ -43,53 +43,8 @@
         <css-priority>11</css-priority>
     </portlet-skin>
 
-
-    <portlet>
-        <name>leadsManagement</name>
-        <module>
-            <depends>
-                <module>leadsManagementjs</module>
-            </depends>
-        </module>
-    </portlet>
-
-    <portlet>
-        <name>mailTemplatesManagement</name>
-        <module>
-            <depends>
-                <module>mailTemplatesManagementjs</module>
-            </depends>
-        </module>
-    </portlet>
-
-    <portlet>
-        <name>leadCaptureSettings</name>
-        <module>
-            <depends>
-                <module>leadCaptureSettingsjs</module>
-            </depends>
-        </module>
-    </portlet>
-
-    <portlet>
-        <name>resourcesManagement</name>
-        <module>
-            <depends>
-                <module>resourcesManagementjs</module>
-            </depends>
-        </module>
-    </portlet>
-    <portlet>
-        <name>compaignsManagement</name>
-        <module>
-            <depends>
-                <module>compaignsManagementjs</module>
-            </depends>
-        </module>
-    </portlet>
-
     <module>
-        <name>leadsManagementjs</name>
+        <name>leadsManagement</name>
         <script>
             <minify>false</minify>
             <path>/js/leadsManagement.bundle.js</path>
@@ -124,7 +79,7 @@
     </module>
 
     <module>
-        <name>mailTemplatesManagementjs</name>
+        <name>mailTemplatesManagement</name>
         <script>
             <minify>false</minify>
             <path>/js/mailTemplatesManagement.bundle.js</path>
@@ -142,7 +97,7 @@
     </module>
 
     <module>
-        <name>leadCaptureSettingsjs</name>
+        <name>leadCaptureSettings</name>
         <script>
             <minify>false</minify>
             <path>/js/leadCaptureSettings.bundle.js</path>
@@ -159,7 +114,7 @@
         </depends>
     </module>
     <module>
-        <name>resourcesManagementjs</name>
+        <name>resourcesManagement</name>
         <script>
             <minify>false</minify>
             <path>/js/resourcesManagement.bundle.js</path>
@@ -176,7 +131,7 @@
         </depends>
     </module>
     <module>
-        <name>compaignsManagementjs</name>
+        <name>compaignsManagement</name>
         <script>
             <minify>false</minify>
             <path>/js/compaignsManagement.bundle.js</path>
