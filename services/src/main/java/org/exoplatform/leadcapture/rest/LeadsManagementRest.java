@@ -15,14 +15,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.leadcapture.dto.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import org.exoplatform.leadcapture.Utils;
-import org.exoplatform.leadcapture.dto.FormInfo;
-import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
-import org.exoplatform.leadcapture.dto.LeadDTO;
-import org.exoplatform.leadcapture.dto.PersonalTask;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.leadcapture.entity.ResponseEntity;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
@@ -92,10 +89,11 @@ public class LeadsManagementRest implements ResourceContainer {
     }
     try {
 
-      return Response.ok(leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned, sortBy, sortDesc, page, limit, export)).build();
+      LeadsAccessList leads = leadsManagementService.getLeads(search, status, owner, captureMethod, from, to, zone, min, max, notassigned, sortBy, sortDesc, page, limit, export);
+      return Response.ok(leads).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get leads list", e);
-      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal server error").build();
     }
   }
 
