@@ -9,104 +9,104 @@
 
     <!-- Definition of LEAD table -->
     <changeSet author="exo-lead-capture" id="1.0.0-1">
+        <validCheckSum>ANY</validCheckSum>
         <createTable tableName="ADDONS_LC_LEAD">
 
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_LEAD"/>
             </column>
-            <column name="MAIL" type="NVARCHAR(255)">
+            <column name="MAIL" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="COMPANY" type="NVARCHAR(256)">
+            <column name="COMPANY" type="VARCHAR(256)">
             </column>
-            <column name="POSITION" type="NVARCHAR(150)">
+            <column name="POSITION" type="VARCHAR(150)">
             </column>
-            <column name="COUNTRY" type="NVARCHAR(150)">
+            <column name="COUNTRY" type="VARCHAR(150)">
             </column>
-            <column name="FIRST_NAME" type="NVARCHAR(150)">
+            <column name="FIRST_NAME" type="VARCHAR(150)">
             </column>
-            <column name="LAST_NAME" type="NVARCHAR(150)">
+            <column name="LAST_NAME" type="VARCHAR(150)">
             </column>
-            <column name="STATUS" type="NVARCHAR(150)">
+            <column name="STATUS" type="VARCHAR(150)">
             </column>
-            <column name="PHONE" type="NVARCHAR(150)">
+            <column name="PHONE" type="VARCHAR(150)">
             </column>
             <column name="CREATED_DATE" type="TIMESTAMP">
             </column>
             <column name="UPDATED_DATE" type="TIMESTAMP">
             </column>
-            <column name="LANGUAGE" type="NVARCHAR(150)">
+            <column name="LANGUAGE" type="VARCHAR(150)">
             </column>
-            <column name="ASSIGNEE" type="NVARCHAR(150)">
+            <column name="ASSIGNEE" type="VARCHAR(150)">
             </column>
-            <column name="GEOGRAPHIQUE_ZONE" type="NVARCHAR(150)">
+            <column name="GEOGRAPHIQUE_ZONE" type="VARCHAR(150)">
             </column>
             <column name="MARKETING_SUSPENDED" type="BOOLEAN">
             </column>
-            <column name="MARKETING_SUSPENDED_CAUSE" type="NVARCHAR(250)">
+            <column name="MARKETING_SUSPENDED_CAUSE" type="VARCHAR(250)">
             </column>
-            <column name="CAPTURE_METHOD" type="NVARCHAR(150)">
+            <column name="CAPTURE_METHOD" type="VARCHAR(150)">
             </column>
-            <column name="CAPTURE_TYPE" type="NVARCHAR(150)">
+            <column name="CAPTURE_TYPE" type="VARCHAR(150)">
             </column>
             <column name="BLOG_SUBSCRIPTION" type="BOOLEAN">
             </column>
             <column name="BLOG_SUBSCRIPTION_DATE" type="TIMESTAMP">
             </column>
-            <column name="COMMUNITY_USER_NAME" type="NVARCHAR(200)">
+            <column name="COMMUNITY_USER_NAME" type="VARCHAR(200)">
             </column>
             <column name="COMMUNITY_REGISTRATION" type="BOOLEAN">
             </column>
-            <column name="COMMUNITY_REGISTRATION_METHOD" type="NVARCHAR(150)">
+            <column name="COMMUNITY_REGISTRATION_METHOD" type="VARCHAR(150)">
             </column>
             <column name="COMMUNITY_REGISTRATION_DATE" type="TIMESTAMP">
             </column>
-            <column name="PERSON_SOURCE" type="NVARCHAR(250)">
+            <column name="PERSON_SOURCE" type="VARCHAR(250)">
             </column>
-            <column name="LANDING_PAGE_INFO" type="NVARCHAR(250)">
+            <column name="LANDING_PAGE_INFO" type="VARCHAR(250)">
             </column>
-            <column name="CAPTURE_SOURCE_INFO" type="NVARCHAR(250)">
+            <column name="CAPTURE_SOURCE_INFO" type="VARCHAR(250)">
             </column>
-            <column name="PERSON_IP" type="NVARCHAR(50)">
+            <column name="PERSON_IP" type="VARCHAR(50)">
             </column>
             <column name="ORIGINAL_REFERRER" type="TEXT">
             </column>
-            <column name="ACTIVITY_ID" type="NVARCHAR(250)">
+            <column name="ACTIVITY_ID" type="VARCHAR(250)">
             </column>
             <column name="TASK_ID" type="BIGINT">
             </column>
-            <column name="TASK_URL" type="NVARCHAR(250)">
+            <column name="TASK_URL" type="VARCHAR(250)">
             </column>
-            <column name="GOAL" type="NVARCHAR(250)">
+            <column name="GOAL" type="VARCHAR(250)">
             </column>
-            <column name="USERS_NUMBER" type="NVARCHAR(250)">
+            <column name="USERS_NUMBER" type="VARCHAR(250)">
             </column>
-            <column name="CURRENT_SOLUTION" type="NVARCHAR(250)">
+            <column name="CURRENT_SOLUTION" type="VARCHAR(250)">
             </column>
             <column name="INTERACTION_SUMMARY" type="LONGTEXT">
             </column>
-            <column name="HOW_HEAR" type="NVARCHAR(250)">
+            <column name="HOW_HEAR" type="VARCHAR(250)">
             </column>
-            <column name="SOLUTION_TYPE" type="NVARCHAR(250)">
+            <column name="SOLUTION_TYPE" type="VARCHAR(250)">
             </column>
-            <column name="SOLUTION_REQUIEREMENTS" type="NVARCHAR(250)">
+            <column name="SOLUTION_REQUIEREMENTS" type="VARCHAR(250)">
             </column>
-            <column name="SHORTLIST_VENDORS" type="NVARCHAR(250)">
+            <column name="SHORTLIST_VENDORS" type="VARCHAR(250)">
             </column>
-            <column name="COMPANY_WEBSITE" type="NVARCHAR(250)">
+            <column name="COMPANY_WEBSITE" type="VARCHAR(250)">
             </column>
-            <column name="EMPLOYEES_NUMBER" type="NVARCHAR(250)">
+            <column name="EMPLOYEES_NUMBER" type="VARCHAR(250)">
             </column>
-            <column name="INDUSTRY" type="NVARCHAR(250)">
+            <column name="INDUSTRY" type="VARCHAR(250)">
             </column>
         </createTable>
 
         <createTable tableName="ADDONS_LC_FORM">
-
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_ADDONS_LC_FORM"/>
             </column>
-            <column name="NAME" type="NVARCHAR(150)">
+            <column name="NAME" type="VARCHAR(150)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="FIELDS" type="LONGTEXT">
@@ -136,28 +136,27 @@
             <column name="LC_RESPONSE_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="FK_LC_RESPONSE" references="ADDONS_LC_RESPONSE(ID)"/>
             </column>
-            <column name="NAME" type="NVARCHAR(250)">
+            <column name="NAME" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="VALUE" type="NVARCHAR(250)">
+            <column name="VALUE" type="VARCHAR(250)">
             </column>
         </createTable>
 
         <createTable tableName="ADDONS_LC_MAIL_TEMPLATE">
-
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_MAIL_TEMPLATE"/>
             </column>
-            <column name="NAME" type="NVARCHAR(250)">
+            <column name="NAME" type="VARCHAR(250)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="DESCRIPTION" type="NVARCHAR(250)">
+            <column name="DESCRIPTION" type="VARCHAR(250)">
             </column>
-            <column name="EVENT" type="NVARCHAR(100)">
+            <column name="EVENT" type="VARCHAR(100)">
             </column>
-            <column name="FORM" type="NVARCHAR(100)">
+            <column name="FORM" type="VARCHAR(100)">
             </column>
-            <column name="FIELD" type="NVARCHAR(100)">
+            <column name="FIELD" type="VARCHAR(100)">
             </column>
 
         </createTable>
@@ -167,7 +166,7 @@
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_MAIL_CONTENT"/>
             </column>
-            <column name="LANGUAGE" type="NVARCHAR(50)">
+            <column name="LANGUAGE" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="SUBJECT" type="LONGTEXT">
@@ -187,16 +186,16 @@
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_RESOURCE"/>
             </column>
-            <column name="NAME" type="NVARCHAR(250)">
+            <column name="NAME" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TYPE" type="NVARCHAR(250)">
+            <column name="TYPE" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PATH" type="NVARCHAR(250)">
+            <column name="PATH" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="URL" type="NVARCHAR(250)">
+            <column name="URL" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
 
@@ -245,18 +244,19 @@
     </changeSet>
 
     <changeSet author="exo-lead-capture" id="1.0.0-">
+        <validCheckSum>ANY</validCheckSum>
         <createTable tableName="ADDONS_LC_COMPAIGN">
 
             <column name="ID" type="BIGINT" autoIncrement="${autoIncrement}" startWith="1">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_LC_COMPAIGN"/>
             </column>
-            <column name="NAME" type="NVARCHAR(250)">
+            <column name="NAME" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="FIELD" type="NVARCHAR(250)">
+            <column name="FIELD" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
-            <column name="VALUE" type="NVARCHAR(250)">
+            <column name="VALUE" type="VARCHAR(250)">
                 <constraints nullable="false"/>
             </column>
             <column name="ENABLED" type="BOOLEAN">
@@ -278,10 +278,11 @@
     </changeSet>
 
     <changeSet author="exo-lead-capture" id="1.0.0-8">
+        <validCheckSum>ANY</validCheckSum>
         <addColumn tableName="ADDONS_LC_LEAD">
-            <column name="DEPARTMENT" type="NVARCHAR(250)">
+            <column name="DEPARTMENT" type="VARCHAR(250)">
             </column>
-            <column name="COMPANY_SIZE" type="NVARCHAR(250)">
+            <column name="COMPANY_SIZE" type="VARCHAR(250)">
             </column>
             <column name="CUSTOMER" type="BOOLEAN">
             </column>
@@ -297,7 +298,12 @@
         <createSequence sequenceName="SEQ_ADDONS_LC_MAIL_CONTENT_ID" startValue="1"/>
         <createSequence sequenceName="SEQ_ADDONS_LC_RESOURCE_ID" startValue="1"/>
     </changeSet>
-
-        </databaseChangeLog>
+    <changeSet author="exo-lead-capture" id="1.0.0-10" >
+        <sql dbms="mysql">
+            ALTER TABLE ADDONS_LC_RESOURCE CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+            ALTER TABLE ADDONS_LC_COMPAIGN CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+        </sql>
+    </changeSet>
+</databaseChangeLog>
 
 
