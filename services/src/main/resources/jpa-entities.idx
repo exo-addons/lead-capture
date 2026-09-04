@@ -1,0 +1,8 @@
+org.exoplatform.leadcapture.entity.CompaignEntity
+org.exoplatform.leadcapture.entity.FieldEntity
+org.exoplatform.leadcapture.entity.FormEntity
+org.exoplatform.leadcapture.entity.LeadEntity
+org.exoplatform.leadcapture.entity.MailContentEntity
+org.exoplatform.leadcapture.entity.MailTemplateEntity
+org.exoplatform.leadcapture.entity.ResourceEntity
+org.exoplatform.leadcapture.entity.ResponseEntity
