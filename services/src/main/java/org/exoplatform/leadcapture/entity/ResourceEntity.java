@@ -4,20 +4,18 @@ import java.io.Serializable;
 
 import jakarta.persistence.*;
 
-import org.exoplatform.commons.api.persistence.ExoEntity;
+import io.meeds.common.persistence.PortableSequence;
 
 import lombok.Data;
 
 @Entity(name = "ResourceEntity")
-@ExoEntity
 @Table(name = "ADDONS_LC_RESOURCE")
 @Data
 
 public class ResourceEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_RESOURCE_ID", sequenceName = "SEQ_ADDONS_LC_RESOURCE_ID", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_RESOURCE_ID")
+  @PortableSequence(name = "SEQ_ADDONS_LC_RESOURCE_ID")
   @Column(name = "ID")
   protected Long   id;
 

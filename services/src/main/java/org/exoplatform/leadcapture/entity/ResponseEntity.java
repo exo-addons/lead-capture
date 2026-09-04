@@ -8,13 +8,12 @@ import java.util.List;
 
 import jakarta.persistence.*;
 
-import org.exoplatform.commons.api.persistence.ExoEntity;
+import io.meeds.common.persistence.PortableSequence;
 
 import lombok.Data;
 import org.exoplatform.task.domain.Comment;
 
 @Entity(name = "ResponseEntity")
-@ExoEntity
 @Table(name = "ADDONS_LC_RESPONSE")
 @Data
 @NamedQueries({
@@ -24,8 +23,7 @@ import org.exoplatform.task.domain.Comment;
 public class ResponseEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_RESPONSE_ID", sequenceName = "SEQ_ADDONS_LC_RESPONSE_ID", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_RESPONSE_ID")
+  @PortableSequence(name = "SEQ_ADDONS_LC_RESPONSE_ID")
   @Column(name = "ID")
   protected Long                  id;
 

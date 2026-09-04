@@ -4,12 +4,11 @@ import java.io.Serializable;
 
 import jakarta.persistence.*;
 
-import org.exoplatform.commons.api.persistence.ExoEntity;
+import io.meeds.common.persistence.PortableSequence;
 
 import lombok.Data;
 
 @Entity(name = "MailTemplateEntity")
-@ExoEntity
 @Table(name = "ADDONS_LC_MAIL_TEMPLATE")
 @Data
 @NamedQueries({
@@ -18,8 +17,7 @@ import lombok.Data;
 public class MailTemplateEntity implements Serializable {
 
   @Id
-  @SequenceGenerator(name = "SEQ_ADDONS_LC_MAIL_TEMPLATE_ID", sequenceName = "SEQ_ADDONS_LC_MAIL_TEMPLATE_ID", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ_ADDONS_LC_MAIL_TEMPLATE_ID")
+  @PortableSequence(name = "SEQ_ADDONS_LC_MAIL_TEMPLATE_ID")
   @Column(name = "ID")
   protected Long   id;
 
