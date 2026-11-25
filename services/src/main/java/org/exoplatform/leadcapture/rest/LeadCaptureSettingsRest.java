@@ -10,13 +10,12 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.core.identity.model.Identity;
 import org.exoplatform.social.service.rest.Util;
 
@@ -25,11 +24,13 @@ import org.exoplatform.social.service.rest.Util;
 
 public class LeadCaptureSettingsRest implements ResourceContainer {
 
-  private final Log                  LOG                 = ExoLogger.getLogger(LeadCaptureSettingsRest.class);
+  private static final String        ADMINISTRATORS_GROUP = "/platform/administrators";
 
-  private final String               portalContainerName = "portal";
+  private final Log                  LOG                  = ExoLogger.getLogger(LeadCaptureSettingsRest.class);
 
-  private final String[]             SUPPORTED_FORMATS   = new String[] { "json" };
+  private final String               portalContainerName  = "portal";
+
+  private final String[]             SUPPORTED_FORMATS    = new String[] { "json" };
 
   private LeadCaptureSettingsService leadCaptureSettingsService;
 
@@ -40,11 +41,16 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
   @GET
   @Path("settings")
   @Produces(MediaType.APPLICATION_JSON)
-  @RolesAllowed("administrators")
+  @RolesAllowed({ "administrators", "ux-team" })
   public Response getSettings(@Context UriInfo uriInfo) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    if (!canManageSettings(sourceIdentity.getRemoteId())) {
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Only administrators and managers of the UX team group can read the lead capture settings")
+                     .build();
     }
     try {
       return Response.ok(leadCaptureSettingsService.getSettings()).build();
@@ -57,11 +63,16 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
   @POST
   @Path("settings")
   @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed("administrators")
+  @RolesAllowed({ "administrators", "ux-team" })
   public Response save(@Context UriInfo uriInfo, LeadCaptureSettings settings) throws Exception {
     Identity sourceIdentity = Util.getAuthenticatedUserIdentity(portalContainerName);
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    if (!canManageSettings(sourceIdentity.getRemoteId())) {
+      return Response.status(Response.Status.FORBIDDEN)
+                     .entity("Only administrators and managers of the UX team group can update the lead capture settings")
+                     .build();
     }
     try {
       leadCaptureSettingsService.saveSettings(settings);
@@ -87,7 +98,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
       JSONObject context = new JSONObject();
       context.put("currentUser", sourceIdentity.getRemoteId());
       context.put("currentUserFullName", sourceIdentity.getProfile().getFullName());
-      context.put("isManager", isManager(sourceIdentity.getRemoteId(), settings.getUserExperienceGroup()));
+      context.put("isManager", leadCaptureSettingsService.isUxTeamManager(sourceIdentity.getRemoteId()));
       context.put("leadCaptureConfigured", isConfigured(settings));
       return Response.ok(context.toString()).build();
     } catch (Exception e) {
@@ -96,25 +107,25 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     }
   }
 
-  public boolean isManager(String userName, String group) {
-    try {
-      OrganizationService organizationService = CommonsUtils.getService(OrganizationService.class);
-      if (group != null
-          && organizationService.getMembershipHandler().findMembershipByUserGroupAndType(userName, group, "manager") != null) {
-        return true;
-      }
-    } catch (Exception e) {
-      LOG.error("An error occured when trying check if user is a manager of the group {}", group, e);
-      return false;
-    }
-    return false;
-  }
-
   public boolean isConfigured(LeadCaptureSettings settings) {
     if (StringUtils.isNotEmpty(settings.getUserExperienceGroup()) && StringUtils.isNotEmpty(settings.getUserExperienceGroup())
         && StringUtils.isNotEmpty(settings.getUserExperienceSpace()) && StringUtils.isNotEmpty(settings.getSenderMail())) {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Settings can be read and updated by platform administrators and by the
+   * managers of the configured UX team group.
+   */
+  private boolean canManageSettings(String userName) {
+    return isAdministrator() || leadCaptureSettingsService.isUxTeamManager(userName);
+  }
+
+  private boolean isAdministrator() {
+    ConversationState conversationState = ConversationState.getCurrent();
+    return conversationState != null && conversationState.getIdentity() != null
+        && conversationState.getIdentity().isMemberOf(ADMINISTRATORS_GROUP);
   }
 }

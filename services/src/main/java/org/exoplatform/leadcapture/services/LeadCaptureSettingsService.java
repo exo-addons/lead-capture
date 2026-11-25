@@ -27,6 +27,7 @@ import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.task.dto.ProjectDto;
@@ -36,34 +37,48 @@ import org.exoplatform.task.service.StatusService;
 
 public class LeadCaptureSettingsService {
 
-  private final Log           LOG = ExoLogger.getLogger(LeadCaptureSettingsService.class);
+  private static final String MANAGER_MEMBERSHIP_TYPE = "manager";
+
+  private final Log           LOG                     = ExoLogger.getLogger(LeadCaptureSettingsService.class);
 
   private SettingService      settingService;
 
-  private LeadCaptureSettings configuredLeadCaptureSettings;
+  private OrganizationService organizationService;
 
-  public LeadCaptureSettingsService(SettingService settingService) {
+  public LeadCaptureSettingsService(SettingService settingService, OrganizationService organizationService) {
     this.settingService = settingService;
+    this.organizationService = organizationService;
   }
 
+  /**
+   * Reads the settings from the {@link SettingService} on every call.
+   * <p>
+   * There is deliberately no local copy: the platform {@link SettingService}
+   * swallows any exception raised while reading a value and returns
+   * {@code null} instead, exactly as if nothing had been stored. A local cache
+   * populated from such a transient failure would serve the default (empty)
+   * settings until the next restart or save, which is how production settings
+   * used to "disappear". The {@link SettingService} already caches values in a
+   * cluster-aware cache, so reading through it costs nothing.
+   *
+   * @return the stored settings, or default settings when nothing is stored
+   *         (or when the store could not be read)
+   */
   public LeadCaptureSettings getSettings() {
-    if (this.configuredLeadCaptureSettings != null) {
-      return this.configuredLeadCaptureSettings.clone();
-    }
     SettingValue<?> settingsValue = settingService.get(LEAD_CAPTURE_CONTEXT, LEAD_CAPTURE_SCOPE, LEAD_CAPTURE_SETTINGS_KEY_NAME);
     String settingsValueString = settingsValue == null || settingsValue.getValue() == null ? null
                                                                                            : settingsValue.getValue().toString();
-    org.exoplatform.leadcapture.dto.LeadCaptureSettings leadCaptureSettings = null;
-    if (settingsValueString == null) {
-      leadCaptureSettings = new org.exoplatform.leadcapture.dto.LeadCaptureSettings();
-    } else {
-      leadCaptureSettings = fromJsonString(settingsValueString, org.exoplatform.leadcapture.dto.LeadCaptureSettings.class);
+    LeadCaptureSettings leadCaptureSettings = StringUtils.isBlank(settingsValueString) ? null
+                                                                                       : fromJsonString(settingsValueString,
+                                                                                                        LeadCaptureSettings.class);
+    if (leadCaptureSettings == null) {
+      LOG.debug("No lead capture settings found in the settings store, using default settings");
+      leadCaptureSettings = new LeadCaptureSettings();
     }
     if (leadCaptureSettings.getUserExperienceGroup() == null) {
       leadCaptureSettings.setUserExperienceGroup(USERS_EXPERENCE_GROUP_NAME);
     }
-    this.configuredLeadCaptureSettings = leadCaptureSettings;
-    return this.configuredLeadCaptureSettings;
+    return leadCaptureSettings;
   }
 
   public void saveSettings(LeadCaptureSettings leadCaptureSettings) throws Exception {
@@ -79,9 +94,6 @@ public class LeadCaptureSettingsService {
                        LEAD_CAPTURE_SETTINGS_KEY_NAME,
                        SettingValue.create(settingsString));
 
-    // Purge cached settings
-    this.configuredLeadCaptureSettings = null;
-
     try {
       if (StringUtils.isEmpty(oldSettings.getUserExperienceSpace())
           || !oldSettings.getUserExperienceSpace().equals(leadCaptureSettings.getUserExperienceSpace())) {
@@ -93,6 +105,30 @@ public class LeadCaptureSettingsService {
     } catch (Exception e) {
       LOG.error(e);
       throw e;
+    }
+  }
+
+  /**
+   * @param userName the user to check
+   * @return {@code true} when the user holds the {@code manager} membership in
+   *         the configured UX team group (see
+   *         {@link LeadCaptureSettings#getUserExperienceGroup()}), {@code false}
+   *         otherwise or when the membership cannot be looked up
+   */
+  public boolean isUxTeamManager(String userName) {
+    if (StringUtils.isBlank(userName)) {
+      return false;
+    }
+    String uxTeamGroup = getSettings().getUserExperienceGroup();
+    if (StringUtils.isBlank(uxTeamGroup)) {
+      return false;
+    }
+    try {
+      return organizationService.getMembershipHandler()
+                                .findMembershipByUserGroupAndType(userName, uxTeamGroup, MANAGER_MEMBERSHIP_TYPE) != null;
+    } catch (Exception e) {
+      LOG.warn("Cannot check whether user {} is a manager of group {}", userName, uxTeamGroup, e);
+      return false;
     }
   }
 
