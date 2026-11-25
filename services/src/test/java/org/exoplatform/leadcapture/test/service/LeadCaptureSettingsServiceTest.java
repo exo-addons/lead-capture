@@ -151,6 +151,7 @@ public class LeadCaptureSettingsServiceTest {
     assertEquals("&lt;img src=x onerror=alert(1)&gt;", Utils.toHtmlText("<img src=x onerror=alert(1)>"));
     assertEquals("Ren&eacute; &amp; Co", Utils.toHtmlText("Ren&eacute; & Co"));
     assertEquals("Ren&eacute;", Utils.toHtmlText("René"));
+    assertEquals("O'Neil", Utils.toHtmlText("O&apos;Neil"));
     assertEquals("", Utils.toHtmlText(null));
   }
 

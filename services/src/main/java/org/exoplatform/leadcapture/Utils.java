@@ -260,7 +260,7 @@ public class Utils {
    * @return the escaped text, empty for {@code null}
    */
   public static String toHtmlText(String value) {
-    return value == null ? "" : StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(value));
+    return value == null ? "" : StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(value).replace("&apos;", "'"));
   }
 
   public static ExoSocialActivity createActivity(LeadEntity lead) {
@@ -349,6 +349,9 @@ public class Utils {
   public static ProjectDto getTaskProject(String groupId, String taskProject) {
     ProjectService projectService = CommonsUtils.getService(ProjectService.class);
     List<ProjectDto> projects = ProjectUtil.getProjectTree(groupId, projectService);
+    if (projects == null || projects.isEmpty()) {
+      return null;
+    }
     if (taskProject != null) {
       for (ProjectDto project : projects) {
         if (project.getName().equals(taskProject)) {

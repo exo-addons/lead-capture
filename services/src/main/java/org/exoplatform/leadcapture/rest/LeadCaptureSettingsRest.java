@@ -53,6 +53,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     }
     try {
       CacheControl noStore = new CacheControl();
+      noStore.setPrivate(true);
       noStore.setNoStore(true);
       return Response.ok(leadCaptureSettingsService.getSettings()).cacheControl(noStore).build();
     } catch (Exception e) {
