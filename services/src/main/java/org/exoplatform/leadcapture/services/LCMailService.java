@@ -6,6 +6,7 @@ import static org.exoplatform.leadcapture.Utils.EMPTY_STR;
 import org.apache.commons.lang3.StringUtils;
 
 import org.exoplatform.commons.utils.StringCommonUtils;
+import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.entity.LeadEntity;
 import org.exoplatform.services.log.ExoLogger;
@@ -75,9 +76,9 @@ public class LCMailService {
   }
 
   public String getContentEmail(String content, LeadEntity lead, String resource, String resourceName) {
-    String content_ = StringUtils.replace(content, "$FIRST_NAME", lead.getFirstName());
-    content_ = StringUtils.replace(content_, "$LAST_NAME", lead.getLastName());
-    content_ = StringUtils.replace(content_, "$MAIL", lead.getMail());
+    String content_ = StringUtils.replace(content, "$FIRST_NAME", Utils.toHtmlText(lead.getFirstName()));
+    content_ = StringUtils.replace(content_, "$LAST_NAME", Utils.toHtmlText(lead.getLastName()));
+    content_ = StringUtils.replace(content_, "$MAIL", Utils.toHtmlText(lead.getMail()));
     content_ = StringUtils.replace(content_, "$RESOURCE_NAME", resourceName);
     content_ = StringUtils.replace(content_, "$RESOURCE", resource);
     content_ = StringUtils.replace(content_, "$UNSUBSCRIBE_URL", leadCaptureSettingsService.getSettings().getUnsubscribeUrl());
