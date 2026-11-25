@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class LeadCaptureSettings implements Serializable, Cloneable {
+public class LeadCaptureSettings implements Serializable {
 
   private static final long serialVersionUID           = -5725443183560646198L;
 
@@ -41,13 +41,5 @@ public class LeadCaptureSettings implements Serializable, Cloneable {
   private String            unsubscribeUrl             = null;
 
   private String            leadManagementAppUrl       = null;
-
-  public LeadCaptureSettings clone() { // NOSONAR
-    try {
-      return (LeadCaptureSettings) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new IllegalStateException("Error while cloning object: " + this, e);
-    }
-  }
 
 }

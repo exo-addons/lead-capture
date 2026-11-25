@@ -251,6 +251,18 @@ public class Utils {
     return (mailTemplateDTO.getContents().get(0));
   }
 
+  /**
+   * Turns a value received from a lead or a form response into HTML text:
+   * entities it already holds are decoded, then every HTML special character
+   * is escaped, so the value is displayed as typed and never read as markup.
+   *
+   * @param value the raw value, possibly {@code null}
+   * @return the escaped text, empty for {@code null}
+   */
+  public static String toHtmlText(String value) {
+    return value == null ? "" : StringEscapeUtils.escapeHtml4(StringEscapeUtils.unescapeHtml4(value));
+  }
+
   public static ExoSocialActivity createActivity(LeadEntity lead) {
     LeadCaptureSettingsService leadCaptureSettingsService = CommonsUtils.getService(LeadCaptureSettingsService.class);
     String spaceName = leadCaptureSettingsService.getSettings().getUserExperienceSpace();
@@ -275,19 +287,18 @@ public class Utils {
     }
     ExoSocialActivity activity = new ExoSocialActivityImpl();
     String userName = "<a class=\"textBold linkTitle\"  href=\""
-        + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid=" + lead.getId() + "\">"
-        + lead.getFirstName() + " " + lead.getLastName() + " </a>";
-    userName = StringEscapeUtils.unescapeHtml3(userName);
+        + toHtmlText(leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid=" + lead.getId()) + "\">"
+        + toHtmlText(lead.getFirstName()) + " " + toHtmlText(lead.getLastName()) + " </a>";
     StringBuilder sb = new StringBuilder("<span id='lcActivity'>\n" + "A new lead has been created: <br/>\n" + " <b>Name : </b>" + userName + "<br/>\n"
-            + " <b>mail : </b>" + lead.getMail() + "<br/>\n");
+            + " <b>mail : </b>" + toHtmlText(lead.getMail()) + "<br/>\n");
     if (StringUtils.isNoneEmpty(lead.getCountry())){
-      sb.append(" <b>Country : </b>").append(lead.getCountry()).append("<br/>\n");
+      sb.append(" <b>Country : </b>").append(toHtmlText(lead.getCountry())).append("<br/>\n");
     }
     if (StringUtils.isNoneEmpty(lead.getCompany())) {
-      sb.append(" <b>Company : </b>").append(lead.getCompany()).append("<br/>\n");
+      sb.append(" <b>Company : </b>").append(toHtmlText(lead.getCompany())).append("<br/>\n");
     }
-    sb.append(" <b>Capture methode : </b>").append(lead.getCaptureMethod()).append("<br/>\n");
-    activity.setTitle(StringEscapeUtils.unescapeHtml3(sb.toString()));
+    sb.append(" <b>Capture methode : </b>").append(toHtmlText(lead.getCaptureMethod())).append("<br/>\n");
+    activity.setTitle(sb.toString());
     activity.setUserId(posterIdentity.getId());
     return activityStorage.saveActivity(spaceIdentity, activity);
 
@@ -318,10 +329,10 @@ public class Utils {
       throw new IllegalStateException("Not able to create the comment, the Poster Identity is missing");
     }
     String commentText = "<span>\n" + "A new response has been added: <br/>" + "Form Name :"
-        + responseEntity.getFormEntity().getName() + "<br/>\n";
+        + toHtmlText(responseEntity.getFormEntity().getName()) + "<br/>\n";
     for (FieldEntity fieldEntity : fieldDAO.getFieldsByResponse(responseEntity.getId())) {
       if (!fieldEntity.getName().equals(CREATION_DATE_FIELD_NAME)) {
-        commentText = commentText.concat(fieldEntity.getName() + " : " + fieldEntity.getValue() + "<br/>");
+        commentText = commentText.concat(toHtmlText(fieldEntity.getName()) + " : " + toHtmlText(fieldEntity.getValue()) + "<br/>");
       }
     }
     saveComment(activity, commentText, posterIdentity.getId(), posterIdentity.getId());

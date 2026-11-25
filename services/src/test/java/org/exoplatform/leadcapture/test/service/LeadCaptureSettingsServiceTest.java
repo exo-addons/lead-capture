@@ -32,6 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +47,12 @@ import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.leadcapture.Utils;
 import org.exoplatform.leadcapture.dto.LeadCaptureSettings;
 import org.exoplatform.leadcapture.services.LeadCaptureSettingsService;
+import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.task.dto.StatusDto;
 
 /**
  * Unit test of {@link LeadCaptureSettingsService} against a mocked
@@ -85,11 +91,67 @@ public class LeadCaptureSettingsServiceTest {
   @Mock
   private Membership                 membership;
 
+  @Mock
+  private UserACL                    userACL;
+
+  @Mock
+  private Identity                   identity;
+
   private LeadCaptureSettingsService service;
 
   @Before
   public void setUp() {
-    service = new LeadCaptureSettingsService(settingService, organizationService);
+    service = new LeadCaptureSettingsService(settingService, organizationService, userACL);
+  }
+
+  @Test
+  public void canManageSettingsTrueForAdministrator() {
+    when(userACL.isAdministrator(identity)).thenReturn(true);
+
+    assertTrue(service.canManageSettings(identity));
+  }
+
+  @Test
+  public void canManageSettingsTrueForManagerOfTheSettingsPageGroup() {
+    when(userACL.isAdministrator(identity)).thenReturn(false);
+    when(userACL.hasPermission(identity, "manager:" + USERS_EXPERENCE_GROUP_NAME)).thenReturn(true);
+
+    assertTrue(service.canManageSettings(identity));
+  }
+
+  @Test
+  public void canManageSettingsFalseForOtherUsers() {
+    when(userACL.isAdministrator(identity)).thenReturn(false);
+    when(userACL.hasPermission(identity, "manager:" + USERS_EXPERENCE_GROUP_NAME)).thenReturn(false);
+
+    assertFalse(service.canManageSettings(identity));
+  }
+
+  @Test
+  public void canManageSettingsFalseWithoutIdentity() {
+    assertFalse(service.canManageSettings(null));
+    verifyNoInteractions(userACL);
+  }
+
+  @Test
+  public void hasLeadCaptureStatusesOnlyForTheExactStatusesInOrder() {
+    assertTrue(LeadCaptureSettingsService.hasLeadCaptureStatuses(statuses(Utils.LC_STATUSES)));
+    assertFalse(LeadCaptureSettingsService.hasLeadCaptureStatuses(statuses("To Do", "In Progress", "Done")));
+    assertFalse(LeadCaptureSettingsService.hasLeadCaptureStatuses(statuses("Attempted",
+                                                                           "Open",
+                                                                           "Contacted",
+                                                                           "Qualified",
+                                                                           "Recycled",
+                                                                           "Accepted")));
+    assertFalse(LeadCaptureSettingsService.hasLeadCaptureStatuses(null));
+  }
+
+  @Test
+  public void toHtmlTextEscapesMarkupAndKeepsText() {
+    assertEquals("&lt;img src=x onerror=alert(1)&gt;", Utils.toHtmlText("<img src=x onerror=alert(1)>"));
+    assertEquals("Ren&eacute; &amp; Co", Utils.toHtmlText("Ren&eacute; & Co"));
+    assertEquals("Ren&eacute;", Utils.toHtmlText("René"));
+    assertEquals("", Utils.toHtmlText(null));
   }
 
   @Test
@@ -260,6 +322,10 @@ public class LeadCaptureSettingsServiceTest {
     settings.setCaptureEnabled(true);
     settings.setMailingEnabled(true);
     return settings;
+  }
+
+  private static List<StatusDto> statuses(String... names) {
+    return Arrays.stream(names).map(name -> new StatusDto(0, name)).toList();
   }
 
   private static String json(LeadCaptureSettings settings) {

@@ -658,8 +658,8 @@ public class LeadsManagementService {
       if (StringUtils.isNoneEmpty(lead.getFirstName()) && StringUtils.isNoneEmpty(lead.getLastName())) {
         task.setTitle(lead.getFirstName() + " " + lead.getLastName());
       }
-      task.setDescription("<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
-          + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>");
+      task.setDescription("<a  href=\"" + Utils.toHtmlText(leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+          + lead.getId()) + "\">" + Utils.toHtmlText(lead.getFirstName()) + " " + Utils.toHtmlText(lead.getLastName()) + " </a>");
       task.setStatus(status);
       task.setPriority(Priority.NORMAL);
       task.setCreatedBy(settings.getUserExperienceBotUserName());
@@ -703,8 +703,8 @@ public class LeadsManagementService {
     Date dueDate = personalTask.getDueDate();
     task.setTitle(lead.getMail());
     task.setTitle(title);
-    task.setDescription("<a  href=\"" + leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
-        + lead.getId() + "\">" + lead.getFirstName() + " " + lead.getLastName() + " </a>");
+    task.setDescription("<a  href=\"" + Utils.toHtmlText(leadCaptureSettingsService.getSettings().getLeadManagementAppUrl() + "?leadid="
+        + lead.getId()) + "\">" + Utils.toHtmlText(lead.getFirstName()) + " " + Utils.toHtmlText(lead.getLastName()) + " </a>");
     task.setCreatedBy(userId);
     task.setCreatedTime(new Date());
     task.setAssignee(userId);

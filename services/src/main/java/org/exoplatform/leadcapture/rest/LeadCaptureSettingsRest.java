@@ -2,6 +2,7 @@ package org.exoplatform.leadcapture.rest;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,8 +25,6 @@ import org.exoplatform.social.service.rest.Util;
 
 public class LeadCaptureSettingsRest implements ResourceContainer {
 
-  private static final String        ADMINISTRATORS_GROUP = "/platform/administrators";
-
   private final Log                  LOG                  = ExoLogger.getLogger(LeadCaptureSettingsRest.class);
 
   private final String               portalContainerName  = "portal";
@@ -47,13 +46,15 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    if (!canManageSettings(sourceIdentity.getRemoteId())) {
+    if (!canManageSettings()) {
       return Response.status(Response.Status.FORBIDDEN)
                      .entity("Only administrators and managers of the UX team group can read the lead capture settings")
                      .build();
     }
     try {
-      return Response.ok(leadCaptureSettingsService.getSettings()).build();
+      CacheControl noStore = new CacheControl();
+      noStore.setNoStore(true);
+      return Response.ok(leadCaptureSettingsService.getSettings()).cacheControl(noStore).build();
     } catch (Exception e) {
       LOG.error("An error occured when trying to get capture settings", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -69,7 +70,7 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     if (sourceIdentity == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    if (!canManageSettings(sourceIdentity.getRemoteId())) {
+    if (!canManageSettings()) {
       return Response.status(Response.Status.FORBIDDEN)
                      .entity("Only administrators and managers of the UX team group can update the lead capture settings")
                      .build();
@@ -115,17 +116,8 @@ public class LeadCaptureSettingsRest implements ResourceContainer {
     return false;
   }
 
-  /**
-   * Settings can be read and updated by platform administrators and by the
-   * managers of the configured UX team group.
-   */
-  private boolean canManageSettings(String userName) {
-    return isAdministrator() || leadCaptureSettingsService.isUxTeamManager(userName);
-  }
-
-  private boolean isAdministrator() {
+  private boolean canManageSettings() {
     ConversationState conversationState = ConversationState.getCurrent();
-    return conversationState != null && conversationState.getIdentity() != null
-        && conversationState.getIdentity().isMemberOf(ADMINISTRATORS_GROUP);
+    return conversationState != null && leadCaptureSettingsService.canManageSettings(conversationState.getIdentity());
   }
 }
