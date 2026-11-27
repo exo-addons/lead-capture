@@ -137,7 +137,7 @@ public class LeadCaptureSettingsService {
    * @param userName the user to check
    * @return {@code true} when the user holds the {@code manager} membership in
    *         the configured UX team group (see
-   *         {@link LeadCaptureSettings#getUserExperienceGroup()}), {@code false}
+   *         {@code LeadCaptureSettings#getUserExperienceGroup()}), {@code false}
    *         otherwise or when the membership cannot be looked up
    */
   public boolean isUxTeamManager(String userName) {
